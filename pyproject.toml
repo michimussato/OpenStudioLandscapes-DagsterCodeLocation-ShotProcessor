@@ -1,0 +1,53 @@
+[build-system]
+build-backend = "setuptools.build_meta"
+requires = [
+    "setuptools-scm>=9",
+    "setuptools>=80",
+]
+
+[project]
+authors = [
+    { email = "michimussato@gmail.com", name = "Michael Mussato" },
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Framework :: OpenStudioLandscapes",
+    "Programming Language :: Python",
+]
+dependencies = [
+    "dagster==1.9.11",
+]
+description = "Run post-render jobs in Dagster."
+dynamic = [
+    "version",
+]
+license-files = [
+    "LICENSE.txt",
+]
+maintainers = [
+    { email = "michimussato@gmail.com", name = "Michael Mussato" },
+]
+name = "OpenStudioLandscapes-Dagster-ShotProcessor"
+requires-python = ">=3.11"
+
+[project.readme]
+content-type = "text/markdown; charset=UTF-8"
+file = "README.md"
+
+[project.urls]
+Homepage = "https://github.com/michimussato/OpenStudioLandscapes-Dagster-ShotProcessor"
+
+[tool.setuptools]
+include-package-data = true
+platforms = [
+    "Linux",
+]
+
+[tool.setuptools.packages.find]
+exclude = [
+    "tests",
+]
+namespaces = true
+where = [
+    "src",
+]
