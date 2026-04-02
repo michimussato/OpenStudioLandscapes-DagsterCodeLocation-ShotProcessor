@@ -18,7 +18,7 @@ dependencies = [
     "dagster==1.9.11",
     "OpenImageIO",
     "OpenEXR",
-    "OpenStudioLandscapes.Dagster.JobProcessor @ git+https://github.com/michimussato/OpenStudioLandscapes-Dagster-JobProcessor.git",
+    "OpenStudioLandscapes.DagsterCodeLocation.JobProcessor @ git+https://github.com/michimussato/OpenStudioLandscapes-DagsterCodeLocation-JobProcessor.git",
 ]
 description = "Run post-render jobs in Dagster."
 dynamic = [
@@ -30,7 +30,7 @@ license-files = [
 maintainers = [
     { email = "michimussato@gmail.com", name = "Michael Mussato" },
 ]
-name = "OpenStudioLandscapes.Dagster.ShotProcessor"
+name = "OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor"
 requires-python = ">=3.11"
 
 [project.readme]
@@ -38,12 +38,12 @@ content-type = "text/markdown; charset=UTF-8"
 file = "README.md"
 
 [project.urls]
-Homepage = "https://github.com/michimussato/OpenStudioLandscapes-Dagster-ShotProcessor"
+Homepage = "https://github.com/michimussato/OpenStudioLandscapes-DagsterCodeLocation-ShotProcessor"
 
 [tool.setuptools]
 include-package-data = true
 #packages = [
-#    "OpenStudioLandscapes.Dagster.ShotProcessor",
+#    "OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor",
 #]
 platforms = [
     "Linux",
@@ -58,7 +58,7 @@ exclude = [
 ]
 namespaces = true
 where = [
-    "src/",
+    "src",
 ]
-#include = ["OpenStudioLandscapes.Dagster.ShotProcessor"]
-include = ["ShotProcessor"]
+#include = ["OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor"]
+include = ["OpenStudioLandscapes.DagsterCodeLocation.*"]
