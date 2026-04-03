@@ -18,7 +18,7 @@ dependencies = [
     "dagster==1.9.11",
     "OpenImageIO",
     "OpenEXR",
-    "OpenStudioLandscapes.DagsterCodeLocation.JobProcessor @ git+https://github.com/michimussato/OpenStudioLandscapes-DagsterCodeLocation-JobProcessor.git@yaml-migration",
+    "OpenStudioLandscapes-DagsterCodeLocation-JobProcessor @ git+https://github.com/michimussato/OpenStudioLandscapes-DagsterCodeLocation-JobProcessor.git@yaml-migration",
 ]
 description = "Run post-render jobs in Dagster."
 dynamic = [
@@ -30,7 +30,7 @@ license-files = [
 maintainers = [
     { email = "michimussato@gmail.com", name = "Michael Mussato" },
 ]
-name = "OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor"
+name = "OpenStudioLandscapes-DagsterCodeLocation-ShotProcessor"
 requires-python = ">=3.11"
 
 [project.readme]
