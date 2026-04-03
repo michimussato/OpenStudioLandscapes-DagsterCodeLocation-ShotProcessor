@@ -18,7 +18,7 @@ dependencies = [
     "dagster==1.9.11",
     "OpenImageIO",
     "OpenEXR",
-    "OpenStudioLandscapes.DagsterCodeLocation.JobProcessor @ git+https://github.com/michimussato/OpenStudioLandscapes-DagsterCodeLocation-JobProcessor.git",
+    "OpenStudioLandscapes.DagsterCodeLocation.JobProcessor @ git+https://github.com/michimussato/OpenStudioLandscapes-DagsterCodeLocation-JobProcessor.git@yaml-migration",
 ]
 description = "Run post-render jobs in Dagster."
 dynamic = [
