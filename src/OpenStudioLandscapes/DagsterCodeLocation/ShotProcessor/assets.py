@@ -2,7 +2,7 @@ import pathlib
 import shlex
 import shutil
 from typing import Generator, Any, Dict, List
-from collections import namedtuple
+# from collections import namedtuple
 
 from dagster import (
 AssetIn,
@@ -10,7 +10,7 @@ AssetKey,
 asset,
 AssetMaterialization,
 AssetExecutionContext,
-OpExecutionContext,
+# OpExecutionContext,
 Output,
 MetadataValue,
 )
@@ -22,59 +22,76 @@ from OpenStudioLandscapes.DagsterCodeLocation.JobProcessor.deadline_templates.jo
 
 @asset(
     **ASSET_HEADER_JOB_PROCESSOR,
-    ins={
-        "job_title": AssetIn(
-            AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "job_title"])
-        ),
-        "output_format": AssetIn(
-            AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "output_format"])
-        ),
-        "render_output_directory": AssetIn(
-            AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "render_output_directory"])
-        ),
-        "render_output_filename": AssetIn(
-            AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "render_output_filename"])
-        ),
-        "frame_start_absolute": AssetIn(
-            AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "frame_start_absolute"])
-        ),
-        "frame_end_absolute": AssetIn(
-            AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "frame_end_absolute"])
-        ),
-        # "frames": AssetIn(
-        #     AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "frames"])
-        # ),
-        # "props": AssetIn(
-        #     AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "props"])
-        # ),
-        # "job_model": AssetIn(
-        #     AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "read_job_yaml"])
-        # ),
-        "CONFIG": AssetIn(
-            AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "CONFIG"]),
-        ),
-    }
+    deps=[
+        AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "job_title"]),
+        AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "output_format"]),
+        AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "render_output_directory"]),
+        AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "render_output_filename"]),
+        AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "frame_start_absolute"]),
+        AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "frame_end_absolute"]),
+        AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "CONFIG"]),
+    ],
+    # ins={
+    #     "job_title": AssetIn(
+    #         AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "job_title"])
+    #     ),
+    #     "output_format": AssetIn(
+    #         AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "output_format"])
+    #     ),
+    #     "render_output_directory": AssetIn(
+    #         AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "render_output_directory"])
+    #     ),
+    #     "render_output_filename": AssetIn(
+    #         AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "render_output_filename"])
+    #     ),
+    #     "frame_start_absolute": AssetIn(
+    #         AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "frame_start_absolute"])
+    #     ),
+    #     "frame_end_absolute": AssetIn(
+    #         AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "frame_end_absolute"])
+    #     ),
+    #     # "frames": AssetIn(
+    #     #     AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "frames"])
+    #     # ),
+    #     # "props": AssetIn(
+    #     #     AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "props"])
+    #     # ),
+    #     # "job_model": AssetIn(
+    #     #     AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "read_job_yaml"])
+    #     # ),
+    #     "CONFIG": AssetIn(
+    #         AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "CONFIG"]),
+    #     ),
+    # }
 )
 def raw_to_oiio(
         context: AssetExecutionContext,
-        # batch_name: str,
-        # job_title_str: str,
-        job_title: str,
-        output_format: str,
-        render_output_directory: pathlib.Path,
-        render_output_filename: Dict,
-        frame_start_absolute: int,
-        frame_end_absolute: int,
-        # frames: str,
-        # props: List,
-        # job_model: JobBase,
-        CONFIG: DefaultConstants,
+        # # batch_name: str,
+        # # job_title_str: str,
+        # job_title: str,
+        # output_format: str,
+        # render_output_directory: pathlib.Path,
+        # render_output_filename: Dict,
+        # frame_start_absolute: int,
+        # frame_end_absolute: int,
+        # # frames: str,
+        # # props: List,
+        # # job_model: JobBase,
+        # CONFIG: DefaultConstants,
 ) -> Generator[Output[pathlib.Path] | AssetMaterialization | Any, Any, None]:
     # Doesn't work:
     # for i in {1197..1254}; do exrinfo "/data/share/AWSPortalRoot1/out/Test Production/Shot/SH030/Rendering/061/4_1197-1254_4/raw/sh030_001.${i}.exr"; done
     # render_output_raw = pathlib.Path(render_output_directory / "raw" / render_output_filename["padding_bash_expansion"])
 
     # exrinfo "${BASE_DIR}/raw/sh030_001.${START_F}.exr"
+
+    job_title: str
+    output_format: str
+    render_output_directory: pathlib.Path
+    render_output_filename: Dict
+    frame_start_absolute: int
+    frame_end_absolute: int
+    CONFIG: DefaultConstants
 
     proc_exrinfo_pre = []
     for i in range(frame_start_absolute, frame_end_absolute + 1):
