@@ -17,6 +17,7 @@ MetadataValue,
 
 from OpenStudioLandscapes.DagsterCodeLocation.JobProcessor.dagster_job_processor.config.models import DefaultConstants
 from OpenStudioLandscapes.DagsterCodeLocation.JobProcessor.dagster_job_processor.assets.read_yaml import ASSET_HEADER_JOB_PROCESSOR
+from OpenStudioLandscapes.DagsterCodeLocation.JobProcessor.deadline_templates.jobs.job_base import Resolution
 
 
 @asset(
@@ -99,7 +100,7 @@ def raw_to_oiio(
     # )
 
     borders: int = 100
-    Resolution = namedtuple("resolution", ["x", "y"])
+    # Resolution = namedtuple("resolution", ["x", "y"])
     resolution = Resolution(x=960, y=540)
 
     render_output_oiiotool_src = pathlib.Path(
