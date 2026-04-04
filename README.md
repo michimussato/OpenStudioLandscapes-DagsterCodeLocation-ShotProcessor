@@ -50,7 +50,7 @@ from OpenStudioLandscapes.DagsterCodeLocation import ShotProcessor
 
 ```shell
 shot-processor -vv \
-    --exr-sequence-dir "/data/share/AWSPortalRoot1/out/Test Production/Shot/SH030/Rendering/065/raw/" \
-    --output-dir "/data/share/AWSPortalRoot1/out/Test Production/Shot/SH030/Rendering/065/oiio/" \
-    --kitsu-task-json "/data/share/AWSPortalRoot1/out/Test Production/Shot/SH030/Rendering/065/kitsu_task.json"
+    --exr-sequence-dir "tests/fixtures/raw/" \
+    --output-dir "tests/fixtures/oiio/" \
+    --kitsu-task-json "tests/fixtures/kitsu_task.json"
 ```

@@ -321,17 +321,24 @@ def _process_image(
     return None
 
     # def mov_from_exr_touched(
-    #         exr_out: pathlib.Path,
+    #         mov_out: pathlib.Path,
     # ):
     #     # Todo
     #     #  - [ ] implement mov generation
     #     pass
     #
     # def gif_from_exr_touched(
-    #         exr_out: pathlib.Path,
+    #         gif_out: pathlib.Path,
     # ):
     #     # Todo
     #     #  - [ ] implement gif generation
+    #     pass
+    #
+    # def png_from_exr_touched(
+    #         png_out: pathlib.Path,
+    # ):
+    #     # Todo
+    #     #  - [ ] implement png sequence generation
     #     pass
 
 
