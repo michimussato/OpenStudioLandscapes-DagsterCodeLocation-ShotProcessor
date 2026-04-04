@@ -1,6 +1,7 @@
 import json
 import os
 import pathlib
+import re
 from dataclasses import dataclass
 from typing import Tuple, Dict
 
@@ -48,6 +49,18 @@ def _process_image(
     # args: ShotProcessorArgs,
 ) -> None:
 
+    f_no_ = re.findall(
+        r"\.[0-9]+\.",
+        image_filepath.name
+    )
+
+    if bool(f_no_):
+        f_no = int(f_no_[-1].replace(".", ""))
+    else:
+        f_no = 0
+
+    LOGGER.debug(f"Frame number: {f_no}")
+
     global args_
     global kitsu_task_dict
 
@@ -68,15 +81,28 @@ def _process_image(
     resolution = f"{raw_spec.width}x{raw_spec.height}"
     render_time = raw_spec.getattribute("RenderTime")
     scene_file = raw_spec.getattribute("File")
+    fps = 0
 
     # Don't change anything to the raw_spec.
     # Just set custom metadata.
-    raw_spec["openstudiolandscapes.show"] = "My Show"
-    raw_spec["openstudiolandscapes.sequence"] = "SQ030"
-    raw_spec["openstudiolandscapes.shot"] = "SH010"
-    raw_spec["openstudiolandscapes.kitsu.task"] = "b0cfdac7-afa9-4382-a75d-3c80a388e136"
-    raw_spec["openstudiolandscapes.version"] = "001"
-    raw_spec["openstudiolandscapes.author.email"] = "michimussato@gmail.com"
+    raw_spec["openstudiolandscapes.kitsu.project.name"] = kitsu_task_dict.get("project", {}).get("name", "N/A")
+    raw_spec["openstudiolandscapes.kitsu.sequence.name"] = kitsu_task_dict.get("sequence", {}).get("name", "N/A")
+    raw_spec["openstudiolandscapes.kitsu.entity.name"] = kitsu_task_dict.get("entity", {}).get("name", "N/A")
+    raw_spec["openstudiolandscapes.kitsu.task.id"] = kitsu_task_dict.get("id", "N/A")
+    raw_spec["openstudiolandscapes.data.resolution"] = resolution
+    raw_spec["openstudiolandscapes.kitsu.entity.data.resolution"] = kitsu_task_dict.get("entity", {}).get("data", {}).get("resolution", "N/A")
+    raw_spec["openstudiolandscapes.fps"] = f"{float(fps):.3f}"
+    raw_spec["openstudiolandscapes.kitsu.entity.data.fps"] = f"{float(kitsu_task_dict.get('entity', {}).get('data', {}).get('fps', 0)):.3f}"
+    frame_in = kitsu_task_dict.get("entity", {}).get("data", {}).get("frame_in", 0)
+    raw_spec["openstudiolandscapes.kitsu.entity.data.frame_in"] = frame_in
+    frame_out = kitsu_task_dict.get("entity", {}).get("data", {}).get("frame_out", 0)
+    raw_spec["openstudiolandscapes.kitsu.entity.data.frame_out"] = frame_out
+    frame_is_handle = frame_in > f_no or f_no > frame_out
+    # frame_is_handle = frame_out < f_no
+    LOGGER.debug(f"{frame_is_handle = }")
+    raw_spec["openstudiolandscapes.is_handle"] = frame_is_handle
+    # raw_spec["openstudiolandscapes.version"] = "001"
+    # raw_spec["openstudiolandscapes.author.email"] = "michimussato@gmail.com"
 
     # Create overlay ImagaBuf (with alpha)
     spec_buf_overlay = raw_spec.copy()
@@ -112,6 +138,30 @@ def _process_image(
             textcolor=[1, 1, 1, 1]
         ) or LOGGER.error("Can't render text: Camera")
 
+        overlay_text_size_resolution = args_.overlay_text_size_frame - args_.overlay_text_size_scaledown
+        pos_y += args_.text_spacing + overlay_text_size_resolution
+        oiio.ImageBufAlgo.render_text(
+            buf,
+            x=args_.text_border,
+            # y=int((spec_buf_overlay.full_height - overlay_text_size_camera) - (overlay_text_size_frame / 2)),
+            y=pos_y,
+            text=f"Resolution: {raw_spec.getattribute('openstudiolandscapes.data.resolution')} @ {raw_spec.getattribute('openstudiolandscapes.fps')}",
+            fontsize=overlay_text_size_resolution,
+            textcolor=[1, 1, 1, 1]
+        ) or LOGGER.error("Can't render text: Resolution")
+
+        overlay_text_size_resolution_kitsu = args_.overlay_text_size_frame - args_.overlay_text_size_scaledown
+        pos_y += args_.text_spacing + overlay_text_size_resolution_kitsu
+        oiio.ImageBufAlgo.render_text(
+            buf,
+            x=args_.text_border,
+            # y=int((spec_buf_overlay.full_height - overlay_text_size_camera) - (overlay_text_size_frame / 2)),
+            y=pos_y,
+            text=f"Resolution (Kitsu): {raw_spec.getattribute('openstudiolandscapes.kitsu.entity.data.resolution')} @ {raw_spec.getattribute('openstudiolandscapes.kitsu.entity.data.fps')}",
+            fontsize=overlay_text_size_resolution,
+            textcolor=[1, 1, 1, 1]
+        ) or LOGGER.error("Can't render text: Resolution")
+
         overlay_text_size_taskid = args_.overlay_text_size_frame - args_.overlay_text_size_scaledown
         pos_y += args_.text_spacing + overlay_text_size_taskid
         oiio.ImageBufAlgo.render_text(
@@ -119,22 +169,22 @@ def _process_image(
             x=args_.text_border,
             # y=int((spec_buf_overlay.full_height - overlay_text_size_camera) - (overlay_text_size_frame / 2)),
             y=pos_y,
-            text=f"Task: {raw_spec.getattribute('openstudiolandscapes.kitsu.task')}",
+            text=f"Task: {raw_spec.getattribute('openstudiolandscapes.kitsu.task.id')}",
             fontsize=overlay_text_size_taskid,
             textcolor=[1, 1, 1, 1]
         ) or LOGGER.error("Can't render text: Task")
 
-        overlay_text_size_resolution = args_.overlay_text_size_frame - args_.overlay_text_size_scaledown
-        pos_y += args_.text_spacing + overlay_text_size_resolution
-        oiio.ImageBufAlgo.render_text(
-            buf,
-            x=args_.text_border,
-            # y=int((spec_buf_overlay.full_height - overlay_text_size_resolution) - (overlay_text_size_resolution / 2)),
-            y=pos_y,
-            text=f"Resolution: {resolution}",
-            fontsize=overlay_text_size_resolution,
-            textcolor=[1, 1, 1, 1]
-        ) or LOGGER.error("Can't render text: Resolution")
+        # overlay_text_size_resolution = args_.overlay_text_size_frame - args_.overlay_text_size_scaledown
+        # pos_y += args_.text_spacing + overlay_text_size_resolution
+        # oiio.ImageBufAlgo.render_text(
+        #     buf,
+        #     x=args_.text_border,
+        #     # y=int((spec_buf_overlay.full_height - overlay_text_size_resolution) - (overlay_text_size_resolution / 2)),
+        #     y=pos_y,
+        #     text=f"Resolution: {resolution}",
+        #     fontsize=overlay_text_size_resolution,
+        #     textcolor=[1, 1, 1, 1]
+        # ) or LOGGER.error("Can't render text: Resolution")
 
         overlay_text_size_rendertime = args_.overlay_text_size_frame - args_.overlay_text_size_scaledown
         pos_y += args_.text_spacing + overlay_text_size_rendertime
@@ -167,7 +217,7 @@ def _process_image(
             x=args_.text_border,
             # y=int((spec_buf_overlay.full_height - overlay_text_size_resolution) - (overlay_text_size_resolution / 2)),
             y=pos_y,
-            text=f"Show: {raw_spec.getattribute('openstudiolandscapes.show')}",
+            text=f"Show: {raw_spec.getattribute('openstudiolandscapes.kitsu.project.name')}",
             fontsize=overlay_text_size_show,
             textcolor=[1, 1, 1, 1]
         ) or LOGGER.error("Can't render text: Show")
@@ -179,7 +229,7 @@ def _process_image(
             x=args_.text_border,
             # y=int((spec_buf_overlay.full_height - overlay_text_size_resolution) - (overlay_text_size_resolution / 2)),
             y=pos_y,
-            text=f"Shot: {raw_spec.getattribute('openstudiolandscapes.sequence')}_{raw_spec.getattribute('openstudiolandscapes.shot')}",
+            text=f"Shot: {raw_spec.getattribute('openstudiolandscapes.kitsu.sequence.name')}_{raw_spec.getattribute('openstudiolandscapes.kitsu.entity.name')}",
             fontsize=overlay_text_size_shot,
             textcolor=[1, 1, 1, 1]
         ) or LOGGER.error("Can't render text: Shot")
@@ -228,7 +278,7 @@ def _process_image(
 
     overlay_handle_buf = get_overlay_handle_buf(
         spec_buf_overlay=spec_buf_overlay,
-        frame_is_handle=True,
+        frame_is_handle=frame_is_handle,
     )
     overlay_handle_buf_out: pathlib.Path = args_.output_dir / "oiio_overlay_handle" / image_filepath.name
     overlay_handle_buf_out.parent.mkdir(parents=True, exist_ok=True)
@@ -270,6 +320,20 @@ def _process_image(
 
     return None
 
+    # def mov_from_exr_touched(
+    #         exr_out: pathlib.Path,
+    # ):
+    #     # Todo
+    #     #  - [ ] implement mov generation
+    #     pass
+    #
+    # def gif_from_exr_touched(
+    #         exr_out: pathlib.Path,
+    # ):
+    #     # Todo
+    #     #  - [ ] implement gif generation
+    #     pass
+
 
 def run_shot_processor(
         args: ShotProcessorArgs
@@ -284,8 +348,11 @@ def run_shot_processor(
 
     # Open this file once
     if args_.kitsu_task_json.exists():
+        LOGGER.info(f"Kitsu Task JSON found")
+        LOGGER.info(f"Reading JSON: {args_.kitsu_task_json.as_posix()}")
         with open(args_.kitsu_task_json) as fr:
             kitsu_task_dict = json.load(fr)
+        LOGGER.debug(f"Kitsu Task JSON loaded: {kitsu_task_dict}")
     else:
         LOGGER.warning(f"Kitsu Task JSON not found, using default values: {kitsu_task_dict = }")
 
