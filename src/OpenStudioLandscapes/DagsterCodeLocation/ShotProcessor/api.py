@@ -46,7 +46,7 @@ kitsu_task_dict: Dict = {}
 def _process_image(
     image_filepath: pathlib.Path,
     # args: ShotProcessorArgs,
-):
+) -> None:
 
     global args_
     global kitsu_task_dict
@@ -235,6 +235,41 @@ def _process_image(
     overlay_handle_buf.write(overlay_handle_buf_out.as_posix())
     LOGGER.info(f"Overlay handle image saved: {overlay_handle_buf_out.as_posix()}")
 
+    def create_exr_from_raw_with_custom_metadata(
+            raw: pathlib.Path,
+            exr_out: pathlib.Path,
+    ) -> None:
+        raw_image_ = OIIO.ImageInput.open(raw.as_posix())
+        raw_image_pixels = raw_image_.read_image()
+        out = oiio.ImageOutput.create(exr_out.as_posix())
+
+        LOGGER.info(f"{exr_out.as_posix()} supports 'multiimage': {out.supports('multiimage')}")
+        LOGGER.info(f"{exr_out.as_posix()} supports 'appendsubimage': {out.supports('appendsubimage')}")
+
+        out.open(exr_out.as_posix(), raw_spec, "Create")
+
+        try:
+            e = None
+            out.write_image(raw_image_pixels)
+        except Exception as e:
+            LOGGER.error(e)
+        finally:
+            out.close()
+
+        if e is not None:
+            raise Exception from e
+
+        return None
+
+    exr_touched_out = args_.output_dir / "oiio_exr" / image_filepath.name
+    exr_touched_out.parent.mkdir(parents=True, exist_ok=True)
+    create_exr_from_raw_with_custom_metadata(
+        raw=image_filepath,
+        exr_out=exr_touched_out,
+    )
+
+    return None
+
 
 def run_shot_processor(
         args: ShotProcessorArgs
@@ -259,9 +294,8 @@ def run_shot_processor(
     # Path.walk was added in Python 3.12
     # - https://stackoverflow.com/a/79132718
     for root, dirs, files in os.walk(args_.exr_sequence_dir):
-        # context.log.info(f"{root = }")
-        # context.log.info(f"{dirs = }")  # dirs should be an empty list if searching inside the album directory
-        # context.log.info(f"{files = }")
+        # sort:
+        # - [](https://stackoverflow.com/a/18282401)
         for dir_ in sorted(dirs):
             LOGGER.debug("Processing directory %s", dir_)
         for file_ in sorted(files):
@@ -270,15 +304,3 @@ def run_shot_processor(
             _process_image(
                 image_filepath=filepath,
             )
-
-            # # context.log.info(f"{dir_ = }")
-            # if pathlib.Path(GDRIVE_MUSIC / dir_ / ".sync").exists():
-            #     context.log.info(f"[X] Including Album {dir_}")
-            #     with open(CONF_SYNC_AUDIO / file_include, "a") as music_include:
-            #         music_include.write(f"{re.escape(dir_)}/\n")
-            #
-            # else:
-            #     context.log.info(f"[ ] Excluding Album {dir_}")
-            #     with open(CONF_SYNC_AUDIO / file_exclude, "a") as music_exclude:
-            #         music_exclude.write(f"{re.escape(dir_)}/\n")
-
