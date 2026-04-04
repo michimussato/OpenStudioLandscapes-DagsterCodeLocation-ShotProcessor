@@ -98,7 +98,7 @@ def _process_image(
             text=f"Frame: {frame}",
             fontsize=args_.overlay_text_size_frame,
             textcolor=[1, 1, 1, 1]
-        ) or print("error")
+        ) or LOGGER.error("Can't render text: Frame")
 
         overlay_text_size_camera = args_.overlay_text_size_frame - args_.overlay_text_size_scaledown
         pos_y += args_.text_spacing + overlay_text_size_camera
@@ -110,7 +110,7 @@ def _process_image(
             text=f"Camera: {camera}",
             fontsize=overlay_text_size_camera,
             textcolor=[1, 1, 1, 1]
-        ) or print("error")
+        ) or LOGGER.error("Can't render text: Camera")
 
         overlay_text_size_taskid = args_.overlay_text_size_frame - args_.overlay_text_size_scaledown
         pos_y += args_.text_spacing + overlay_text_size_taskid
@@ -122,7 +122,7 @@ def _process_image(
             text=f"Task: {raw_spec.getattribute('openstudiolandscapes.kitsu.task')}",
             fontsize=overlay_text_size_taskid,
             textcolor=[1, 1, 1, 1]
-        ) or print("error")
+        ) or LOGGER.error("Can't render text: Task")
 
         overlay_text_size_resolution = args_.overlay_text_size_frame - args_.overlay_text_size_scaledown
         pos_y += args_.text_spacing + overlay_text_size_resolution
@@ -134,7 +134,7 @@ def _process_image(
             text=f"Resolution: {resolution}",
             fontsize=overlay_text_size_resolution,
             textcolor=[1, 1, 1, 1]
-        ) or print("error")
+        ) or LOGGER.error("Can't render text: Resolution")
 
         overlay_text_size_rendertime = args_.overlay_text_size_frame - args_.overlay_text_size_scaledown
         pos_y += args_.text_spacing + overlay_text_size_rendertime
@@ -146,7 +146,7 @@ def _process_image(
             text=f"RenderTime: {render_time}",
             fontsize=overlay_text_size_rendertime,
             textcolor=[1, 1, 1, 1]
-        ) or print("error")
+        ) or LOGGER.error("Can't render text: RenderTime")
 
         overlay_text_size_file = args_.overlay_text_size_frame - args_.overlay_text_size_scaledown
         pos_y += args_.text_spacing + overlay_text_size_file
@@ -158,7 +158,7 @@ def _process_image(
             text=f"File: {scene_file}",
             fontsize=overlay_text_size_rendertime,
             textcolor=[1, 1, 1, 1]
-        ) or print("error")
+        ) or LOGGER.error("Can't render text: File")
 
         overlay_text_size_show = args_.overlay_text_size_frame - args_.overlay_text_size_scaledown
         pos_y += args_.text_spacing + overlay_text_size_show
@@ -170,7 +170,7 @@ def _process_image(
             text=f"Show: {raw_spec.getattribute('openstudiolandscapes.show')}",
             fontsize=overlay_text_size_show,
             textcolor=[1, 1, 1, 1]
-        ) or print("error")
+        ) or LOGGER.error("Can't render text: Show")
 
         overlay_text_size_shot = args_.overlay_text_size_frame - args_.overlay_text_size_scaledown
         pos_y += args_.text_spacing + overlay_text_size_shot
@@ -182,7 +182,7 @@ def _process_image(
             text=f"Shot: {raw_spec.getattribute('openstudiolandscapes.sequence')}_{raw_spec.getattribute('openstudiolandscapes.shot')}",
             fontsize=overlay_text_size_shot,
             textcolor=[1, 1, 1, 1]
-        ) or print("error")
+        ) or LOGGER.error("Can't render text: Shot")
 
         return buf
 
@@ -212,7 +212,7 @@ def _process_image(
             y2=args_.handle_marker_height,
             fill=True,
             color=handle_colors[frame_is_handle]
-        ) or print("error")
+        ) or LOGGER.error("Can't render box: frame_is_handle top")
         # Bottom Marker
         oiio.ImageBufAlgo.render_box(
             buf,
@@ -222,7 +222,7 @@ def _process_image(
             y2=spec_buf_overlay.height,
             fill=True,
             color=handle_colors[frame_is_handle]
-        ) or print("error")
+        ) or LOGGER.error("Can't render box: frame_is_handle bottom")
 
         return buf
 
