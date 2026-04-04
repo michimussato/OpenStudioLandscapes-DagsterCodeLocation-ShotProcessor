@@ -198,7 +198,7 @@ def _process_image(
     ) -> OIIO.ImageBuf:
         buf = OIIO.ImageBuf(spec_buf_overlay)
 
-        colors = {
+        handle_colors = {
             True: [1, 0, 0, 1],
             False: [0, 1, 0, 1]
         }
@@ -211,7 +211,7 @@ def _process_image(
             x2=spec_buf_overlay.width,
             y2=args_.handle_marker_height,
             fill=True,
-            color=colors[frame_is_handle]
+            color=handle_colors[frame_is_handle]
         ) or print("error")
         # Bottom Marker
         oiio.ImageBufAlgo.render_box(
@@ -221,7 +221,7 @@ def _process_image(
             x2=spec_buf_overlay.width,
             y2=spec_buf_overlay.height,
             fill=True,
-            color=colors[frame_is_handle]
+            color=handle_colors[frame_is_handle]
         ) or print("error")
 
         return buf
