@@ -3,26 +3,28 @@
 ---
 
 <!-- TOC -->
-* [OpenStudioLandscapes-Dagster-ShotProcessor](#openstudiolandscapes-dagster-shotprocessor)
+* [OpenStudioLandscapes-DagsterCodeLocation-ShotProcessor](#openstudiolandscapes-dagstercodelocation-shotprocessor)
   * [Brief](#brief)
   * [Usage](#usage)
+    * [CLI](#cli)
 <!-- TOC -->
 
 ---
 
-# OpenStudioLandscapes-Dagster-ShotProcessor
+# OpenStudioLandscapes-DagsterCodeLocation-ShotProcessor
 
 > [!NOTE]
 > 
 > This package was scaffolded with `dagster==1.9.11`
 > 
 > ```shell
-> dagster project scaffold --name OpenStudioLandscapes-Dagster-ShotProcessor
-> git -C ./OpenStudioLandscapes-ShotProcessor init --initial-branch main
-> git -C ./OpenStudioLandscapes-ShotProcessor remote add origin https://github.com/michimussato/OpenStudioLandscapes-Dagster-ShotProcessor.git
-> git -C ./OpenStudioLandscapes-ShotProcessor add *
-> git -C ./OpenStudioLandscapes-ShotProcessor commit -a -m "initial commit"
-> git -C ./OpenStudioLandscapes-ShotProcessor push -u origin main
+> dagster project scaffold --name OpenStudioLandscapes-DagsterCodeLocation-ShotProcessor
+> cd OpenStudioLandscapes-DagsterCodeLocation-ShotProcessor
+> git init --initial-branch main
+> git remote add origin https://github.com/michimussato/OpenStudioLandscapes-DagsterCodeLocation-ShotProcessor.git
+> git add *
+> git commit -a -m "initial commit"
+> git push -u origin main
 > ```
 
 ## Brief
@@ -39,19 +41,16 @@ from dagster import (
     AssetExecutionContext
 )
 
-from OpenStudioLandscapes.Dagster_Streaming_Process import submit_cmds
+from OpenStudioLandscapes.DagsterCodeLocation import ShotProcessor
 
-dagster_execution_context: Union[OpExecutionContext, AssetExecutionContext]
-tasks: List[List[str]] = [
-  [
-    "ls",
-    "-al",
-    "/dir/1",
-  ],
-]
+...
+```
 
-log_records: List[str] = submit_cmds(
-  context=dagster_execution_context,
-  cmds=tasks,
-)
+### CLI
+
+```shell
+shot-processor -vv \
+    --exr-sequence-dir "/data/share/AWSPortalRoot1/out/Test Production/Shot/SH030/Rendering/065/raw/" \
+    --output-dir "/data/share/AWSPortalRoot1/out/Test Production/Shot/SH030/Rendering/065/oiio/" \
+    --kitsu-task-json "/data/share/AWSPortalRoot1/out/Test Production/Shot/SH030/Rendering/065/kitsu_task.json"
 ```

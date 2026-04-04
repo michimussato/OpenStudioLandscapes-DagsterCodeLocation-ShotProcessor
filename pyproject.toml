@@ -17,7 +17,7 @@ classifiers = [
 dependencies = [
     "dagster==1.9.11",
     "OpenImageIO",
-    "OpenEXR",
+#    "OpenEXR",
     "OpenStudioLandscapes-DagsterCodeLocation-JobProcessor @ git+https://github.com/michimussato/OpenStudioLandscapes-DagsterCodeLocation-JobProcessor.git@yaml-migration",
 ]
 description = "Run post-render jobs in Dagster."
@@ -36,6 +36,9 @@ requires-python = ">=3.11"
 [project.readme]
 content-type = "text/markdown; charset=UTF-8"
 file = "README.md"
+
+[project.scripts]
+shot-processor = "OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.cli:run"
 
 [project.urls]
 Homepage = "https://github.com/michimussato/OpenStudioLandscapes-DagsterCodeLocation-ShotProcessor"
