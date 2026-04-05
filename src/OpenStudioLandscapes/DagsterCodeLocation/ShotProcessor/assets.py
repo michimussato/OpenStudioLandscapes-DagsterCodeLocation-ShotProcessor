@@ -45,7 +45,7 @@ from OpenStudioLandscapes.DagsterCodeLocation.StreamingProcess import submit_cmd
         # AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "frame_start_absolute"]),
         # AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "frame_end_absolute"]),
         # AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "CONFIG"]),
-        # AssetKey([*ASSET_HEADER_JOB_SUBMITTER_DEADLINE["key_prefix"], "submit_job"]),  # Does not yet return anything (just returns MaterializeResult)
+        AssetKey([*ASSET_HEADER_JOB_SUBMITTER_DEADLINE["key_prefix"], "submit_job"]),  # Does not yet return anything (just returns MaterializeResult)
     ],
     ins={
         # "submit_job": AssetIn(
@@ -61,7 +61,7 @@ from OpenStudioLandscapes.DagsterCodeLocation.StreamingProcess import submit_cmd
             AssetKey([*ASSET_HEADER_JOB_PROCESSOR_PREPROCESSOR_KITSU["key_prefix"], "get_kitsu_task_dict"]),
         ),
         "CONFIG": AssetIn(
-            AssetKey([*ASSET_HEADER_JOB_SUBMITTER_DEADLINE["key_prefix"], "submit_job"]),
+            AssetKey([*ASSET_HEADER_JOB_SUBMITTER_DEADLINE["key_prefix"], "CONFIG"]),
         ),
     }
 )
