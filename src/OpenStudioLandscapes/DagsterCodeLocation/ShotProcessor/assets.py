@@ -1,7 +1,7 @@
 import json
 import os
 import pathlib
-# import shlex
+import shlex
 # import shutil
 from typing import Generator, Any, Dict, List
 # from collections import namedtuple
@@ -33,12 +33,12 @@ from OpenStudioLandscapes.DagsterCodeLocation.StreamingProcess import submit_cmd
 # Asset data across code locations:
 # - [SourceAsset](https://stackoverflow.com/q/79780791)
 # - [AssetSpec](https://release-1-8-9.dagster.dagster-docs.io/concepts/assets/external-assets)
-# - [Asset overvations](https://release-1-8-9.dagster.dagster-docs.io/concepts/assets/asset-observations)
+# - [Asset obervations](https://release-1-8-9.dagster.dagster-docs.io/concepts/assets/asset-observations)
 
 @asset(
     **ASSET_HEADER_JOB_PROCESSOR,
     deps=[
-        AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "job_title"]),
+        # AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "job_title"]),
         # AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "output_format"]),
         # AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "render_output_directory"]),
         ## AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "render_output_filename"]),
@@ -90,10 +90,10 @@ def raw_to_oiio(
 
     raw_out = render_output_directory / CONFIG.RENDER_RAW_OUT
     kitsu_task_json: pathlib.Path = render_output_directory / "kitsu_task.json"
-    with open(kitsu_task_json, "r") as fr:
-        kitsu_task_json_dict = json.load(fr)
+    # with open(kitsu_task_json, "r") as fr:
+    #     kitsu_task_json_dict = json.load(fr)
 
-    context.log.debug(f"{kitsu_task_json_dict = }")
+    # context.log.debug(f"{kitsu_task_json_dict = }")
     context.log.debug(f"{get_kitsu_task_dict = }")
     context.log.debug(f"raw_out={raw_out}")
 
@@ -109,6 +109,14 @@ def raw_to_oiio(
     # frame_start_absolute: int
     # frame_end_absolute: int
     # CONFIG: DefaultConstants
+
+    cmd_shot_processor = [
+        "shot-processor",
+        "-vv",
+        "--exr-sequence-dir", raw_out.as_posix(),
+        "--output-dir", raw_out.parent.joinpath("oiio").as_posix(),
+        "--kitsu-task-json", kitsu_task_json.as_posix(),
+    ]
 
     tasks: List[List] = [
         [
@@ -133,5 +141,6 @@ def raw_to_oiio(
         asset_key=context.asset_key,
         metadata={
             "__".join(context.asset_key.path): MetadataValue.md(f"```json\n{json.dumps(log_records)}\n```"),
+            "cmd_shot_processor": MetadataValue.path(shlex.join(cmd_shot_processor)),
         }
     )
