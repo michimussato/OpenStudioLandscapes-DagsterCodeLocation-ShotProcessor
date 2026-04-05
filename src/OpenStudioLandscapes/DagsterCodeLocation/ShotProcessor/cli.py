@@ -34,7 +34,10 @@ def parse_args(args) -> ShotProcessorArgs:
     Returns:
       :obj:`argparse.Namespace`: command line parameters namespace
     """
-    parser = argparse.ArgumentParser(description="Just a Fibonacci demonstration")
+    parser = argparse.ArgumentParser(description="Takes an input directory where the raw EXR renders live, "
+                                                 "and creates a new EXR sequence based on them with "
+                                                 "additional metadata. It also creates handle and text overlay "
+                                                 "EXR sequences for comp and editorial.")
     # parser.add_argument(
     #     "--version",
     #     action="version",
