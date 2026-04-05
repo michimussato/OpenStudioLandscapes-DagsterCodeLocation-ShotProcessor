@@ -61,7 +61,7 @@ from OpenStudioLandscapes.DagsterCodeLocation.StreamingProcess import submit_cmd
             AssetKey([*ASSET_HEADER_JOB_PROCESSOR_PREPROCESSOR_KITSU["key_prefix"], "get_kitsu_task_dict"]),
         ),
         "CONFIG": AssetIn(
-            AssetKey([*ASSET_HEADER_JOB_SUBMITTER_DEADLINE["key_prefix"], "CONFIG"]),
+            AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "CONFIG"]),
         ),
     }
 )
