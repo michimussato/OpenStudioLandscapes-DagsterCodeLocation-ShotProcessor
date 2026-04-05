@@ -89,6 +89,7 @@ def _process_image(
     raw_spec["openstudiolandscapes.kitsu.sequence.name"] = kitsu_task_dict.get("sequence", {}).get("name", "N/A")
     raw_spec["openstudiolandscapes.kitsu.entity.name"] = kitsu_task_dict.get("entity", {}).get("name", "N/A")
     raw_spec["openstudiolandscapes.kitsu.task.id"] = kitsu_task_dict.get("id", "N/A")
+    raw_spec["openstudiolandscapes.kitsu.json"] = args_.kitsu_task_json.as_posix()
     raw_spec["openstudiolandscapes.data.resolution"] = resolution
     raw_spec["openstudiolandscapes.kitsu.entity.data.resolution"] = kitsu_task_dict.get("entity", {}).get("data", {}).get("resolution", "N/A")
     raw_spec["openstudiolandscapes.fps"] = f"{float(fps):.3f}"
@@ -325,6 +326,7 @@ def _process_image(
     # ):
     #     # Todo
     #     #  - [ ] implement mov generation
+    #     #  - [ ] upload to Kitsu
     #     pass
     #
     # def gif_from_exr_touched(
