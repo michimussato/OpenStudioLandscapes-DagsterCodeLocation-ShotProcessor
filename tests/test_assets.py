@@ -17,6 +17,9 @@ from OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.config.models import
 # LOGGER = get_dagster_logger(__name__)
 
 
+CLEANUP_ENABLED = True
+
+
 fixtures = pathlib.Path(__file__).parent / "fixtures"
 
 
@@ -104,7 +107,8 @@ def test_raw_to_oiio() -> None:
         )
     )
 
-    # shutil.rmtree(oiio_out)
+    if CLEANUP_ENABLED:
+        shutil.rmtree(oiio_out)
 
     output: Output = result[0]
     actual = output.value
