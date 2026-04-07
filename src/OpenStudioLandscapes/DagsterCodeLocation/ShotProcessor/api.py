@@ -2,11 +2,13 @@ import json
 import os
 import pathlib
 import re
-from dataclasses import dataclass
-from typing import Tuple, Dict, Union
+from tkinter import Listbox
+from typing import Tuple, Dict, Union, List
 
 from dagster import (
     get_dagster_logger,
+    AssetExecutionContext,
+    OpExecutionContext,
 )
 
 import OpenImageIO as OIIO
@@ -49,36 +51,18 @@ LOGGER = get_dagster_logger(__name__)
 # kitsu_task_dict: Dict = {}
 
 
-# def _expand_args(
-#         args: ShotProcessorArgs,
-# ) -> Dict:
-#
-#     ret = {}
-#
-#     print(type(args))
-#
-#     print(args.__dict__)
-#
-#     return ret
-
-
-def process_image():
-    return None
-
-
 def _process_image(
+    *,
     CONFIG_OIIO: ConfigOIIO,
     image_filepath: pathlib.Path,
     kitsu_task_dict: Dict,
     version: str,
     render_version_directory: pathlib.Path,
-    # text_border: int,
-    # overlay_text_size_frame: int,
-    # text_spacing: int,
-    # overlay_text_size_scaledown: int,
-    # handle_marker_height: int,
-    # args: ShotProcessorArgs,
-) -> None:
+    context: Union[AssetExecutionContext, OpExecutionContext] = None,
+) -> Dict[str, pathlib.Path]:
+
+    if context is not None:
+        LOGGER = context.log
 
     output_dir: pathlib.Path = render_version_directory.joinpath(
         version,
@@ -357,7 +341,13 @@ def _process_image(
         exr_out=exr_touched_out,
     )
 
-    return None
+    ret = {
+        "overlay_text_buf_out": overlay_text_buf_out,
+        "overlay_handle_buf_out": overlay_handle_buf_out,
+        "exr_touched_out": exr_touched_out,
+    }
+
+    return ret
 
     # def mov_from_exr_touched(
     #         mov_out: pathlib.Path,

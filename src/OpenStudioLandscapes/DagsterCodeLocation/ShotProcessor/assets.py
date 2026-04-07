@@ -158,15 +158,6 @@ def image_sequence(
         AssetKey([*ASSET_HEADER_JOB_SUBMITTER_DEADLINE["key_prefix"], "submit_job"]),  # Does not yet return anything (just returns MaterializeResult)
     ],
     ins={
-        # "submit_job": AssetIn(
-        #     AssetKey([*ASSET_HEADER_JOB_SUBMITTER_DEADLINE["key_prefix"], "submit_job"])
-        # ),
-        # "render_output_directory": AssetIn(
-        #     AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "render_output_directory"]),
-        # ),
-        # "output_format": AssetIn(
-        #     AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "output_format"]),
-        # ),
         "get_kitsu_task_dict": AssetIn(
             AssetKey([*ASSET_HEADER_JOB_PROCESSOR_PREPROCESSOR_KITSU["key_prefix"], "get_kitsu_task_dict"]),
         ),
@@ -176,9 +167,9 @@ def image_sequence(
         "render_version_directory": AssetIn(
             AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "render_version_directory"]),
         ),
-        "CONFIG": AssetIn(
-            AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "CONFIG"]),
-        ),
+        # "CONFIG": AssetIn(
+        #     AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "CONFIG"]),
+        # ),
         "image_sequence": AssetIn(
             AssetKey([*ASSET_HEADER_OIIO_PROCESSOR["key_prefix"], "image_sequence"]),
         ),
@@ -190,23 +181,10 @@ def image_sequence(
 def raw_to_oiio(
         context: AssetExecutionContext,
         image_sequence: List[pathlib.Path],
-        # render_version_directory: pathlib.Path,
         version: str,
         render_version_directory: pathlib.Path,
-        # submit_job: str,
-        # # batch_name: str,
-        # # job_title_str: str,
-        # job_title: str,
-        # output_format: str,
-        # render_output_directory: pathlib.Path,
-        # render_output_filename: Dict,
-        # frame_start_absolute: int,
-        # frame_end_absolute: int,
-        # # frames: str,
-        # # props: List,
-        # # job_model: JobBase,
         get_kitsu_task_dict: Dict,
-        CONFIG: DefaultConstants,
+        # CONFIG: DefaultConstants,
         CONFIG_OIIO: ConfigOIIO,
 ) -> Generator[Output[pathlib.Path] | AssetMaterialization | Any, Any, None]:
     # Doesn't work:
@@ -215,77 +193,25 @@ def raw_to_oiio(
 
     # exrinfo "${BASE_DIR}/raw/sh030_001.${START_F}.exr"
 
-    raw_out = render_version_directory / version / CONFIG.RENDER_RAW_OUT
-    # kitsu_task_json: pathlib.Path = render_output_directory / "kitsu_task.json"
-    # with open(kitsu_task_json, "r") as fr:
-    #     kitsu_task_json_dict = json.load(fr)
-
-    result = {
-        ""
-    }
+    results = []
 
     for image_ in image_sequence:
-        processed = _process_image(
+        context.log.debug("Processing image %s", image_)
+        processed_result = _process_image(
+            context=context,
             image_filepath=image_,
             kitsu_task_dict=get_kitsu_task_dict,
             CONFIG_OIIO=CONFIG_OIIO,
             version=version,
             render_version_directory=render_version_directory,
-            # # output_dir=output_dir,
-            # text_border=CONFIG.text_border,
-            # overlay_text_size_frame=CONFIG.overlay_text_size_frame,
-            # text_spacing=CONFIG.text_spacing,
-            # overlay_text_size_scaledown=
         )
+        context.log.debug(f"{processed_result = }")
 
-    # context.log.debug(f"{kitsu_task_json_dict = }")
-    context.log.debug(f"{get_kitsu_task_dict = }")
-    context.log.debug(f"raw_out={raw_out}")
-
-    # for root, dirs, files in os.walk(raw_out):
-    #     for f in files:
-    #         if f.endswith(f".{output_format}"):
-    #             context.log.debug(f"raw_out={root}/{f}")
-
-    # # job_title: str
-    # # output_format: str
-    # # render_output_directory: pathlib.Path
-    # # render_output_filename: Dict
-    # # frame_start_absolute: int
-    # # frame_end_absolute: int
-    # # CONFIG: DefaultConstants
-    #
-    # cmd_shot_processor = [
-    #     "shot-processor",
-    #     "-vv",
-    #     "--exr-sequence-dir", raw_out.as_posix(),
-    #     "--output-dir", raw_out.parent.joinpath("oiio").as_posix(),
-    #     "--kitsu-task-json", kitsu_task_json.as_posix(),
-    # ]
-    #
-    # tasks: List[List] = [
-    #     [
-    #         "ls",
-    #         "-al",
-    #         raw_out.as_posix(),
-    #     ],
-    #     [
-    #         "shot-processor",
-    #         "--help",
-    #     ],
-    # ]
-    #
-    # log_records: List[str] = submit_cmds(
-    #     context=context,
-    #     cmds=tasks,
-    # )
-
-    yield Output(None)
+    yield Output(results)
 
     yield AssetMaterialization(
         asset_key=context.asset_key,
         metadata={
-            "__".join(context.asset_key.path): MetadataValue.md(f"```json\n{json.dumps(None)}\n```"),
-            # "cmd_shot_processor": MetadataValue.path(shlex.join(cmd_shot_processor)),
+            "__".join(context.asset_key.path): MetadataValue.md(f"```json\n{json.dumps(results, indent=2, default=str)}\n```"),
         }
     )
