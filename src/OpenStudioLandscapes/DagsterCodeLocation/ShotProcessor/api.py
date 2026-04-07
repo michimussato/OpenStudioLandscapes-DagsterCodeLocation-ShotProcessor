@@ -2,8 +2,7 @@ import json
 import os
 import pathlib
 import re
-from tkinter import Listbox
-from typing import Tuple, Dict, Union, List
+from typing import Tuple, Dict, Union
 
 from dagster import (
     get_dagster_logger,

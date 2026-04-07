@@ -31,7 +31,7 @@ from OpenStudioLandscapes.DagsterCodeLocation.JobProcessor.dagster_job_processor
 
 
 # from OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.api import run_shot_processor
-from OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.api import process_image, _process_image
+from OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.api import _process_image
 from OpenStudioLandscapes.DagsterCodeLocation.StreamingProcess import submit_cmds
 
 
@@ -206,6 +206,7 @@ def raw_to_oiio(
             render_version_directory=render_version_directory,
         )
         context.log.debug(f"{processed_result = }")
+        results.append(processed_result)
 
     yield Output(results)
 

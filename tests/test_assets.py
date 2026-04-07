@@ -1,12 +1,12 @@
-# https://docs.dagster.io/guides/test/unit-testing-assets-and-ops#unit-test-examples
 import json
 import pathlib
 import shutil
-from typing import Generator, List, Any, Dict
+from typing import Generator, List, Any
+# https://docs.dagster.io/guides/test/unit-testing-assets-and-ops#unit-test-examples
 
 # https://docs.dagster.io/guides/test/unit-testing-assets-and-ops#upstream-dependencies
 
-from dagster import build_asset_context, get_dagster_logger, Output, AssetMaterialization
+from dagster import build_asset_context, Output, AssetMaterialization
 
 from OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.assets import (
     image_sequence,
@@ -14,7 +14,7 @@ from OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.assets import (
 )
 from OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.config.models import ConfigOIIO
 
-LOGGER = get_dagster_logger(__name__)
+# LOGGER = get_dagster_logger(__name__)
 
 
 fixtures = pathlib.Path(__file__).parent / "fixtures"
@@ -58,7 +58,6 @@ def test_raw_to_oiio() -> None:
     oiio_out = fixtures / "v123/oiio"
 
     expected = [
-
         {
             'exr_touched_out': oiio_out / 'oiio_exr/sh030_001.1200.exr',
             'overlay_handle_buf_out': oiio_out / 'oiio_overlay_handle/sh030_001.1200.exr',
@@ -84,9 +83,6 @@ def test_raw_to_oiio() -> None:
     with open(fixtures / "kitsu_task_dict.json") as fr:
         kitsu_task_dict = json.load(fr)
 
-    from OpenStudioLandscapes.DagsterCodeLocation.JobProcessor.dagster_job_processor.config.models import DefaultConstants
-    config = DefaultConstants()
-
     config_oiio: ConfigOIIO = ConfigOIIO()
 
     image_sequence: List[pathlib.Path] = [
@@ -103,13 +99,12 @@ def test_raw_to_oiio() -> None:
             get_kitsu_task_dict=kitsu_task_dict,
             version="v123",
             render_version_directory=fixtures,
-            CONFIG=config,
             CONFIG_OIIO=config_oiio,
             image_sequence=image_sequence,
         )
     )
 
-    shutil.rmtree(oiio_out)
+    # shutil.rmtree(oiio_out)
 
     output: Output = result[0]
     actual = output.value
