@@ -2,6 +2,8 @@ import json
 import pathlib
 import shutil
 from typing import Generator, List, Any
+
+import pytest
 # https://docs.dagster.io/guides/test/unit-testing-assets-and-ops#unit-test-examples
 
 # https://docs.dagster.io/guides/test/unit-testing-assets-and-ops#upstream-dependencies
@@ -13,8 +15,6 @@ from OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.assets import (
     raw_to_oiio,
 )
 from OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.config.models import ConfigOIIO
-
-# LOGGER = get_dagster_logger(__name__)
 
 
 CLEANUP_ENABLED = True
@@ -54,11 +54,25 @@ def test_image_sequence() -> None:
     assert actual == expected
 
 
-def test_raw_to_oiio() -> None:
+@pytest.fixture
+def oiio_out():
+    # Use fixtures:
+    # - [Pytest - How to use fixtures](https://docs.pytest.org/en/7.1.x/how-to/fixtures.html)
+    # before test - create resource
+    oiio_out = fixtures / "v123/oiio"
+    yield oiio_out
+    # after test - remove resource
+    if CLEANUP_ENABLED:
+        shutil.rmtree(oiio_out)
+
+# @pytest.mark.usefixtures("fixture_oiio_out")
+def test_raw_to_oiio(
+    oiio_out,
+) -> None:
 
     context = build_asset_context()
 
-    oiio_out = fixtures / "v123/oiio"
+    # oiio_out = fixture_oiio_out
 
     expected = [
         {
@@ -106,9 +120,6 @@ def test_raw_to_oiio() -> None:
             image_sequence=image_sequence,
         )
     )
-
-    if CLEANUP_ENABLED:
-        shutil.rmtree(oiio_out)
 
     output: Output = result[0]
     actual = output.value
