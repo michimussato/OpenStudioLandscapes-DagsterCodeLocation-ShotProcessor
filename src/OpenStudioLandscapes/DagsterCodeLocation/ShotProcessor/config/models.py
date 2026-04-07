@@ -1,0 +1,144 @@
+from typing import Dict
+
+from dagster import get_dagster_logger
+from pydantic import (
+    BaseModel,
+    Field,
+)
+
+LOGGER = get_dagster_logger(__name__)
+
+
+class ConfigOIIO(BaseModel):
+
+    # kitsu_task_dict: Dict = Field(
+    #     default_factory=dict,
+    # )
+
+    fps: float = Field(
+        default=25.0,
+    )
+    text_border: int = Field(
+        default=10,
+    )
+    text_spacing: int = Field(
+        default=4,
+    )
+    handle_marker_height: int = Field(
+        default=10,
+    )
+    overlay_text_size_frame: int = Field(
+        default=24,
+    )
+    overlay_text_size_scaledown: int = Field(
+        default=8,
+    )
+
+#     feature_name: str = dist.name
+#
+#     group_name: str = constants.ASSET_HEADER["group_name"]
+#
+#     key_prefixes: List[str] = constants.ASSET_HEADER["key_prefix"]
+#
+#     docker_compose_override: pathlib.Path = Field(
+#         default=pathlib.Path(
+#             "{DOT_LANDSCAPES}/{LANDSCAPE}/{FEATURE}/docker_compose/docker-compose.override.yml"
+#         ),
+#         description="The path to the `docker-compose.yml` file.",
+#         frozen=True,
+#     )
+#
+#     ayon_port_container: PositiveInt = Field(
+#         default=5000,
+#         description="The Ayon container port.",
+#         frozen=True,
+#     )
+#     ayon_port_host: PositiveInt = Field(
+#         default=5005,
+#         description="The Ayon host port.",
+#         frozen=False,
+#     )
+#     ayon_db_install_destination: pathlib.Path = Field(
+#         description="The host side Ayon database installation destination.",
+#         default=pathlib.Path("{DOT_LANDSCAPES}/{LANDSCAPE}/{FEATURE}/data/ayon-db"),
+#     )
+#     # Todo:
+#     #  - [ ] Implement?
+#     # ayon_db_inside_container: bool = Field(
+#     #     default=False,
+#     #     description="The Ayon database inside container; the database will not be persistent. "
+#     #     "Helpful for testing.",
+#     # )
+#
+#     # Todo:
+#     #  - [ ] is this necessary here?
+#     # @field_validator("ayon_port_container")
+#     # @classmethod
+#     # def ensure_valid__ayon_port_container(cls, value: int):
+#     #     if value == 80:
+#     #         return value
+#     #     else:
+#     #         raise ValueError(
+#     #             "`ayon_port_container` must be set "
+#     #             "to 80 for now. Other values *may* render Ayon inoperable."
+#     #         )
+#
+#     repository_url: HttpUrl = Field(
+#         default="https://github.com/ynput/ayon-docker.git",
+#     )
+#     repository_branch: Branches = Field(
+#         default=Branches.main,
+#         description="The branch of the Ayon repository.",
+#         frozen=True,
+#         examples=[i.name for i in Branches],
+#     )
+#     repository_subdir: str = Field(
+#         default="ayon-docker",
+#     )
+#     docker_compose_yml: str = Field(
+#         default="docker-compose.yml",
+#     )
+#     docker_compose_worker_yml: str = Field(
+#         default="docker-compose.worker.yml",
+#     )
+#
+#     # EXPANDABLE PATHS
+#     @property
+#     def docker_compose_override_expanded(self) -> pathlib.Path:
+#         LOGGER.debug(f"{self.env = }")
+#         if self.env is None:
+#             raise KeyError("`env` is `None`.")
+#         LOGGER.debug(f"Expanding {self.docker_compose_override}...")
+#         ret = pathlib.Path(
+#             self.docker_compose_override.expanduser()  # pylint: disable=E1101
+#             .as_posix()
+#             .format(
+#                 **{
+#                     "FEATURE": self.feature_name,
+#                     **self.env,
+#                 }
+#             )
+#         )
+#         return ret
+#
+#     @property
+#     def ayon_db_install_destination_expanded(self) -> pathlib.Path:
+#         LOGGER.debug(f"{self.env = }")
+#         if self.env is None:
+#             raise KeyError("`env` is `None`.")
+#
+#         LOGGER.debug(f"Expanding {self.ayon_db_install_destination}...")
+#         ret = pathlib.Path(
+#             self.ayon_db_install_destination.expanduser()  # pylint: disable=E1101
+#             .as_posix()
+#             .format(
+#                 **{
+#                     "FEATURE": self.feature_name,
+#                     **self.env,
+#                 }
+#             )
+#         )
+#         return ret
+#
+#
+# CONFIG_STR = Config.get_docs()

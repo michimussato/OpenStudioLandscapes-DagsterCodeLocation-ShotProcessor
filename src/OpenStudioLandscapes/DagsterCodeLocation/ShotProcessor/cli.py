@@ -1,8 +1,10 @@
+import json
 import sys
 import argparse
 import pathlib
 import textwrap
 import logging
+from typing import Dict
 
 from dagster import (
     get_dagster_logger,
@@ -24,7 +26,8 @@ LOGGER = get_dagster_logger(__name__)
 # executable/script.
 
 
-def parse_args(args) -> ShotProcessorArgs:
+# def parse_args(args) -> ShotProcessorArgs:
+def parse_args(args) -> argparse.Namespace:
     """Parse command line parameters
 
     Args:
@@ -66,6 +69,15 @@ def parse_args(args) -> ShotProcessorArgs:
         dest="kitsu_task_json",
         help="The full path to the Kitsu task JSON file.",
         type=pathlib.Path,
+        required=True,
+        # action="store_const",
+        # const=logging.DEBUG,
+    )
+    parser.add_argument(
+        "--version",
+        dest="version",
+        help="The version (iteration) number.",
+        type=str,
         required=True,
         # action="store_const",
         # const=logging.DEBUG,
@@ -148,6 +160,7 @@ def parse_args(args) -> ShotProcessorArgs:
         # action="store_const",
         # const=logging.DEBUG,
     )
+    return parser.parse_args(args)
     return ShotProcessorArgs(**vars(parser.parse_args(args)))
 
 
@@ -167,7 +180,28 @@ def setup_logging(loglevel):
 def main(args):
     args = parse_args(args)
     setup_logging(args.loglevel)
-    run_shot_processor(args)
+
+    # Open this file once
+    def parse_kitsu_task_json(path) -> Dict:
+        if args.kitsu_task_json.exists():
+            LOGGER.info(f"Kitsu Task JSON found")
+            LOGGER.info(f"Reading JSON: {args.kitsu_task_json.as_posix()}")
+            with open(args.kitsu_task_json) as fr:
+                kitsu_task_dict = json.load(fr)
+            LOGGER.debug(f"Kitsu Task JSON loaded: {kitsu_task_dict}")
+        else:
+            kitsu_task_dict = {}
+            LOGGER.warning(f"Kitsu Task JSON not found, using default values: {kitsu_task_dict = }")
+        return kitsu_task_dict
+
+    args["kitsu_task_dict"] = parse_kitsu_task_json(args.kitsu_task_json)
+
+    args_ = ShotProcessorArgs(**vars(args))
+
+    run_shot_processor(
+        args=args_,
+        cli=True,
+    )
 
 
 def run():

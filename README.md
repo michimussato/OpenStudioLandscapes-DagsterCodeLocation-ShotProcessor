@@ -7,6 +7,8 @@
   * [Brief](#brief)
   * [Usage](#usage)
     * [CLI](#cli)
+* [Development](#development)
+  * [pytest](#pytest)
 <!-- TOC -->
 
 ---
@@ -52,5 +54,34 @@ from OpenStudioLandscapes.DagsterCodeLocation import ShotProcessor
 shot-processor -vv \
     --exr-sequence-dir "tests/fixtures/raw/" \
     --output-dir "tests/fixtures/oiio/" \
-    --kitsu-task-json "tests/fixtures/kitsu_task.json"
+    --kitsu-task-json "tests/fixtures/kitsu_task.json" \
+    --version 005
 ```
+
+> [!TIP]
+> 
+> Reinstall this package inside the container it was deployed to:
+> 
+> ```shell
+> docker exec -it dagster.2026-01-21_17-22-54__seasoned-jelly-wholesale-mixer bash
+> pip3 install --root-user-action=ignore --editable 'OpenStudioLandscapes-DagsterCodeLocation-ShotProcessor @ git+https://github.com/michimussato/OpenStudioLandscapes-DagsterCodeLocation-ShotProcessor.git@main'
+> ```
+
+
+# Development
+
+```shell
+pip install --force-reinstall --editable .[dev]
+
+dagster dev --workspace workspace.yaml
+```
+
+## pytest
+
+Add `-s` (equivalent to `--capture=no`) to `pytest` runner
+in case `print` or `LOGGER` output is required.
+
+> [!TIP]
+> 
+> In Pycharm:
+> ![Modify Run Configuration](media/images/Screenshot_20260407_110349.png)
