@@ -104,7 +104,8 @@ def _update_raw_spec(
         "openstudiolandscapes.is_handle": frame_is_handle,
     }
 
-    raw_spec_.__dict__.update(update_dict)
+    for k, v in update_dict.items():
+        raw_spec_[k] = v
 
     return raw_spec_
 
