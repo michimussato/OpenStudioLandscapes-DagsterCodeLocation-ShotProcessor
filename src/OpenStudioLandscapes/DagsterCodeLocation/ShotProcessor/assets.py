@@ -307,6 +307,8 @@ def png_to_mov(
         if png is not None:
             png_seq.append(png)
 
+    context.log.debug(f"{png_seq = }")
+
     cmds: List[List[str]] = []
     ffmpeg_out = pathlib.Path(output_dir).joinpath(
         f"{output_format_}.{output_format_}"
@@ -321,7 +323,7 @@ def png_to_mov(
         #  - [ ] add out timestamp
         cmd: List[str] = [
             "ffmpeg",
-            "-framerate", CONFIG_OIIO.fps,
+            "-framerate", f"{float(CONFIG_OIIO.fps):.3f}",
             # "-an",
             *i_seq,
             "-c:v", "libx264",
