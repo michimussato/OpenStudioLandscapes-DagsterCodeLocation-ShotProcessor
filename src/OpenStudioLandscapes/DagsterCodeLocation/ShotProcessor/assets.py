@@ -28,8 +28,6 @@ from OpenStudioLandscapes.DagsterCodeLocation.JobProcessor.dagster_job_processor
 from OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.api import process_image, create_buf_from_raw
 from OpenStudioLandscapes.DagsterCodeLocation.StreamingProcess import submit_cmds
 
-from OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.definitions import output_format
-
 # Asset data across code locations:
 # - [SourceAsset](https://stackoverflow.com/q/79780791)
 # - [AssetSpec](https://release-1-8-9.dagster.dagster-docs.io/concepts/assets/external-assets)
@@ -310,6 +308,9 @@ def png_to_mov(
             png_seq.append(png)
 
     cmds: List[List[str]] = []
+    ffmpeg_out = pathlib.Path(output_dir).joinpath(
+        f"{output_format_}.{output_format_}"
+    )
 
     if bool(png_seq):
         i_seq = []
@@ -325,9 +326,7 @@ def png_to_mov(
             *i_seq,
             "-c:v", "libx264",
             "-pix_fmt", "yuv420p",
-            pathlib.Path(output_dir).joinpath(
-                f"{output_format_}.{output_format_}"
-            )
+            ffmpeg_out.as_posix(),
         ]
 
         cmds.append(cmd)
@@ -400,5 +399,6 @@ def png_to_mov(
             "logs": MetadataValue.md(
                 f"```yaml\n{yaml.safe_dump(logs)}\n```"
             ),
+            "ffmpeg_out": MetadataValue.path(ffmpeg_out),
         }
     )
