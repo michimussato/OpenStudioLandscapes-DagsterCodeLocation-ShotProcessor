@@ -293,13 +293,11 @@ def png_to_mov(
 ) -> Generator[Output[pathlib.Path] | AssetMaterialization | Any, Any, None]:
     # https://stackoverflow.com/questions/24961127/how-to-create-a-video-from-images-with-ffmpeg
 
-
-
-    output_format = "mp4"
+    output_format_ = "mp4"
     output_dir: pathlib.Path = render_version_directory.joinpath(
         version,
         "oiio",
-        f"oiio_{output_format}",
+        f"oiio_{output_format_}",
     )
     output_dir.mkdir(parents=True, exist_ok=True)
 
@@ -328,7 +326,7 @@ def png_to_mov(
             "-c:v", "libx264",
             "-pix_fmt", "yuv420p",
             pathlib.Path(output_dir).joinpath(
-                f"{output_format}.{output_format}"
+                f"{output_format_}.{output_format_}"
             )
         ]
 
