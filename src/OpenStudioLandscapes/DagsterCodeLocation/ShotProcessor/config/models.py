@@ -1,4 +1,4 @@
-from typing import Dict
+# from typing import NamedTuple
 
 from dagster import get_dagster_logger
 from pydantic import (
@@ -7,6 +7,11 @@ from pydantic import (
 )
 
 LOGGER = get_dagster_logger(__name__)
+
+
+# class Resolution(NamedTuple):
+#     x: int
+#     y: int
 
 
 class ConfigOIIO(BaseModel):
@@ -33,6 +38,24 @@ class ConfigOIIO(BaseModel):
     overlay_text_size_scaledown: int = Field(
         default=8,
     )
+
+    # width: int = Field(
+    #     default=1920,
+    #     description="Resolution width in pixels.",
+    # )
+    #
+    # height: int = Field(
+    #     default=1080,
+    #     description="Resolution height in pixels.",
+    # )
+    #
+    # @property
+    # def resolution(self):
+    #     ret = Resolution(
+    #         x=self.width,
+    #         y=self.height,
+    #     )
+    #     return ret
 
 #     feature_name: str = dist.name
 #

@@ -64,6 +64,7 @@ def _update_raw_spec(
     *,
     # context: Union[AssetExecutionContext, OpExecutionContext] = None,
     raw_spec: OIIO.ImageSpec,
+    CONFIG_OIIO: ConfigOIIO,
     kitsu_task_dict: Dict,
     version: str,
     frame_number: int,
@@ -77,7 +78,7 @@ def _update_raw_spec(
     resolution = f"{raw_spec_.width}x{raw_spec_.height}"
     # render_time = raw_spec_.getattribute("RenderTime")
     # scene_file = raw_spec_.getattribute("File")
-    fps = 0
+    fps = CONFIG_OIIO.fps
 
     # Don't change anything to the raw_spec.
     # Create a new spec dict with additional metadata.
