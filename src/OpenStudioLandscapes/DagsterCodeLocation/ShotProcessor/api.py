@@ -540,14 +540,17 @@ def process_image(
 
 
 def _create_gif():
+    # https://openimageio.readthedocs.io/en/v3.1.12.0/builtinplugins.html#gif
     ...
 
 
 def _create_mov():
+    # https://openimageio.readthedocs.io/en/v3.1.12.0/builtinplugins.html#movie-formats-using-ffmpeg
     ...
 
 
 def _create_png():
+    # https://openimageio.readthedocs.io/en/v3.1.12.0/builtinplugins.html#png
     ...
 
 
