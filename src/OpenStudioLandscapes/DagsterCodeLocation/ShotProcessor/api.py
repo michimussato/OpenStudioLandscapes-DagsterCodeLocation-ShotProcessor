@@ -2,6 +2,7 @@ import json
 import os
 import pathlib
 import re
+from gettext import npgettext
 from typing import Tuple, Dict, Union
 
 from dagster import (
@@ -278,6 +279,74 @@ def get_overlay_handle_buf(
     return buf
 
 
+# def get_png_buf(
+#     *,
+#     CONFIG_OIIO: ConfigOIIO,
+#     spec: oiio.ImageSpec,
+#     raw_buf: oiio.ImageBuf,
+#     # frame_is_handle: bool,
+# ) -> OIIO.ImageBuf:
+#     buf = OIIO.ImageBuf(spec)
+#
+#     buf.
+#
+#     handle_colors = {
+#         True: [1, 0, 0, 1],
+#         False: [0, 1, 0, 1]
+#     }
+#
+#     # # Top Marker
+#     # oiio.ImageBufAlgo.render_box(
+#     #     buf,
+#     #     x1=0,
+#     #     y1=0,
+#     #     x2=spec_buf_raw.width,
+#     #     y2=CONFIG_OIIO.handle_marker_height,
+#     #     fill=True,
+#     #     color=handle_colors[frame_is_handle]
+#     # ) or LOGGER.error("Can't render box: frame_is_handle top")
+#     # # Bottom Marker
+#     # oiio.ImageBufAlgo.render_box(
+#     #     buf,
+#     #     x1=0,
+#     #     y1=spec_buf_overlay.height - CONFIG_OIIO.handle_marker_height,
+#     #     x2=spec_buf_overlay.width,
+#     #     y2=spec_buf_overlay.height,
+#     #     fill=True,
+#     #     color=handle_colors[frame_is_handle]
+#     # ) or LOGGER.error("Can't render box: frame_is_handle bottom")
+#
+#     return buf
+
+
+def png_from_raw(
+        raw: pathlib.Path,
+        png_out: pathlib.Path,
+        spec: oiio.ImageSpec,
+) -> pathlib.Path:
+    raw_image_ = OIIO.ImageInput.open(raw.as_posix())
+    raw_image_pixels = raw_image_.read_image()
+    out = oiio.ImageOutput.create(png_out.as_posix())
+
+    # LOGGER.info(f"{png_out.as_posix()} supports 'multiimage': {out.supports('multiimage')}")
+    # LOGGER.info(f"{png_out.as_posix()} supports 'appendsubimage': {out.supports('appendsubimage')}")
+
+    out.open(png_out.as_posix(), spec, "Create")
+
+    try:
+        e = None
+        out.write_image(raw_image_pixels)
+    except Exception as e:
+        LOGGER.error(e)
+    finally:
+        out.close()
+
+    if e is not None:
+        raise Exception from e
+
+    return png_out
+
+
 def exr_from_raw_with_custom_metadata(
         raw: pathlib.Path,
         exr_out: pathlib.Path,
@@ -309,7 +378,7 @@ def exr_from_raw_with_custom_metadata(
 def _process_image(
     *,
     context: Union[AssetExecutionContext, OpExecutionContext] = None,
-    # raw_buf: OIIO.ImageBuf,
+    raw_buf: OIIO.ImageBuf,
     raw_spec: OIIO.ImageSpec,
     CONFIG_OIIO: ConfigOIIO,
     image_filepath: pathlib.Path,
@@ -320,6 +389,7 @@ def _process_image(
     create_exr_from_raw_with_custom_metadata: bool = True,
     create_text_overlay: bool = False,
     create_handle_overlay: bool = False,
+    create_png: bool = False,
 ) -> Dict[str, pathlib.Path]:
 
     ret = {}
@@ -382,14 +452,14 @@ def _process_image(
                 spec_buf_overlay=spec_buf_overlay,
                 frame_is_handle=bool(spec_buf_overlay["openstudiolandscapes.is_handle"]),
             )
-            overlay_handle_buf_out: pathlib.Path = output_dir / "oiio_overlay_handle" / image_filepath.name
-            overlay_handle_buf_out.parent.mkdir(parents=True, exist_ok=True)
-            overlay_handle_buf.write(overlay_handle_buf_out.as_posix())
-            LOGGER.info(f"Overlay handle image saved: {overlay_handle_buf_out.as_posix()}")
+            png_buf_out: pathlib.Path = output_dir / "oiio_overlay_handle" / image_filepath.name
+            png_buf_out.parent.mkdir(parents=True, exist_ok=True)
+            overlay_handle_buf.write(png_buf_out.as_posix())
+            LOGGER.info(f"Overlay handle image saved: {png_buf_out.as_posix()}")
 
             ret.update(
                 {
-                    "overlay_handle_buf_out": overlay_handle_buf_out,
+                    "png_buf_out": png_buf_out,
                 }
             )
 
@@ -406,6 +476,41 @@ def _process_image(
         ret.update(
             {
                 "exr_touched_out": exr_touched_out,
+            }
+        )
+
+    # create_png = True
+    if create_png:
+        # https://dev.to/plinecom/convert-openexr-to-jpeg-using-openimageiooiio-in-python-52f8
+        extension = ".png"
+        spec_buf_png = raw_spec_updated.copy()
+        channels = ("R", "G", "B")
+        spec_buf_png.nchannels = len(channels)
+        spec_buf_png.channelnames = channels
+        try:
+            spec_buf_png.alpha_channel = channels.index("A")
+        except ValueError:
+            # no alpha channel
+            spec_buf_png.alpha_channel = -1
+        # file_name = image_filepath.name
+        png_out: pathlib.Path = output_dir / "oiio_png" / f"{image_filepath.stem}{extension}"
+        png_out.parent.mkdir(parents=True, exist_ok=True)
+        # png_buf.write(png_buf_out.as_posix())
+        # LOGGER.info(f"PNG image saved: {png_buf_out.as_posix()}")
+
+        png_out_ = png_from_raw(
+            raw=image_filepath,
+            png_out=png_out,
+            # CONFIG_OIIO=CONFIG_OIIO,
+            spec=spec_buf_png,
+            # raw_buf=raw_buf,
+            # spec_buf_overlay=spec_buf_overlay,
+            # frame_is_handle=bool(spec_buf_overlay["openstudiolandscapes.is_handle"]),
+        )
+
+        ret.update(
+            {
+                "png_out": png_out_,
             }
         )
 

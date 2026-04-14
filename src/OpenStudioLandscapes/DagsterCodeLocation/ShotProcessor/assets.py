@@ -213,7 +213,7 @@ def raw_to_oiio(
         )
 
         processed_result = _process_image(
-            # raw_buf=raw_buf,
+            raw_buf=raw_buf,
             raw_spec=raw_spec,
             context=context,
             image_filepath=image_,
@@ -225,6 +225,7 @@ def raw_to_oiio(
             create_exr_from_raw_with_custom_metadata=True,
             create_text_overlay=True,
             create_handle_overlay=True,
+            create_png=True,
         )
         context.log.debug(f"{processed_result = }")
         results.append(processed_result)
