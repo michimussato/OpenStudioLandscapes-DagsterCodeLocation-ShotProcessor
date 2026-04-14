@@ -334,7 +334,7 @@ def _process_image(
     # render_time = raw_spec.getattribute("RenderTime")
     # scene_file = raw_spec.getattribute("File")
 
-    raw_spec_updated = _update_raw_spec(
+    raw_spec_updated: OIIO.ImageSpec = _update_raw_spec(
         CONFIG_OIIO=CONFIG_OIIO,
         raw_spec=raw_spec,
         kitsu_task_dict=kitsu_task_dict,
