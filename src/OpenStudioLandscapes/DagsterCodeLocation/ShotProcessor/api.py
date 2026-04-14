@@ -51,7 +51,7 @@ LOGGER = get_dagster_logger(__name__)
 # kitsu_task_dict: Dict = {}
 
 
-def _create_buf_from_raw(
+def create_buf_from_raw(
         raw: pathlib.Path,
 ) -> Tuple[OIIO.ImageBuf, OIIO.ImageSpec]:
     raw_image_ = OIIO.ImageInput.open(raw.as_posix())
@@ -375,7 +375,7 @@ def exr_from_raw_with_custom_metadata(
     return None
 
 
-def _process_image(
+def process_image(
     *,
     context: Union[AssetExecutionContext, OpExecutionContext] = None,
     # raw_buf: OIIO.ImageBuf,
@@ -493,7 +493,7 @@ def _process_image(
             # no alpha channel
             spec_buf_png.alpha_channel = -1
         # file_name = image_filepath.name
-        png_out: pathlib.Path = output_dir / "oiio_png" / f"{image_filepath.stem}{extension}"
+        png_out: pathlib.Path = output_dir / "oiio_proxy_png" / f"{image_filepath.stem}{extension}"
         png_out.parent.mkdir(parents=True, exist_ok=True)
         # png_buf.write(png_buf_out.as_posix())
         # LOGGER.info(f"PNG image saved: {png_buf_out.as_posix()}")

@@ -2,7 +2,7 @@ import json
 import os
 import pathlib
 import re
-from typing import Generator, Any, Dict, List
+from typing import Generator, Any, Dict, List, Union
 
 import yaml
 
@@ -25,7 +25,7 @@ from OpenStudioLandscapes.DagsterCodeLocation.JobProcessor.dagster_job_processor
 from OpenStudioLandscapes.DagsterCodeLocation.JobProcessor.dagster_job_processor.assets.submit_jobs import ASSET_HEADER_JOB_SUBMITTER_DEADLINE
 
 
-from OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.api import _process_image, _create_buf_from_raw
+from OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.api import process_image, create_buf_from_raw
 
 
 # Asset data across code locations:
@@ -146,6 +146,7 @@ def image_sequence_raw(
     outs={
         "raw_to_oiio": AssetOut(
             **ASSET_HEADER_OIIO_PROCESSOR,
+            dagster_type=List[Dict],
             description="Todo",
         ),
     },
@@ -177,7 +178,7 @@ def raw_to_oiio(
         render_version_directory: pathlib.Path,
         get_kitsu_task_dict: Dict,
         CONFIG_OIIO: ConfigOIIO,
-) -> Generator[Output[pathlib.Path] | AssetMaterialization | Any, Any, None]:
+) -> Generator[Union[Output[List[Dict]]] | AssetMaterialization | Any, Any, None]:
     # Doesn't work:
     # for i in {1197..1254}; do exrinfo "/data/share/AWSPortalRoot1/out/Test Production/Shot/SH030/Rendering/061/4_1197-1254_4/raw/sh030_001.${i}.exr"; done
     # render_output_raw = pathlib.Path(render_output_directory / "raw" / render_output_filename["padding_bash_expansion"])
@@ -208,11 +209,11 @@ def raw_to_oiio(
 
         context.log.debug(f"Frame number: {f_no}")
 
-        raw_buf, raw_spec = _create_buf_from_raw(
+        raw_buf, raw_spec = create_buf_from_raw(
             raw=image_
         )
 
-        processed_result = _process_image(
+        processed_result = process_image(
             # raw_buf=raw_buf,
             raw_spec=raw_spec,
             context=context,
@@ -248,6 +249,116 @@ def raw_to_oiio(
                 context.asset_key_for_output(output_name).path
             ): MetadataValue.md(
                 f"```json\n{json.dumps(results, indent=2, default=str)}\n```"
+            ),
+        }
+    )
+
+
+@multi_asset(
+    outs={
+        "png_to_mov": AssetOut(
+            **ASSET_HEADER_OIIO_PROCESSOR,
+            description="Todo",
+        ),
+    },
+    # deps=[
+    #     AssetKey([*ASSET_HEADER_JOB_SUBMITTER_DEADLINE["key_prefix"], "submit_job"]),  # Does not yet return anything (just returns MaterializeResult)
+    # ],
+    ins={
+        "raw_to_oiio": AssetIn(
+            AssetKey([*ASSET_HEADER_OIIO_PROCESSOR["key_prefix"], "raw_to_oiio"]),
+        ),
+        "version": AssetIn(
+            AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "version"]),
+        ),
+        "render_version_directory": AssetIn(
+            AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "render_version_directory"]),
+        ),
+        # "image_sequence_raw": AssetIn(
+        #     AssetKey([*ASSET_HEADER_OIIO_PROCESSOR["key_prefix"], "image_sequence_raw"]),
+        # ),
+        # "CONFIG_OIIO": AssetIn(
+        #     AssetKey([*ASSET_HEADER_OIIO_PROCESSOR["key_prefix"], "CONFIG_OIIO"]),
+        # ),
+    }
+)
+def png_to_mov(
+        context: AssetExecutionContext,
+        raw_to_oiio: List[Dict],
+        render_version_directory: pathlib.Path,
+        version: str,
+) -> Generator[Output[pathlib.Path] | AssetMaterialization | Any, Any, None]:
+
+    output_dir: pathlib.Path = render_version_directory.joinpath(
+        version,
+        "oiio",
+    )
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    png_seq: List[pathlib.Path] = []
+
+    for d_image in raw_to_oiio:
+        png: Union[pathlib.Path, None]
+        png = d_image.get("png_out", None)
+        if png is not None:
+            png_seq.append(png)
+
+    # for image_ in image_sequence_raw:
+    #     context.log.debug("Processing image %s", image_)
+    #
+    #     # Frame number based on image name (image.0123.png)
+    #     f_no_ = re.findall(
+    #         r"\.[0-9]+\.",
+    #         image_.name
+    #     )
+    #
+    #     if bool(f_no_):
+    #         f_no = int(f_no_[-1].replace(".", ""))
+    #     else:
+    #         f_no = 0
+    #
+    #     context.log.debug(f"Frame number: {f_no}")
+    #
+    #     raw_buf, raw_spec = create_buf_from_raw(
+    #         raw=image_
+    #     )
+    #
+    #     processed_result = process_image(
+    #         # raw_buf=raw_buf,
+    #         raw_spec=raw_spec,
+    #         context=context,
+    #         image_filepath=image_,
+    #         frame_number=f_no,
+    #         kitsu_task_dict=get_kitsu_task_dict,
+    #         CONFIG_OIIO=CONFIG_OIIO,
+    #         version=version,
+    #         output_dir=output_dir,
+    #         create_exr_from_raw_with_custom_metadata=True,
+    #         create_text_overlay=True,
+    #         create_handle_overlay=True,
+    #         create_png=True,
+    #     )
+    #     context.log.debug(f"{processed_result = }")
+    #     results.append(processed_result)
+
+    ##############
+    # png_to_mov #
+    ##############
+
+    output_name = "png_to_mov"
+
+    yield Output(
+        output_name=output_name,
+        value=png_seq,
+    )
+
+    yield AssetMaterialization(
+        asset_key=context.asset_key_for_output(output_name),
+        metadata={
+            "__".join(
+                context.asset_key_for_output(output_name).path
+            ): MetadataValue.md(
+                f"```json\n{json.dumps(png_seq, indent=2, default=str)}\n```"
             ),
         }
     )
