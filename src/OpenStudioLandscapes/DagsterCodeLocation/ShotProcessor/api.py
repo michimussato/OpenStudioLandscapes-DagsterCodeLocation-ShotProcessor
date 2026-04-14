@@ -378,7 +378,7 @@ def exr_from_raw_with_custom_metadata(
 def _process_image(
     *,
     context: Union[AssetExecutionContext, OpExecutionContext] = None,
-    raw_buf: OIIO.ImageBuf,
+    # raw_buf: OIIO.ImageBuf,
     raw_spec: OIIO.ImageSpec,
     CONFIG_OIIO: ConfigOIIO,
     image_filepath: pathlib.Path,

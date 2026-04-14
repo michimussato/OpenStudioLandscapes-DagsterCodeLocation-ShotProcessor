@@ -213,7 +213,7 @@ def raw_to_oiio(
         )
 
         processed_result = _process_image(
-            raw_buf=raw_buf,
+            # raw_buf=raw_buf,
             raw_spec=raw_spec,
             context=context,
             image_filepath=image_,
