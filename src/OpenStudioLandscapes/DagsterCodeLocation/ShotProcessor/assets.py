@@ -316,7 +316,8 @@ def png_to_mov(
 
     if bool(png_seq):
         i_seq = []
-        i_seq.extend(["-i", f] for f in png_seq)
+        for f in png_seq:
+            i_seq.extend(["-i", f.as_posix()])
 
         # Todo:
         #  - [ ] add in timestamp
