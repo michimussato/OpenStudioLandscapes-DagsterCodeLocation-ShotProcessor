@@ -26,7 +26,9 @@ from OpenStudioLandscapes.DagsterCodeLocation.JobProcessor.dagster_job_processor
 
 
 from OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.api import process_image, create_buf_from_raw
+from OpenStudioLandscapes.DagsterCodeLocation.StreamingProcess import submit_cmds
 
+from OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.definitions import output_format
 
 # Asset data across code locations:
 # - [SourceAsset](https://stackoverflow.com/q/79780791)
@@ -277,9 +279,9 @@ def raw_to_oiio(
         # "image_sequence_raw": AssetIn(
         #     AssetKey([*ASSET_HEADER_OIIO_PROCESSOR["key_prefix"], "image_sequence_raw"]),
         # ),
-        # "CONFIG_OIIO": AssetIn(
-        #     AssetKey([*ASSET_HEADER_OIIO_PROCESSOR["key_prefix"], "CONFIG_OIIO"]),
-        # ),
+        "CONFIG_OIIO": AssetIn(
+            AssetKey([*ASSET_HEADER_OIIO_PROCESSOR["key_prefix"], "CONFIG_OIIO"]),
+        ),
     }
 )
 def png_to_mov(
@@ -287,11 +289,17 @@ def png_to_mov(
         raw_to_oiio: List[Dict],
         render_version_directory: pathlib.Path,
         version: str,
+        CONFIG_OIIO: ConfigOIIO,
 ) -> Generator[Output[pathlib.Path] | AssetMaterialization | Any, Any, None]:
+    # https://stackoverflow.com/questions/24961127/how-to-create-a-video-from-images-with-ffmpeg
 
+
+
+    output_format = "mp4"
     output_dir: pathlib.Path = render_version_directory.joinpath(
         version,
         "oiio",
+        f"oiio_{output_format}",
     )
     output_dir.mkdir(parents=True, exist_ok=True)
 
@@ -302,6 +310,34 @@ def png_to_mov(
         png = d_image.get("png_out", None)
         if png is not None:
             png_seq.append(png)
+
+    cmds: List[List[str]] = []
+
+    if bool(png_seq):
+        i_seq = []
+        i_seq.extend(["-i", f] for f in png_seq)
+
+        # Todo:
+        #  - [ ] add in timestamp
+        #  - [ ] add out timestamp
+        cmd: List[str] = [
+            "ffmpeg",
+            "-framerate", CONFIG_OIIO.fps,
+            # "-an",
+            *i_seq,
+            "-c:v", "libx264",
+            "-pix_fmt", "yuv420p",
+            pathlib.Path(output_dir).joinpath(
+                f"{output_format}.{output_format}"
+            )
+        ]
+
+        cmds.append(cmd)
+
+    logs = submit_cmds(
+        context=context,
+        cmds=cmds,
+    )
 
     # for image_ in image_sequence_raw:
     #     context.log.debug("Processing image %s", image_)
@@ -359,6 +395,12 @@ def png_to_mov(
                 context.asset_key_for_output(output_name).path
             ): MetadataValue.md(
                 f"```json\n{json.dumps(png_seq, indent=2, default=str)}\n```"
+            ),
+            "cmds": MetadataValue.md(
+                f"```yaml\n{yaml.safe_dump(cmds)}\n```"
+            ),
+            "logs": MetadataValue.md(
+                f"```yaml\n{yaml.safe_dump(logs)}\n```"
             ),
         }
     )
