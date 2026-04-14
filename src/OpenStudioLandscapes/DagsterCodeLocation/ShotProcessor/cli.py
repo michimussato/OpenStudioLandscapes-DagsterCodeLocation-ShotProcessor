@@ -10,7 +10,7 @@ from dagster import (
     get_dagster_logger,
 )
 
-from OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.api import run_shot_processor, ShotProcessorArgs
+from OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.api import run_shot_processor
 
 __author__ = "Michael Mussato"
 __copyright__ = "Michael Mussato"

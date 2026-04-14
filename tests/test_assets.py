@@ -11,7 +11,7 @@ import pytest
 from dagster import build_asset_context, Output, AssetMaterialization
 
 from OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.assets import (
-    image_sequence,
+    image_sequence_raw,
     raw_to_oiio,
 )
 from OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.config.models import ConfigOIIO
@@ -37,7 +37,7 @@ def test_image_sequence() -> None:
     from OpenStudioLandscapes.DagsterCodeLocation.JobProcessor.dagster_job_processor.config.models import DefaultConstants
     config = DefaultConstants()
 
-    asset_return_generator: Generator[Output[List[pathlib.Path]] | AssetMaterialization | Any, Any, None] = image_sequence(
+    asset_return_generator: Generator[Output[List[pathlib.Path]] | AssetMaterialization | Any, Any, None] = image_sequence_raw(
         context=context,
         render_version_directory=fixtures,
         output_format="exr",
@@ -110,6 +110,8 @@ def test_raw_to_oiio(
     ]
 
     # asset_return_generator: Generator[Output[pathlib.Path] | AssetMaterialization | Any, Any, None] = list(raw_to_oiio(
+    # Todo:
+    #  - [ ] change to multi_asset test if all this works
     result = list(
         raw_to_oiio(
             context=context,
@@ -117,7 +119,7 @@ def test_raw_to_oiio(
             version="v123",
             render_version_directory=fixtures,
             CONFIG_OIIO=config_oiio,
-            image_sequence=image_sequence,
+            image_sequence_raw=image_sequence,
         )
     )
 

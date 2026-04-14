@@ -8,6 +8,8 @@ Resources:
 - [](https://medium.com/@maurice.verhoeven/video-with-timecode-burn-in-using-ffmpeg-d5c776bed4cb)
 - [](https://linuxvox.com/blog/bash-variable-expansion-in-single-quote-double-quote/)
 
+Todo:
+- [richardssam/ffmpeg-dailies](https://github.com/richardssam/ffmpeg-dailies)
 
 ```shell
 # Convert exr image sequence to movie

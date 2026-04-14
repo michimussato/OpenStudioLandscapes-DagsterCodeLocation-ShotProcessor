@@ -1,24 +1,21 @@
 import json
 import os
 import pathlib
-import shlex
-# import shutil
+import re
 from typing import Generator, Any, Dict, List
 
 import yaml
-# from collections import namedtuple
 
 from dagster import (
     AssetIn,
     AssetKey,
+    AssetOut,
     asset,
+    multi_asset,
     AssetMaterialization,
     AssetExecutionContext,
-    # OpExecutionContext,
     Output,
     MetadataValue,
-    # SourceAsset,
-    # AssetSpec,
 )
 
 from OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.config.models import ConfigOIIO
@@ -26,13 +23,9 @@ from OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.config.models import
 from OpenStudioLandscapes.DagsterCodeLocation.JobProcessor.dagster_job_processor.config.models import DefaultConstants
 from OpenStudioLandscapes.DagsterCodeLocation.JobProcessor.dagster_job_processor.assets.read_yaml import ASSET_HEADER_JOB_PROCESSOR, ASSET_HEADER_JOB_PROCESSOR_PREPROCESSOR_KITSU
 from OpenStudioLandscapes.DagsterCodeLocation.JobProcessor.dagster_job_processor.assets.submit_jobs import ASSET_HEADER_JOB_SUBMITTER_DEADLINE
-# from OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.definitions import ASSET_HEADER_JOB_SUBMITTER_DEADLINE
-# from OpenStudioLandscapes.DagsterCodeLocation.JobProcessor.deadline_templates.jobs.job_base import Resolution
 
 
-# from OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.api import run_shot_processor
-from OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.api import _process_image
-from OpenStudioLandscapes.DagsterCodeLocation.StreamingProcess import submit_cmds
+from OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.api import _process_image, _create_buf_from_raw
 
 
 # Asset data across code locations:
@@ -51,20 +44,19 @@ ASSET_HEADER_OIIO_PROCESSOR = {
 }
 
 
-@asset(
-    **ASSET_HEADER_OIIO_PROCESSOR,
-    # deps=[
-    #     AssetKey([*ASSET_HEADER_JOB_SUBMITTER_DEADLINE["key_prefix"], "submit_job"]),  # Does not yet return anything (just returns MaterializeResult)
-    # ],
-    # ins={
-    #     "get_kitsu_task_dict": AssetIn(
-    #         AssetKey([*ASSET_HEADER_JOB_PROCESSOR_PREPROCESSOR_KITSU["key_prefix"], "get_kitsu_task_dict"]),
-    #     ),
-    # }
+@multi_asset(
+    # **ASSET_HEADER_OIIO_PROCESSOR,
+    outs={
+        # "env": AssetOut.from_spec(env_spec),
+        "CONFIG_OIIO": AssetOut(
+            **ASSET_HEADER_OIIO_PROCESSOR,
+            # dagster_type=ConfigOIIO,
+            description="Todo",
+        ),
+    },
 )
 def CONFIG_OIIO(
         context: AssetExecutionContext,
-        # get_kitsu_task_dict: Dict,
 ) -> Generator[Output[List[pathlib.Path]] | AssetMaterialization | Any, Any, None]:
 
     config_oiio: ConfigOIIO = ConfigOIIO()
@@ -73,20 +65,18 @@ def CONFIG_OIIO(
     # CONFIG_OIIO #
     ###############
 
-    # output_name = "CONFIG_OIIO"
+    output_name = "CONFIG_OIIO"
 
     yield Output(
-        # output_name=output_name,
+        output_name=output_name,
         value=config_oiio,
     )
 
     yield AssetMaterialization(
-        # asset_key=context.asset_key_for_output(output_name),
-        asset_key=context.asset_key,
+        asset_key=context.asset_key_for_output(output_name),
         metadata={
             "__".join(
-                # context.asset_key_for_output(output_name).path
-                context.asset_key.path
+                context.asset_key_for_output(output_name).path
             ): MetadataValue.md(
                 f"```yaml\n{yaml.safe_dump(json.loads(config_oiio.model_dump_json(fallback=str, indent=2)))}\n```"
             ),
@@ -114,7 +104,7 @@ def CONFIG_OIIO(
         ),
     }
 )
-def image_sequence(
+def image_sequence_raw(
         context: AssetExecutionContext,
         render_version_directory: pathlib.Path,
         output_format: str,
@@ -152,8 +142,13 @@ def image_sequence(
     )
 
 
-@asset(
-    **ASSET_HEADER_OIIO_PROCESSOR,
+@multi_asset(
+    outs={
+        "raw_to_oiio": AssetOut(
+            **ASSET_HEADER_OIIO_PROCESSOR,
+            description="Todo",
+        ),
+    },
     deps=[
         AssetKey([*ASSET_HEADER_JOB_SUBMITTER_DEADLINE["key_prefix"], "submit_job"]),  # Does not yet return anything (just returns MaterializeResult)
     ],
@@ -167,11 +162,8 @@ def image_sequence(
         "render_version_directory": AssetIn(
             AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "render_version_directory"]),
         ),
-        # "CONFIG": AssetIn(
-        #     AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "CONFIG"]),
-        # ),
-        "image_sequence": AssetIn(
-            AssetKey([*ASSET_HEADER_OIIO_PROCESSOR["key_prefix"], "image_sequence"]),
+        "image_sequence_raw": AssetIn(
+            AssetKey([*ASSET_HEADER_OIIO_PROCESSOR["key_prefix"], "image_sequence_raw"]),
         ),
         "CONFIG_OIIO": AssetIn(
             AssetKey([*ASSET_HEADER_OIIO_PROCESSOR["key_prefix"], "CONFIG_OIIO"]),
@@ -180,11 +172,10 @@ def image_sequence(
 )
 def raw_to_oiio(
         context: AssetExecutionContext,
-        image_sequence: List[pathlib.Path],
+        image_sequence_raw: List[pathlib.Path],
         version: str,
         render_version_directory: pathlib.Path,
         get_kitsu_task_dict: Dict,
-        # CONFIG: DefaultConstants,
         CONFIG_OIIO: ConfigOIIO,
 ) -> Generator[Output[pathlib.Path] | AssetMaterialization | Any, Any, None]:
     # Doesn't work:
@@ -195,24 +186,67 @@ def raw_to_oiio(
 
     results = []
 
-    for image_ in image_sequence:
+    output_dir: pathlib.Path = render_version_directory.joinpath(
+        version,
+        "oiio",
+    )
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    for image_ in image_sequence_raw:
         context.log.debug("Processing image %s", image_)
+
+        # Frame number based on image name (image.0123.png)
+        f_no_ = re.findall(
+            r"\.[0-9]+\.",
+            image_.name
+        )
+
+        if bool(f_no_):
+            f_no = int(f_no_[-1].replace(".", ""))
+        else:
+            f_no = 0
+
+        context.log.debug(f"Frame number: {f_no}")
+
+        raw_buf, raw_spec = _create_buf_from_raw(
+            raw=image_
+        )
+
         processed_result = _process_image(
+            # raw_buf=raw_buf,
+            raw_spec=raw_spec,
             context=context,
             image_filepath=image_,
+            frame_number=f_no,
             kitsu_task_dict=get_kitsu_task_dict,
             CONFIG_OIIO=CONFIG_OIIO,
             version=version,
-            render_version_directory=render_version_directory,
+            output_dir=output_dir,
+            create_exr_from_raw_with_custom_metadata=True,
+            create_text_overlay=True,
+            create_handle_overlay=True,
         )
         context.log.debug(f"{processed_result = }")
         results.append(processed_result)
 
-    yield Output(results)
+    ###############
+    # raw_to_oiio #
+    ###############
+
+    output_name = "raw_to_oiio"
+
+    yield Output(
+        output_name=output_name,
+        value=results,
+    )
 
     yield AssetMaterialization(
-        asset_key=context.asset_key,
+        asset_key=context.asset_key_for_output(output_name),
         metadata={
-            "__".join(context.asset_key.path): MetadataValue.md(f"```json\n{json.dumps(results, indent=2, default=str)}\n```"),
+            "__".join(
+                context.asset_key_for_output(output_name).path
+            ): MetadataValue.md(
+                f"```json\n{json.dumps(results, indent=2, default=str)}\n```"
+            ),
         }
     )
