@@ -2,6 +2,7 @@ import json
 import os
 import pathlib
 import re
+import tempfile
 from typing import Generator, Any, Dict, List, Union
 
 import yaml
@@ -290,8 +291,16 @@ def png_to_mov(
         CONFIG_OIIO: ConfigOIIO,
 ) -> Generator[Output[pathlib.Path] | AssetMaterialization | Any, Any, None]:
     # https://stackoverflow.com/questions/24961127/how-to-create-a-video-from-images-with-ffmpeg
+    # https://www.ffmpeg.media/articles/image-sequences-timelapse-photos-to-video
 
+    # input_format_ = ".png"
     output_format_ = "mp4"
+    input_dir: pathlib.Path = render_version_directory.joinpath(
+        version,
+        "oiio",
+        f"oiio_png",
+    )
+
     output_dir: pathlib.Path = render_version_directory.joinpath(
         version,
         "oiio",
@@ -299,40 +308,54 @@ def png_to_mov(
     )
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    png_seq: List[pathlib.Path] = []
+    # png_seq: List[pathlib.Path] = []
 
-    for d_image in raw_to_oiio:
-        png: Union[pathlib.Path, None]
-        png = d_image.get("png_out", None)
-        if png is not None:
-            png_seq.append(png)
+    # for d_image in raw_to_oiio:
+    #     png: Union[pathlib.Path, None]
+    #     png = d_image.get("png_out", None)
+    #     if png is not None:
+    #         png_seq.append(png)
 
-    context.log.debug(f"{png_seq = }")
+    # context.log.debug(f"{png_seq = }")
 
     cmds: List[List[str]] = []
     ffmpeg_out = pathlib.Path(output_dir).joinpath(
         f"{output_format_}.{output_format_}"
     )
 
-    if bool(png_seq):
-        i_seq = []
-        for f in png_seq:
-            i_seq.extend(["-i", f.as_posix()])
+    # if bool(png_seq):
+    # i_seq = []
+    # f: pathlib.Path
+    # for f in png_seq:
+    #     i_seq.extend(["-i", f.as_posix()])
 
-        # Todo:
-        #  - [ ] add in timestamp
-        #  - [ ] add out timestamp
-        cmd: List[str] = [
-            "ffmpeg",
-            "-framerate", f"{float(CONFIG_OIIO.fps):.3f}",
-            # "-an",
-            *i_seq,
-            "-c:v", "libx264",
-            "-pix_fmt", "yuv420p",
-            ffmpeg_out.as_posix(),
-        ]
+    # with tempfile.NamedTemporaryFile(
+    #         delete=False,
+    #         prefix="ffmpeg_images_list__",
+    #         suffix=".txt",
+    #         mode="w",
+    # ) as file_out:
+    #
+    #     for f in png_seq:
+    #         file_out.write(f"file {f.as_posix()}\n")
 
-        cmds.append(cmd)
+    # Todo:
+    #  - [ ] add in timestamp
+    #  - [ ] add out timestamp
+    cmd: List[str] = [
+        "ffmpeg",
+        "-hide_banner",
+        "-y",
+        "-framerate", f"{float(CONFIG_OIIO.fps):.3f}",
+        # "-an",
+        "-pattern_type", "glob",
+        "-i", f"{input_dir.as_posix()}/*.png",
+        "-c:v", "libx264",
+        "-pix_fmt", "yuv420p",
+        ffmpeg_out.as_posix(),
+    ]
+
+    cmds.append(cmd)
 
     logs = submit_cmds(
         context=context,
