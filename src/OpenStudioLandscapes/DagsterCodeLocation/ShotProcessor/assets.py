@@ -357,6 +357,8 @@ def png_to_mov(
 
     cmds.append(cmd)
 
+    context.log.debug(f"{cmds = }")
+
     logs = submit_cmds(
         context=context,
         cmds=cmds,
@@ -408,7 +410,7 @@ def png_to_mov(
 
     yield Output(
         output_name=output_name,
-        value=png_seq,
+        value=ffmpeg_out,
     )
 
     yield AssetMaterialization(
@@ -416,15 +418,13 @@ def png_to_mov(
         metadata={
             "__".join(
                 context.asset_key_for_output(output_name).path
-            ): MetadataValue.md(
-                f"```json\n{json.dumps(png_seq, indent=2, default=str)}\n```"
-            ),
+            ): MetadataValue.path(ffmpeg_out),
             "cmds": MetadataValue.md(
                 f"```yaml\n{yaml.safe_dump(cmds)}\n```"
             ),
             "logs": MetadataValue.md(
                 f"```yaml\n{yaml.safe_dump(logs)}\n```"
             ),
-            "ffmpeg_out": MetadataValue.path(ffmpeg_out),
+            # "ffmpeg_out": MetadataValue.path(ffmpeg_out),
         }
     )
