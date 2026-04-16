@@ -49,9 +49,25 @@ render_version_directory = AssetSpec(
     ),
     group_name=ASSET_HEADER_JOB_PROCESSOR["group_name"],
     description="Entry point for "
-                "`OpenStudioLandscapes.DagsterCodeLocation.JobProcessor.dagster_job_processor.assets.read_yaml.render_output_directory`.",
+                "`OpenStudioLandscapes.DagsterCodeLocation.JobProcessor.dagster_job_processor.assets.read_yaml.render_version_directory`.",
 )
 external_assets.append(render_version_directory)
+
+# [x] image_sequence
+# [x] raw_to_oiio
+# [x] plugin_info_model
+render_output_directory = AssetSpec(
+    key=AssetKey(
+        [
+            *ASSET_HEADER_JOB_PROCESSOR["key_prefix"],
+            "render_output_directory"
+        ],
+    ),
+    group_name=ASSET_HEADER_JOB_PROCESSOR["group_name"],
+    description="Entry point for "
+                "`OpenStudioLandscapes.DagsterCodeLocation.JobProcessor.dagster_job_processor.assets.read_yaml.render_output_directory`.",
+)
+external_assets.append(render_output_directory)
 
 # [ ] image_sequence
 # [ ] raw_to_oiio
