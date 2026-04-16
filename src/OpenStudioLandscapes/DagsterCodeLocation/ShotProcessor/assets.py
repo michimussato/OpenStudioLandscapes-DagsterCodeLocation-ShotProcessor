@@ -557,10 +557,10 @@ def png_to_mov(
         "-framerate", f"{float(CONFIG_OIIO.fps):.3f}",
         # "-an",
         "-pattern_type", "glob",
-        "-i", f"{input_dir.as_posix()}/*.png",
+        "-i", f"<QUOTE>{input_dir.as_posix()}/*.png<QUOTE>",
         "-c:v", "libx264",
         "-pix_fmt", "yuv420p",
-        ffmpeg_out.as_posix(),
+        f"<QUOTE>{ffmpeg_out.as_posix()}<QUOTE>",
     ]
 
     # cmds.append(cmd)
