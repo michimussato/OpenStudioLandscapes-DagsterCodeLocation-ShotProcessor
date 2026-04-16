@@ -693,6 +693,8 @@ def job_info(
         # "OnJobComplete"
         # "SynchronizeAllAuxiliaryFiles"
         "ForceReloadPlugin": True,
+        "JobDependencyPercentage": 100,
+        "ResumeOnCompleteDependencies": True,
         # "Sequential"
         # "SuppressEvents"
         # "Protected"
