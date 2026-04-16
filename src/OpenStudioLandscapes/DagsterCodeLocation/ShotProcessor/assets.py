@@ -268,10 +268,10 @@ def raw_to_oiio(
             AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "CONFIG"]),
         ),
         "job_info_model": AssetIn(
-            AssetKey([*ASSET_HEADER_JOB_PROCESSOR_DEADLINE["key_prefix"], "job_info_model"]),
+            AssetKey([*ASSET_HEADER_OIIO_PROCESSOR["key_prefix"], "job_info_model"]),
         ),
         "plugin_info_model": AssetIn(
-            AssetKey([*ASSET_HEADER_JOB_PROCESSOR_DEADLINE["key_prefix"], "plugin_info_model"]),
+            AssetKey([*ASSET_HEADER_OIIO_PROCESSOR["key_prefix"], "plugin_info_model"]),
         ),
         # "job_id_raw": AssetIn(
         #     AssetKey([*ASSET_HEADER_JOB_PROCESSOR_DEADLINE["key_prefix"], "job_id_raw"]),
