@@ -39,6 +39,7 @@ external_assets: List[AssetSpec] = []
 
 # [x] image_sequence
 # [x] raw_to_oiio
+# [x] plugin_info_model
 render_version_directory = AssetSpec(
     key=AssetKey(
         [
@@ -125,7 +126,8 @@ external_assets.append(get_kitsu_task_dict)
 
 # [ ] image_sequence
 # [ ] raw_to_oiio
-# [x] submit_request_png_to_mov
+# [ ] submit_request_png_to_mov
+# [x] plugin_info_model
 read_job_yaml = AssetSpec(
     key=AssetKey(
         [
@@ -138,6 +140,23 @@ read_job_yaml = AssetSpec(
                 "`OpenStudioLandscapes.DagsterCodeLocation.JobProcessor.dagster_job_processor.assets.read_yaml.read_job_yaml`.",
 )
 external_assets.append(read_job_yaml)
+
+# [ ] image_sequence
+# [ ] raw_to_oiio
+# [ ] submit_request_png_to_mov
+# [x] plugin_info_model
+render_arguments = AssetSpec(
+    key=AssetKey(
+        [
+            *ASSET_HEADER_JOB_PROCESSOR_READER["key_prefix"],
+            "render_arguments"
+        ],
+    ),
+    group_name=ASSET_HEADER_JOB_PROCESSOR_READER["group_name"],
+    description="Entry point for "
+                "`OpenStudioLandscapes.DagsterCodeLocation.JobProcessor.dagster_job_processor.assets.read_yaml.plugin_info_model`.",
+)
+external_assets.append(render_arguments)
 
 # # [ ] image_sequence
 # # [ ] raw_to_oiio
