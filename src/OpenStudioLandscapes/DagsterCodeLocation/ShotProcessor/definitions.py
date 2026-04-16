@@ -9,7 +9,7 @@ from dagster import (
 
 from OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor import assets  # noqa: TID252
 from OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.assets import (
-    ASSET_HEADER_JOB_SUBMITTER_DEADLINE,
+    # ASSET_HEADER_JOB_SUBMITTER_DEADLINE,
     ASSET_HEADER_JOB_PROCESSOR,
     ASSET_HEADER_JOB_PROCESSOR_PREPROCESSOR_KITSU,
 )
@@ -20,20 +20,20 @@ all_assets = load_assets_from_modules([assets])
 # External Assets
 external_assets: List[AssetSpec] = []
 
-# [x] image_sequence
-# [x] raw_to_oiio
-submit_job = AssetSpec(
-    key=AssetKey(
-        [
-            *ASSET_HEADER_JOB_SUBMITTER_DEADLINE["key_prefix"],
-            "submit_job"
-        ],
-    ),
-    group_name=ASSET_HEADER_JOB_SUBMITTER_DEADLINE["group_name"],
-    description="Entry point for "
-                "`OpenStudioLandscapes.DagsterCodeLocation.JobProcessor.dagster_job_processor.assets.submit_jobs.submit_job`.",
-)
-external_assets.append(submit_job)
+# # [x] image_sequence
+# # [x] raw_to_oiio
+# submit_job = AssetSpec(
+#     key=AssetKey(
+#         [
+#             *ASSET_HEADER_JOB_SUBMITTER_DEADLINE["key_prefix"],
+#             "submit_job"
+#         ],
+#     ),
+#     group_name=ASSET_HEADER_JOB_SUBMITTER_DEADLINE["group_name"],
+#     description="Entry point for "
+#                 "`OpenStudioLandscapes.DagsterCodeLocation.JobProcessor.dagster_job_processor.assets.submit_jobs.submit_job`.",
+# )
+# external_assets.append(submit_job)
 
 # [x] image_sequence
 # [x] raw_to_oiio
