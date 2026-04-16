@@ -273,6 +273,9 @@ def raw_to_oiio(
         "plugin_info_model": AssetIn(
             AssetKey([*ASSET_HEADER_JOB_PROCESSOR_DEADLINE["key_prefix"], "plugin_info_model"]),
         ),
+        # "job_id_raw": AssetIn(
+        #     AssetKey([*ASSET_HEADER_JOB_PROCESSOR_DEADLINE["key_prefix"], "job_id_raw"]),
+        # ),
     },
 )
 def payload_png_to_mov(
@@ -280,6 +283,7 @@ def payload_png_to_mov(
         CONFIG: DefaultConstants,
         job_info_model: models_submission.JobInfo,
         plugin_info_model: models_submission.CommandLinePluginInfo,
+        # job_id_raw: str,
 ) -> Generator[Output[Dict] | AssetMaterialization | Any, Any, None]:
 
     """
@@ -468,9 +472,9 @@ def submit_request_png_to_mov(
         "CONFIG_OIIO": AssetIn(
             AssetKey([*ASSET_HEADER_OIIO_PROCESSOR["key_prefix"], "CONFIG_OIIO"]),
         ),
-        "job_id_raw": AssetIn(
-            AssetKey([*ASSET_HEADER_JOB_PROCESSOR_DEADLINE["key_prefix"], "job_id_raw"]),
-        ),
+        # "job_id_raw": AssetIn(
+        #     AssetKey([*ASSET_HEADER_JOB_PROCESSOR_DEADLINE["key_prefix"], "job_id_raw"]),
+        # ),
     }
 )
 def png_to_mov(
@@ -479,7 +483,7 @@ def png_to_mov(
         render_version_directory: pathlib.Path,
         version: str,
         CONFIG_OIIO: ConfigOIIO,
-        job_id_raw: str,
+        # job_id_raw: str,
 ) -> Generator[Output[pathlib.Path] | AssetMaterialization | Any, Any, None]:
     # https://stackoverflow.com/questions/24961127/how-to-create-a-video-from-images-with-ffmpeg
     # https://www.ffmpeg.media/articles/image-sequences-timelapse-photos-to-video
@@ -617,5 +621,167 @@ def png_to_mov(
                 f"```yaml\n{yaml.safe_dump(logs)}\n```"
             ),
             # "ffmpeg_out": MetadataValue.path(ffmpeg_out),
+        }
+    )
+
+
+@multi_asset(
+    outs={
+        "job_info_model": AssetOut(
+            **ASSET_HEADER_OIIO_PROCESSOR,
+            dagster_type=models_submission.JobInfo,
+            description="",
+        ),
+    },
+    ins={
+        "batch_name": AssetIn(
+            AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "batch_name"])
+        ),
+        "job_title_str": AssetIn(
+            AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "job_title_str"])
+        ),
+        "render_output_directory": AssetIn(
+            AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "render_output_directory"])
+        ),
+        "frames": AssetIn(
+            AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "frames"])
+        ),
+        "render_output_filename": AssetIn(
+            AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "render_output_filename"])
+        ),
+        "job_model": AssetIn(
+            AssetKey([*ASSET_HEADER_JOB_PROCESSOR_READER["key_prefix"], "read_job_yaml"])
+        ),
+        "job_id_raw": AssetIn(
+            AssetKey([*ASSET_HEADER_JOB_PROCESSOR_DEADLINE["key_prefix"], "job_id_raw"]),
+        ),
+    }
+)
+def job_info(
+        context: AssetExecutionContext,
+        batch_name: str,
+        job_title_str: str,
+        render_output_directory: pathlib.Path,
+        frames: str,
+        render_output_filename: Dict,
+        job_model: JobBase,
+        job_id_raw: str,
+) -> Generator[Output[pathlib.Path] | AssetMaterialization | Any, Any, None]:
+
+    # https://docs.thinkboxsoftware.com/products/deadline/10.2/1_User%20Manual/manual/manual-submission.html#job-info-file-options
+    # render_output_directory.mkdir(parents=True, exist_ok=True)
+    path = render_output_directory / "jobinfo_info.txt"
+
+    context.log.debug(f"{path = }")
+
+    job_info_dict = {
+        "Plugin": models_submission.DeadlinePlugins.CommandLine.value,
+        "Frames": frames,
+        "Name": job_title_str,
+        "Comment": job_model.comment,
+        # "Department"
+        "BatchName": batch_name,
+        "UserName": job_model.deadline_config.user,
+        "MachineName": job_model.deadline_config.host,
+        # "Pool"
+        # "SecondaryPool"
+        # "Group"
+        "Priority": job_model.job_priority,
+        "ChunkSize": job_model.chunk_size,
+        # "ConcurrentTasks"
+        # "LimitConcurrentTasksToNumberOfCpus"
+        # "OnJobComplete"
+        # "SynchronizeAllAuxiliaryFiles"
+        "ForceReloadPlugin": True,
+        # "Sequential"
+        # "SuppressEvents"
+        # "Protected"
+        "InitialStatus": job_model.deadline_initial_status,
+        "JobDependencies": [job_id_raw],
+        # "StartupDirectory"
+        "OutputDirectory0": render_output_directory.as_posix(),
+        "OutputFilename0": render_output_filename["padding_deadline"],
+    }
+
+    job_info = models_submission.JobInfo(
+        **job_info_dict,
+    )
+
+    context.log.debug(f"{job_info = }")
+
+    output_name = "job_info_model"
+
+    yield Output(
+        output_name=output_name,
+        value=job_info,
+    )
+
+    yield AssetMaterialization(
+        asset_key=context.asset_key_for_output(output_name),
+        metadata={
+            "job_info_model_yaml": MetadataValue.md(
+                f"```yaml\n{yaml.safe_dump(json.loads(job_info.model_dump_json(indent=2, fallback=str)))}\n```"
+            ),
+        }
+    )
+
+
+@multi_asset(
+    outs={
+        "plugin_info_model": AssetOut(
+            **ASSET_HEADER_OIIO_PROCESSOR,
+            dagster_type=models_submission.CommandLinePluginInfo,
+            description="",
+        ),
+    },
+    ins={
+        "render_output_directory": AssetIn(
+            AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "render_output_directory"])
+        ),
+        "render_arguments": AssetIn(
+            AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "render_arguments"])
+        ),
+        "job_model": AssetIn(
+            AssetKey([*ASSET_HEADER_JOB_PROCESSOR_READER["key_prefix"], "read_job_yaml"])
+        ),
+    }
+)
+def plugin_info(
+        context: AssetExecutionContext,
+        render_output_directory: pathlib.Path,
+        render_arguments: str,
+        job_model: JobBase,
+) -> Generator[Output[pathlib.Path] | AssetMaterialization | Any, Any, None]:
+
+    # https://docs.thinkboxsoftware.com/products/deadline/10.2/1_User%20Manual/manual/manual-submission.html#plug-in-info-file
+    # render_output_directory.mkdir(parents=True, exist_ok=True)
+    path = pathlib.Path(f"{render_output_directory}/plugin_info.txt")
+
+    context.log.debug(f"{path = }")
+
+    plugin_info_dict = {
+        "Executable": job_model.plugin_model.executable.as_posix(),
+        "Arguments": f"{render_arguments}",
+    }
+
+    plugin_info = models_submission.CommandLinePluginInfo(
+        **plugin_info_dict,
+    )
+
+    context.log.debug(f"{plugin_info = }")
+
+    output_name = "plugin_info_model"
+
+    yield Output(
+        output_name=output_name,
+        value=plugin_info,
+    )
+
+    yield AssetMaterialization(
+        asset_key=context.asset_key_for_output(output_name),
+        metadata={
+            "plugin_info_model_yaml": MetadataValue.md(
+                f"```yaml\n{yaml.safe_dump(json.loads(plugin_info.model_dump_json(indent=2, fallback=str)))}\n```"
+            ),
         }
     )
