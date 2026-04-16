@@ -151,9 +151,9 @@ def image_sequence_raw(
             description="Todo",
         ),
     },
-    deps=[
-        AssetKey([*ASSET_HEADER_JOB_SUBMITTER_DEADLINE["key_prefix"], "submit_job"]),  # Does not yet return anything (just returns MaterializeResult)
-    ],
+    # deps=[
+    #     AssetKey([*ASSET_HEADER_JOB_SUBMITTER_DEADLINE["key_prefix"], "submit_job"]),  # Does not yet return anything (just returns MaterializeResult)
+    # ],
     ins={
         "get_kitsu_task_dict": AssetIn(
             AssetKey([*ASSET_HEADER_JOB_PROCESSOR_PREPROCESSOR_KITSU["key_prefix"], "get_kitsu_task_dict"]),
