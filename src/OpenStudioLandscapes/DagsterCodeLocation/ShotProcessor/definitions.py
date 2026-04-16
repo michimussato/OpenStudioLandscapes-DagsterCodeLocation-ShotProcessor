@@ -175,6 +175,25 @@ plugin_info_model = AssetSpec(
 )
 external_assets.append(plugin_info_model)
 
+# [ ] image_sequence
+# [ ] raw_to_oiio
+# [ ] submit_request_png_to_mov
+# [ ] payload_png_to_mov
+# [x] png_to_mov
+job_id_raw = AssetSpec(
+    key=AssetKey(
+        [
+            *ASSET_HEADER_JOB_PROCESSOR_DEADLINE["key_prefix"],
+            "job_id_raw"
+        ],
+    ),
+    group_name=ASSET_HEADER_JOB_PROCESSOR_DEADLINE["group_name"],
+    description="Entry point for "
+                "`OpenStudioLandscapes.DagsterCodeLocation.JobProcessor.dagster_job_processor.assets.read_yaml.plugin_info_file` "
+                "`job_id_raw` AssetOut.",
+)
+external_assets.append(job_id_raw)
+
 
 defs = Definitions(
     assets=[
