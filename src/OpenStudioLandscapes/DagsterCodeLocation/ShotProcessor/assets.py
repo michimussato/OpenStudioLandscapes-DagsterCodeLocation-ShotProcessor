@@ -701,14 +701,20 @@ def png_to_mov(
         # "frames": AssetIn(
         #     AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "frames"])
         # ),
-        "render_output_filename": AssetIn(
-            AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "render_output_filename"])
-        ),
+        # "render_output_filename": AssetIn(
+        #     AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "render_output_filename"])
+        # ),
         "job_model": AssetIn(
             AssetKey([*ASSET_HEADER_JOB_PROCESSOR_READER["key_prefix"], "read_job_yaml"])
         ),
         "job_id_raw": AssetIn(
             AssetKey([*ASSET_HEADER_JOB_PROCESSOR_DEADLINE["key_prefix"], "job_id_raw"]),
+        ),
+        "OutputDirectory_png_to_mov": AssetIn(
+            AssetKey([*ASSET_HEADER_OIIO_PROCESSOR["key_prefix"], "OutputDirectory_png_to_mov"]),
+        ),
+        "OutputFilename_png_to_mov": AssetIn(
+            AssetKey([*ASSET_HEADER_OIIO_PROCESSOR["key_prefix"], "OutputFilename_png_to_mov"]),
         ),
     }
 )
@@ -718,7 +724,7 @@ def job_info(
         job_title_str: str,
         render_output_directory: pathlib.Path,
         # frames: str,
-        render_output_filename: Dict,
+        # render_output_filename: Dict,
         job_model: JobBase,
         job_id_raw: str,
         OutputDirectory_png_to_mov: pathlib.Path,
