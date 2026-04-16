@@ -10,6 +10,7 @@ from dagster import (
 from OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor import assets  # noqa: TID252
 from OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.assets import (
     # ASSET_HEADER_JOB_SUBMITTER_DEADLINE,
+    ASSET_HEADER_JOB_PROCESSOR_READER,
     ASSET_HEADER_JOB_PROCESSOR,
     ASSET_HEADER_JOB_PROCESSOR_PREPROCESSOR_KITSU,
 )
@@ -120,6 +121,22 @@ get_kitsu_task_dict = AssetSpec(
                 "`OpenStudioLandscapes.DagsterCodeLocation.JobProcessor.dagster_job_processor.assets.read_yaml.get_kitsu_task_dict`.",
 )
 external_assets.append(get_kitsu_task_dict)
+
+# [ ] image_sequence
+# [ ] raw_to_oiio
+# [x] submit_request_png_to_mov
+read_job_yaml = AssetSpec(
+    key=AssetKey(
+        [
+            *ASSET_HEADER_JOB_PROCESSOR_READER["key_prefix"],
+            "read_job_yaml"
+        ],
+    ),
+    group_name=ASSET_HEADER_JOB_PROCESSOR_READER["group_name"],
+    description="Entry point for "
+                "`OpenStudioLandscapes.DagsterCodeLocation.JobProcessor.dagster_job_processor.assets.read_yaml.read_job_yaml`.",
+)
+external_assets.append(read_job_yaml)
 
 
 defs = Definitions(
