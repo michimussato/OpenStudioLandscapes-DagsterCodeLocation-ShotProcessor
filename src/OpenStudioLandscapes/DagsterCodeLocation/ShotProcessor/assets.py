@@ -469,6 +469,9 @@ def submit_request_png_to_mov(
             description="Todo",
         ),
     },
+    deps=[
+        AssetKey([*ASSET_HEADER_OIIO_PROCESSOR["key_prefix"], "raw_to_oiio"]),
+    ],
     ins={
         # "raw_to_oiio": AssetIn(
         #     AssetKey([*ASSET_HEADER_OIIO_PROCESSOR["key_prefix"], "raw_to_oiio"]),
@@ -566,6 +569,8 @@ def png_to_mov(
         "-pix_fmt", "yuv420p",
         f"{ffmpeg_out.as_posix()}",
     ]
+
+    # /data/share/AWSPortalRoot1/out/Test Production/Shot/SH030/Rendering/093/oiio/oiio_proxy_png/
 
     # cmds.append(cmd)
     #
