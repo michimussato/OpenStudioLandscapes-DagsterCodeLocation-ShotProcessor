@@ -841,6 +841,8 @@ def plugin_info(
         # "Arguments": f"-c <QUOTE>{shlex.join(cmd_png_to_mov)}<QUOTE>",
     }
 
+    context.log.debug(f"{plugin_info_dict = }")
+
     plugin_info = models_submission.CommandLinePluginInfo(
         **plugin_info_dict,
     )
