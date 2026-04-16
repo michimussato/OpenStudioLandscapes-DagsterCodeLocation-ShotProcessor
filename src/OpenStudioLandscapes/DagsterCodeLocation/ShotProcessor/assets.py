@@ -457,6 +457,14 @@ def submit_request_png_to_mov(
             **ASSET_HEADER_OIIO_PROCESSOR,
             description="Todo",
         ),
+        "OutputDirectory_png_to_mov": AssetOut(
+            **ASSET_HEADER_OIIO_PROCESSOR,
+            description="Todo",
+        ),
+        "OutputFilename_png_to_mov": AssetOut(
+            **ASSET_HEADER_OIIO_PROCESSOR,
+            description="Todo",
+        ),
     },
     ins={
         # "raw_to_oiio": AssetIn(
@@ -623,8 +631,48 @@ def png_to_mov(
             #     f"```yaml\n{yaml.safe_dump(logs)}\n```"
             # ),
             "cmd_": MetadataValue.path(shlex.join(cmd)),
+        }
+    )
+
+    ##############################
+    # OutputDirectory_png_to_mov #
+    ##############################
+
+    output_name = "OutputDirectory_png_to_mov"
+
+    yield Output(
+        output_name=output_name,
+        value=output_dir,
+    )
+
+    yield AssetMaterialization(
+        asset_key=context.asset_key_for_output(output_name),
+        metadata={
+            "__".join(
+                context.asset_key_for_output(output_name).path
+            ): MetadataValue.path(output_dir),
             "input_dir": MetadataValue.path(input_dir),
-            "output_dir": MetadataValue.path(output_dir),
+        }
+    )
+
+    ##############################
+    # OutputFilename_png_to_mov #
+    ##############################
+
+    output_name = "OutputFilename_png_to_mov"
+
+    yield Output(
+        output_name=output_name,
+        value=ffmpeg_out.name,
+    )
+
+    yield AssetMaterialization(
+        asset_key=context.asset_key_for_output(output_name),
+        metadata={
+            "__".join(
+                context.asset_key_for_output(output_name).path
+            ): MetadataValue.path(ffmpeg_out.name),
+            "ffmpeg_out": MetadataValue.path(ffmpeg_out),
         }
     )
 
@@ -680,8 +728,9 @@ def job_info(
 
     job_info_dict = {
         "Plugin": models_submission.DeadlinePlugins.CommandLine.value,
-        "Frames": frames,
-        "Name": job_title_str,
+        # png_to_mov is a single task
+        "Frames": 1,
+        "Name": f"{job_title_str} - PNG to MOV",
         "Comment": job_model.comment,
         # "Department"
         "BatchName": batch_name,
@@ -691,7 +740,7 @@ def job_info(
         # "SecondaryPool"
         # "Group"
         "Priority": job_model.job_priority,
-        "ChunkSize": job_model.chunk_size,
+        "ChunkSize": 1,
         # "ConcurrentTasks"
         # "LimitConcurrentTasksToNumberOfCpus"
         # "OnJobComplete"
@@ -747,8 +796,11 @@ def job_info(
         "render_arguments": AssetIn(
             AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "render_arguments"])
         ),
-        "job_model": AssetIn(
-            AssetKey([*ASSET_HEADER_JOB_PROCESSOR_READER["key_prefix"], "read_job_yaml"])
+        # "job_model": AssetIn(
+        #     AssetKey([*ASSET_HEADER_JOB_PROCESSOR_READER["key_prefix"], "read_job_yaml"])
+        # ),
+        "cmd_png_to_mov": AssetIn(
+            AssetKey([*ASSET_HEADER_OIIO_PROCESSOR["key_prefix"], "cmd_png_to_mov"])
         ),
     }
 )
@@ -756,7 +808,8 @@ def plugin_info(
         context: AssetExecutionContext,
         render_output_directory: pathlib.Path,
         render_arguments: str,
-        job_model: JobBase,
+        # job_model: JobBase,
+        cmd_png_to_mov: List,
 ) -> Generator[Output[pathlib.Path] | AssetMaterialization | Any, Any, None]:
 
     # https://docs.thinkboxsoftware.com/products/deadline/10.2/1_User%20Manual/manual/manual-submission.html#plug-in-info-file
@@ -766,8 +819,8 @@ def plugin_info(
     context.log.debug(f"{path = }")
 
     plugin_info_dict = {
-        "Executable": job_model.plugin_model.executable.as_posix(),
-        "Arguments": f"{render_arguments}",
+        "Executable": cmd_png_to_mov[0],
+        "Arguments": f"{shlex.join(cmd_png_to_mov[1:])}",
     }
 
     plugin_info = models_submission.CommandLinePluginInfo(
