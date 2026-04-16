@@ -1,8 +1,8 @@
 import json
 import os
 import pathlib
+import requests
 import re
-import tempfile
 from typing import Generator, Any, Dict, List, Union
 
 import yaml
@@ -22,9 +22,15 @@ from dagster import (
 from OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.config.models import ConfigOIIO
 
 from OpenStudioLandscapes.DagsterCodeLocation.JobProcessor.dagster_job_processor.config.models import DefaultConstants
-from OpenStudioLandscapes.DagsterCodeLocation.JobProcessor.dagster_job_processor.assets.read_yaml import ASSET_HEADER_JOB_PROCESSOR, ASSET_HEADER_JOB_PROCESSOR_PREPROCESSOR_KITSU
-# from OpenStudioLandscapes.DagsterCodeLocation.JobProcessor.dagster_job_processor.assets.submit_jobs import ASSET_HEADER_JOB_SUBMITTER_DEADLINE
+from OpenStudioLandscapes.DagsterCodeLocation.JobProcessor.dagster_job_processor.assets.read_yaml import (
+    ASSET_HEADER_JOB_PROCESSOR,
+    ASSET_HEADER_JOB_PROCESSOR_PREPROCESSOR_KITSU,
+    ASSET_HEADER_JOB_PROCESSOR_DEADLINE,
+    ASSET_HEADER_JOB_PROCESSOR_READER,
+)
 
+from OpenStudioLandscapes.DagsterCodeLocation.JobProcessor.deadline_templates.jobs.job_base import JobBase
+from OpenStudioLandscapes.DagsterCodeLocation.JobProcessor.deadline_templates.jobs import models_submission
 
 from OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.api import process_image, create_buf_from_raw
 from OpenStudioLandscapes.DagsterCodeLocation.StreamingProcess import submit_cmds
@@ -255,6 +261,190 @@ def raw_to_oiio(
     )
 
 
+@asset(
+    **ASSET_HEADER_OIIO_PROCESSOR,
+    ins={
+        "CONFIG": AssetIn(
+            AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "CONFIG"]),
+        ),
+        "job_info_model": AssetIn(
+            AssetKey([*ASSET_HEADER_OIIO_PROCESSOR["key_prefix"], "job_info_model"]),
+        ),
+        "plugin_info_model": AssetIn(
+            AssetKey([*ASSET_HEADER_OIIO_PROCESSOR["key_prefix"], "plugin_info_model"]),
+        ),
+    },
+)
+def payload_png_to_mov(
+        context: AssetExecutionContext,
+        CONFIG: DefaultConstants,
+        job_info_model: models_submission.JobInfo,
+        plugin_info_model: models_submission.CommandLinePluginInfo,
+) -> Generator[Output[Dict] | AssetMaterialization | Any, Any, None]:
+
+    """
+    Before:
+    cat "/data/share/AWSPortalRoot1/out/Test Production/Shot/SH030/Rendering/037/4_1197-1254_4/combined_dict.json"
+
+    After
+    cat "/data/share/AWSPortalRoot1/out/Test Production/Shot/SH030/Rendering/045/4_0997-1104_4/combined_dict.json"
+    """
+
+    headers = {
+        "Content-Type": "application/json",
+        "Accept-Charset": "UTF-8",
+    }
+
+    context.log.debug(f"{headers = }")
+
+    # https://docs.thinkboxsoftware.com/products/deadline/10.2/1_User%20Manual/manual/rest-jobs.html#submit-job
+    payload_raw = {
+        "JobInfo": json.loads(job_info_model.model_dump_json(indent=2, fallback=str)),
+        "PluginInfo": json.loads(plugin_info_model.model_dump_json(indent=2, fallback=str)),
+        "IdOnly": False,
+        "AuxFiles": [],
+    }
+
+    context.log.debug(f"{payload_raw = }")
+
+    yield Output(payload_raw)
+
+    yield AssetMaterialization(
+        asset_key=context.asset_key,
+        metadata={
+            "__".join(context.asset_key.path): MetadataValue.md(
+                f"```json\n{json.dumps(payload_raw, default=str, sort_keys=True, indent=CONFIG.JSON_INDENT)}\n```"
+            ),
+        }
+    )
+
+
+@multi_asset(
+    outs={
+        "job_png_to_mov": AssetOut(
+            **ASSET_HEADER_OIIO_PROCESSOR,
+            dagster_type=Dict,
+            description="",
+        ),
+        "job_id_png_to_mov": AssetOut(
+            **ASSET_HEADER_OIIO_PROCESSOR,
+            dagster_type=str,
+            description="",
+        ),
+    },
+    ins={
+        "CONFIG": AssetIn(
+            AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "CONFIG"]),
+        ),
+        "payload_png_to_mov": AssetIn(
+            AssetKey([*ASSET_HEADER_OIIO_PROCESSOR["key_prefix"], "payload_png_to_mov"]),
+        ),
+        "job_model": AssetIn(
+            AssetKey([*ASSET_HEADER_JOB_PROCESSOR_READER["key_prefix"], "read_job_yaml"])
+        ),
+    },
+)
+def submit_request_png_to_mov(
+        context: AssetExecutionContext,
+        CONFIG: DefaultConstants,
+        payload_png_to_mov: Dict,
+        job_model: JobBase,
+) -> Generator[Output[requests.Response] | AssetMaterialization | Any, Any, None]:
+
+    """
+    Before:
+    cat "/data/share/AWSPortalRoot1/out/Test Production/Shot/SH030/Rendering/037/4_1197-1254_4/combined_dict.json"
+
+    After
+    cat "/data/share/AWSPortalRoot1/out/Test Production/Shot/SH030/Rendering/045/4_0997-1104_4/combined_dict.json"
+    """
+
+    headers = {
+        "Content-Type": "application/json",
+        "Accept-Charset": "UTF-8",
+    }
+
+    context.log.debug(f"{headers = }")
+
+    payload = json.dumps(payload_png_to_mov, indent=CONFIG.JSON_INDENT, sort_keys=True, default=str)
+
+    context.log.debug(f"{payload = }")
+
+    context.log.info(f"Sending request to {job_model.deadline_config.rest_api_jobs}...")
+
+    # Requests: data vs. json:
+    # - https://stackoverflow.com/a/26685359/2207196
+    # - https://requests.readthedocs.io/en/latest/user/quickstart/#more-complicated-post-requests
+    #   > If you need that header set and you don’t want to encode the dict yourself, you can
+    #   > also pass it directly using the json parameter (added in version 2.4.2) and it will
+    #   > be encoded automatically
+    # -> using `json=` does not serialize as expected (yet). Hence, `data=` and manual.
+    request = requests.Request(
+        url=job_model.deadline_config.rest_api_jobs,
+        method="POST",
+        headers=headers,
+        # json=payload_raw,
+        data=payload,
+    )
+
+    context.log.debug(f"{request = }")
+
+    prepared_request = request.prepare()
+
+    context.log.debug(f"{prepared_request = }")
+
+    session = requests.Session()
+    response = session.send(prepared_request, verify=False)
+
+    context.log.debug(f"{response = }")
+    context.log.debug(f"{response.raw = }")
+    context.log.debug(f"{response.status_code = }")
+    # context.log.debug(f"{response.content = }")
+    context.log.debug(f"{response.text = }")
+
+    output_name = "job_png_to_mov"
+
+    yield Output(
+        output_name=output_name,
+        value=response.json(),
+    )
+
+    yield AssetMaterialization(
+        asset_key=context.asset_key_for_output(output_name),
+        metadata={
+            "__".join(context.asset_key_for_output(output_name).path): MetadataValue.json(payload),
+            "headers": MetadataValue.md(
+                f"```json\n{json.dumps(headers, default=str, sort_keys=True, indent=CONFIG.JSON_INDENT)}\n```"
+            ),
+            "payload": MetadataValue.md(
+                f"```json\n{payload}\n```"
+            ),
+            "request": MetadataValue.md(
+                f"```json\n{json.dumps(request.__dict__, indent=CONFIG.JSON_INDENT, default=str, sort_keys=True)}\n```"
+            ),
+            "response": MetadataValue.md(
+                f"```json\n{json.dumps(response.json(), default=str, sort_keys=True, indent=CONFIG.JSON_INDENT)}\n```"
+            ),
+        }
+    )
+
+    output_name = "job_id_png_to_mov"
+
+    _id = response.json().get("_id", None)
+
+    yield Output(
+        output_name=output_name,
+        value=_id,
+    )
+
+    yield AssetMaterialization(
+        asset_key=context.asset_key_for_output(output_name),
+        metadata={
+            "__".join(context.asset_key_for_output(output_name).path): MetadataValue.path(_id),
+        }
+    )
+
+
 @multi_asset(
     outs={
         "png_to_mov": AssetOut(
@@ -262,13 +452,10 @@ def raw_to_oiio(
             description="Todo",
         ),
     },
-    # deps=[
-    #     AssetKey([*ASSET_HEADER_JOB_SUBMITTER_DEADLINE["key_prefix"], "submit_job"]),  # Does not yet return anything (just returns MaterializeResult)
-    # ],
     ins={
-        "raw_to_oiio": AssetIn(
-            AssetKey([*ASSET_HEADER_OIIO_PROCESSOR["key_prefix"], "raw_to_oiio"]),
-        ),
+        # "raw_to_oiio": AssetIn(
+        #     AssetKey([*ASSET_HEADER_OIIO_PROCESSOR["key_prefix"], "raw_to_oiio"]),
+        # ),
         "version": AssetIn(
             AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "version"]),
         ),
@@ -281,14 +468,18 @@ def raw_to_oiio(
         "CONFIG_OIIO": AssetIn(
             AssetKey([*ASSET_HEADER_OIIO_PROCESSOR["key_prefix"], "CONFIG_OIIO"]),
         ),
+        "job_id_raw": AssetIn(
+            AssetKey([*ASSET_HEADER_JOB_PROCESSOR_DEADLINE["key_prefix"], "job_id_raw"]),
+        ),
     }
 )
 def png_to_mov(
         context: AssetExecutionContext,
-        raw_to_oiio: List[Dict],
+        # raw_to_oiio: List[Dict],
         render_version_directory: pathlib.Path,
         version: str,
         CONFIG_OIIO: ConfigOIIO,
+        job_id_raw: str,
 ) -> Generator[Output[pathlib.Path] | AssetMaterialization | Any, Any, None]:
     # https://stackoverflow.com/questions/24961127/how-to-create-a-video-from-images-with-ffmpeg
     # https://www.ffmpeg.media/articles/image-sequences-timelapse-photos-to-video
