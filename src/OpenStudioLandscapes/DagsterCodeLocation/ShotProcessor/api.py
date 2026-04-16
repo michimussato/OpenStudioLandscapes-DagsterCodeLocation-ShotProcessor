@@ -375,6 +375,236 @@ def exr_from_raw_with_custom_metadata(
     return None
 
 
+# def cli(
+#         image_filepath: pathlib.Path,
+# ):
+#
+#     output_dir: pathlib.Path = render_version_directory.joinpath(
+#         version,
+#         "oiio",
+#     )
+#     output_dir.mkdir(parents=True, exist_ok=True)
+#
+#     for image_ in image_sequence_raw:
+#         context.log.debug("Processing image %s", image_)
+#
+#         # Frame number based on image name (image.0123.png)
+#         f_no_ = re.findall(
+#             r"\.[0-9]+\.",
+#             image_.name
+#         )
+
+
+def create_text_overlay(
+    exr_src: pathlib.Path,
+    CONFIG_OIIO: ConfigOIIO,
+    kitsu_task_dict: Dict,
+    version: str,
+    frame_number: int,
+    output_dir: pathlib.Path,
+) -> pathlib.Path:
+    """
+    Create a text overlay.
+
+    Example:
+        shot-processor --verbose --exr-image "/data/share/AWSPortalRoot1/out/Test Production/Shot/SH030/Rendering/094/raw/sh030_001.1197.exr" --version "094" --output-dir "/data/share/AWSPortalRoot1/out/Test Production/Shot/SH030/Rendering/094/oiio/test_oiio_overlay_text" --kitsu-task-json "/data/share/AWSPortalRoot1/out/Test Production/Shot/SH030/Rendering/094/kitsu_task.json" --frame-number 1197 --oiio-config-yaml "/asdf" create-text-overlay
+    """
+
+    raw_buf, raw_spec = create_buf_from_raw(
+        raw=exr_src
+    )
+
+    LOGGER.debug(f"{kitsu_task_dict = }")
+
+    # Get Some Metadata
+    # frame = raw_spec.getattribute("Frame")
+    camera = raw_spec.getattribute("Camera")
+    # resolution = f"{raw_spec.width}x{raw_spec.height}"
+    # render_time = raw_spec.getattribute("RenderTime")
+    # scene_file = raw_spec.getattribute("File")
+
+    raw_spec_updated: OIIO.ImageSpec = _update_raw_spec(
+        CONFIG_OIIO=CONFIG_OIIO,
+        raw_spec=raw_spec,
+        kitsu_task_dict=kitsu_task_dict,
+        version=version,
+        frame_number=frame_number,
+    )
+
+    spec_buf_overlay = raw_spec_updated.copy()
+    spec_buf_overlay.nchannels = 4
+    spec_buf_overlay.channelnames = ("R", "G", "B", "A")
+    spec_buf_overlay.alpha_channel = 3
+
+    overlay_text_buf = get_overlay_text_buf(
+        CONFIG_OIIO=CONFIG_OIIO,
+        spec_buf_overlay=spec_buf_overlay,
+        frame_number=frame_number,
+        camera=camera,
+    )
+    overlay_text_buf_out: pathlib.Path = output_dir / exr_src.name
+    overlay_text_buf_out.parent.mkdir(parents=True, exist_ok=True)
+    overlay_text_buf.write(overlay_text_buf_out.as_posix())
+    LOGGER.info(f"Overlay text image saved: {overlay_text_buf_out.as_posix()}")
+
+    # ret.update(
+    #     {
+    #         "overlay_text_buf_out": overlay_text_buf_out,
+    #     }
+    # )
+
+    return overlay_text_buf_out
+
+
+def create_handle_overlay(
+    exr_src: pathlib.Path,
+    CONFIG_OIIO: ConfigOIIO,
+    kitsu_task_dict: Dict,
+    version: str,
+    frame_number: int,
+    output_dir: pathlib.Path,
+) -> pathlib.Path:
+    """
+    Create a handle overlay.
+
+    Example:
+        shot-processor --verbose --exr-image "/data/share/AWSPortalRoot1/out/Test Production/Shot/SH030/Rendering/094/raw/sh030_001.1197.exr" --version "094" --output-dir "/data/share/AWSPortalRoot1/out/Test Production/Shot/SH030/Rendering/094/oiio/test_oiio_overlay_handle" --kitsu-task-json "/data/share/AWSPortalRoot1/out/Test Production/Shot/SH030/Rendering/094/kitsu_task.json" --frame-number 1197 --oiio-config-yaml "/asdf" create-handle-overlay
+    """
+
+    raw_buf, raw_spec = create_buf_from_raw(
+        raw=exr_src
+    )
+
+    LOGGER.debug(f"{kitsu_task_dict = }")
+
+    raw_spec_updated: OIIO.ImageSpec = _update_raw_spec(
+        CONFIG_OIIO=CONFIG_OIIO,
+        raw_spec=raw_spec,
+        kitsu_task_dict=kitsu_task_dict,
+        version=version,
+        frame_number=frame_number,
+    )
+
+    spec_buf_overlay = raw_spec_updated.copy()
+    spec_buf_overlay.nchannels = 4
+    spec_buf_overlay.channelnames = ("R", "G", "B", "A")
+    spec_buf_overlay.alpha_channel = 3
+
+    overlay_handle_buf = get_overlay_handle_buf(
+        CONFIG_OIIO=CONFIG_OIIO,
+        spec_buf_overlay=spec_buf_overlay,
+        frame_is_handle=bool(spec_buf_overlay["openstudiolandscapes.is_handle"]),
+    )
+    png_buf_out: pathlib.Path = output_dir / exr_src.name
+    png_buf_out.parent.mkdir(parents=True, exist_ok=True)
+    overlay_handle_buf.write(png_buf_out.as_posix())
+    LOGGER.info(f"Overlay handle image saved: {png_buf_out.as_posix()}")
+
+    return png_buf_out
+
+
+def exr_with_custom_metadata(
+    exr_src: pathlib.Path,
+    CONFIG_OIIO: ConfigOIIO,
+    kitsu_task_dict: Dict,
+    version: str,
+    frame_number: int,
+    output_dir: pathlib.Path,
+) -> pathlib.Path:
+    """
+    Create a handle overlay.
+
+    Example:
+        shot-processor --exr-image "/data/share/AWSPortalRoot1/out/Test Production/Shot/SH030/Rendering/094/raw/sh030_001.1197.exr" --version "094" --output-dir "/data/share/AWSPortalRoot1/out/Test Production/Shot/SH030/Rendering/094/oiio/test_oiio_exr" --kitsu-task-json "/data/share/AWSPortalRoot1/out/Test Production/Shot/SH030/Rendering/094/kitsu_task.json" --frame-number 1197 --oiio-config-yaml "/asdf" exr-with-custom-metadata
+        oiiotool --info -v  "/data/share/AWSPortalRoot1/out/Test Production/Shot/SH030/Rendering/094/oiio/test_oiio_exr/sh030_001.1197.exr"
+    """
+
+    raw_buf, raw_spec = create_buf_from_raw(
+        raw=exr_src
+    )
+
+    raw_spec_updated: OIIO.ImageSpec = _update_raw_spec(
+        CONFIG_OIIO=CONFIG_OIIO,
+        raw_spec=raw_spec,
+        kitsu_task_dict=kitsu_task_dict,
+        version=version,
+        frame_number=frame_number,
+    )
+
+    LOGGER.debug(f"{kitsu_task_dict = }")
+
+    exr_touched_out = output_dir / exr_src.name
+    exr_touched_out.parent.mkdir(parents=True, exist_ok=True)
+    exr_from_raw_with_custom_metadata(
+        raw=exr_src,
+        exr_out=exr_touched_out,
+        spec=raw_spec_updated,
+    )
+    LOGGER.info(f"EXR with extra metadata saved: {exr_touched_out.as_posix()}")
+
+    return exr_touched_out
+
+
+def create_png(
+    exr_src: pathlib.Path,
+    CONFIG_OIIO: ConfigOIIO,
+    kitsu_task_dict: Dict,
+    version: str,
+    frame_number: int,
+    output_dir: pathlib.Path,
+) -> pathlib.Path:
+    """
+    Create a png.
+
+    Example:
+        shot-processor -vv --exr-image "/data/share/AWSPortalRoot1/out/Test Production/Shot/SH030/Rendering/094/raw/sh030_001.1197.exr" --version "094" --output-dir "/data/share/AWSPortalRoot1/out/Test Production/Shot/SH030/Rendering/094/oiio/test_oiio_proxy_png" --kitsu-task-json "/data/share/AWSPortalRoot1/out/Test Production/Shot/SH030/Rendering/094/kitsu_task.json" --frame-number 1197 --oiio-config-yaml "/asdf" create-png
+    """
+
+    raw_buf, raw_spec = create_buf_from_raw(
+        raw=exr_src
+    )
+
+    raw_spec_updated: OIIO.ImageSpec = _update_raw_spec(
+        CONFIG_OIIO=CONFIG_OIIO,
+        raw_spec=raw_spec,
+        kitsu_task_dict=kitsu_task_dict,
+        version=version,
+        frame_number=frame_number,
+    )
+
+    LOGGER.debug(f"{kitsu_task_dict = }")
+
+    # https://dev.to/plinecom/convert-openexr-to-jpeg-using-openimageiooiio-in-python-52f8
+    extension = ".png"
+    spec_buf_png = raw_spec_updated.copy()
+    channels = ("R", "G", "B")
+    spec_buf_png.nchannels = len(channels)
+    spec_buf_png.channelnames = channels
+    try:
+        spec_buf_png.alpha_channel = channels.index("A")
+    except ValueError:
+        # no alpha channel
+        spec_buf_png.alpha_channel = -1
+    # file_name = image_filepath.name
+    png_out: pathlib.Path = output_dir / f"{exr_src.stem}{extension}"
+    png_out.parent.mkdir(parents=True, exist_ok=True)
+    # png_buf.write(png_buf_out.as_posix())
+    # LOGGER.info(f"PNG image saved: {png_buf_out.as_posix()}")
+
+    png_out_ = png_from_raw(
+        raw=exr_src,
+        png_out=png_out,
+        # CONFIG_OIIO=CONFIG_OIIO,
+        spec=spec_buf_png,
+        # raw_buf=raw_buf,
+        # spec_buf_overlay=spec_buf_overlay,
+        # frame_is_handle=bool(spec_buf_overlay["openstudiolandscapes.is_handle"]),
+    )
+    LOGGER.info(f"PNG saved: {png_out_.as_posix()}")
+
+    return png_out_
+
+
 def process_image(
     *,
     context: Union[AssetExecutionContext, OpExecutionContext] = None,
@@ -434,7 +664,7 @@ def process_image(
                 frame_number=frame_number,
                 camera=camera,
             )
-            overlay_text_buf_out: pathlib.Path = output_dir / "oiio_overlay_text" / image_filepath.name
+            overlay_text_buf_out: pathlib.Path = output_dir / image_filepath.name
             overlay_text_buf_out.parent.mkdir(parents=True, exist_ok=True)
             overlay_text_buf.write(overlay_text_buf_out.as_posix())
             LOGGER.info(f"Overlay text image saved: {overlay_text_buf_out.as_posix()}")
