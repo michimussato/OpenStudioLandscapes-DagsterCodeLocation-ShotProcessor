@@ -503,12 +503,16 @@ def png_to_mov(
 
     # input_format_ = ".png"
     output_format_ = "mp4"
+    # Todo
+    #  - [ ] Remove hard code
     input_dir: pathlib.Path = render_version_directory.joinpath(
         version,
         "oiio",
-        f"oiio_png",
+        f"oiio_proxy_png",
     )
 
+    # Todo
+    #  - [ ] Remove hard code
     output_dir: pathlib.Path = render_version_directory.joinpath(
         version,
         "oiio",
