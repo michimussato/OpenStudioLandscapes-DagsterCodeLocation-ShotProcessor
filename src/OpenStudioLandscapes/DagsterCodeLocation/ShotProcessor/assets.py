@@ -1,6 +1,8 @@
 import json
 import os
 import pathlib
+import shlex
+
 import requests
 import re
 from typing import Generator, Any, Dict, List, Union
@@ -451,7 +453,7 @@ def submit_request_png_to_mov(
 
 @multi_asset(
     outs={
-        "png_to_mov": AssetOut(
+        "cmd_png_to_mov": AssetOut(
             **ASSET_HEADER_OIIO_PROCESSOR,
             description="Todo",
         ),
@@ -484,7 +486,7 @@ def png_to_mov(
         version: str,
         CONFIG_OIIO: ConfigOIIO,
         # job_id_raw: str,
-) -> Generator[Output[pathlib.Path] | AssetMaterialization | Any, Any, None]:
+) -> Generator[Output[List] | AssetMaterialization | Any, Any, None]:
     # https://stackoverflow.com/questions/24961127/how-to-create-a-video-from-images-with-ffmpeg
     # https://www.ffmpeg.media/articles/image-sequences-timelapse-photos-to-video
 
@@ -513,7 +515,7 @@ def png_to_mov(
 
     # context.log.debug(f"{png_seq = }")
 
-    cmds: List[List[str]] = []
+    # cmds: List[List[str]] = []
     ffmpeg_out = pathlib.Path(output_dir).joinpath(
         f"{output_format_}.{output_format_}"
     )
@@ -550,14 +552,14 @@ def png_to_mov(
         ffmpeg_out.as_posix(),
     ]
 
-    cmds.append(cmd)
-
-    context.log.debug(f"{cmds = }")
-
-    logs = submit_cmds(
-        context=context,
-        cmds=cmds,
-    )
+    # cmds.append(cmd)
+    #
+    # context.log.debug(f"{cmds = }")
+    #
+    # logs = submit_cmds(
+    #     context=context,
+    #     cmds=cmds,
+    # )
 
     # for image_ in image_sequence_raw:
     #     context.log.debug("Processing image %s", image_)
@@ -597,15 +599,15 @@ def png_to_mov(
     #     context.log.debug(f"{processed_result = }")
     #     results.append(processed_result)
 
-    ##############
-    # png_to_mov #
-    ##############
+    ##################
+    # cmd_png_to_mov #
+    ##################
 
-    output_name = "png_to_mov"
+    output_name = "cmd_png_to_mov"
 
     yield Output(
         output_name=output_name,
-        value=ffmpeg_out,
+        value=cmd,
     )
 
     yield AssetMaterialization(
@@ -613,14 +615,16 @@ def png_to_mov(
         metadata={
             "__".join(
                 context.asset_key_for_output(output_name).path
-            ): MetadataValue.path(ffmpeg_out),
-            "cmds": MetadataValue.md(
-                f"```yaml\n{yaml.safe_dump(cmds)}\n```"
+            ): MetadataValue.json(cmd),
+            "cmd": MetadataValue.md(
+                f"```yaml\n{yaml.safe_dump(cmd)}\n```"
             ),
-            "logs": MetadataValue.md(
-                f"```yaml\n{yaml.safe_dump(logs)}\n```"
-            ),
-            # "ffmpeg_out": MetadataValue.path(ffmpeg_out),
+            # "logs": MetadataValue.md(
+            #     f"```yaml\n{yaml.safe_dump(logs)}\n```"
+            # ),
+            "cmd_": MetadataValue.path(shlex.join(cmd)),
+            "input_dir": MetadataValue.path(input_dir),
+            "output_dir": MetadataValue.path(output_dir),
         }
     )
 
