@@ -557,10 +557,10 @@ def png_to_mov(
         "-framerate", f"{float(CONFIG_OIIO.fps):.3f}",
         # "-an",
         "-pattern_type", "glob",
-        "-i", f"<QUOTE>{input_dir.as_posix()}/*.png<QUOTE>",
+        "-i", f"{input_dir.as_posix()}/*.png",
         "-c:v", "libx264",
         "-pix_fmt", "yuv420p",
-        f"<QUOTE>{ffmpeg_out.as_posix()}<QUOTE>",
+        f"{ffmpeg_out.as_posix()}",
     ]
 
     # cmds.append(cmd)
@@ -765,6 +765,8 @@ def job_info(
         "InitialStatus": job_model.deadline_initial_status,
         "JobDependencies": [job_id_raw],
         # "StartupDirectory"
+        # Todo:
+        #  - [ ] integrate these into model (not being used so far)
         "OutputDirectory0": OutputDirectory_png_to_mov.as_posix(),
         "OutputFilename0": OutputFilename_png_to_mov,
     }
@@ -829,9 +831,13 @@ def plugin_info(
 
     context.log.debug(f"{path = }")
 
+    SHELL = [
+        "/bin/bash"
+    ]
+
     plugin_info_dict = {
-        "Executable": cmd_png_to_mov[0],
-        "Arguments": f"{shlex.join(cmd_png_to_mov[1:])}",
+        "Executable": SHELL[0],
+        "Arguments": f'-c "{shlex.join(cmd_png_to_mov)}"',
     }
 
     plugin_info = models_submission.CommandLinePluginInfo(
