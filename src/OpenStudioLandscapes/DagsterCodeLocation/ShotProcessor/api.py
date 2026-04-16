@@ -1,8 +1,8 @@
-import json
-import os
+# import json
+# import os
 import pathlib
-import re
-from gettext import npgettext
+# import re
+# from gettext import npgettext
 from typing import Tuple, Dict, Union
 
 from dagster import (
@@ -512,10 +512,10 @@ def exr_with_custom_metadata(
     output_dir: pathlib.Path,
 ) -> pathlib.Path:
     """
-    Create a handle overlay.
+    Create an EXR with extended metadata.
 
     Example:
-        shot-processor --exr-image "/data/share/AWSPortalRoot1/out/Test Production/Shot/SH030/Rendering/094/raw/sh030_001.1197.exr" --version "094" --output-dir "/data/share/AWSPortalRoot1/out/Test Production/Shot/SH030/Rendering/094/oiio/test_oiio_exr" --kitsu-task-json "/data/share/AWSPortalRoot1/out/Test Production/Shot/SH030/Rendering/094/kitsu_task.json" --frame-number 1197 --oiio-config-yaml "/asdf" exr-with-custom-metadata
+        shot-processor --verbose --exr-image "/data/share/AWSPortalRoot1/out/Test Production/Shot/SH030/Rendering/094/raw/sh030_001.1197.exr" --version "094" --output-dir "/data/share/AWSPortalRoot1/out/Test Production/Shot/SH030/Rendering/094/oiio/test_oiio_exr" --kitsu-task-json "/data/share/AWSPortalRoot1/out/Test Production/Shot/SH030/Rendering/094/kitsu_task.json" --frame-number 1197 --oiio-config-yaml "/asdf" exr-with-custom-metadata
         oiiotool --info -v  "/data/share/AWSPortalRoot1/out/Test Production/Shot/SH030/Rendering/094/oiio/test_oiio_exr/sh030_001.1197.exr"
     """
 
@@ -557,7 +557,7 @@ def create_png(
     Create a png.
 
     Example:
-        shot-processor -vv --exr-image "/data/share/AWSPortalRoot1/out/Test Production/Shot/SH030/Rendering/094/raw/sh030_001.1197.exr" --version "094" --output-dir "/data/share/AWSPortalRoot1/out/Test Production/Shot/SH030/Rendering/094/oiio/test_oiio_proxy_png" --kitsu-task-json "/data/share/AWSPortalRoot1/out/Test Production/Shot/SH030/Rendering/094/kitsu_task.json" --frame-number 1197 --oiio-config-yaml "/asdf" create-png
+        shot-processor --verbose --exr-image "/data/share/AWSPortalRoot1/out/Test Production/Shot/SH030/Rendering/094/raw/sh030_001.1197.exr" --version "094" --output-dir "/data/share/AWSPortalRoot1/out/Test Production/Shot/SH030/Rendering/094/oiio/test_oiio_proxy_png" --kitsu-task-json "/data/share/AWSPortalRoot1/out/Test Production/Shot/SH030/Rendering/094/kitsu_task.json" --frame-number 1197 --oiio-config-yaml "/asdf" create-png
     """
 
     raw_buf, raw_spec = create_buf_from_raw(
@@ -709,7 +709,6 @@ def process_image(
             }
         )
 
-    # create_png = True
     if create_png:
         # https://dev.to/plinecom/convert-openexr-to-jpeg-using-openimageiooiio-in-python-52f8
         extension = ".png"
@@ -769,64 +768,64 @@ def process_image(
     #     pass
 
 
-def _create_gif():
-    # https://openimageio.readthedocs.io/en/v3.1.12.0/builtinplugins.html#gif
-    ...
+# def _create_gif():
+#     # https://openimageio.readthedocs.io/en/v3.1.12.0/builtinplugins.html#gif
+#     ...
+#
+#
+# def _create_mov():
+#     # https://openimageio.readthedocs.io/en/v3.1.12.0/builtinplugins.html#movie-formats-using-ffmpeg
+#     ...
+#
+#
+# def _create_png():
+#     # https://openimageio.readthedocs.io/en/v3.1.12.0/builtinplugins.html#png
+#     ...
 
 
-def _create_mov():
-    # https://openimageio.readthedocs.io/en/v3.1.12.0/builtinplugins.html#movie-formats-using-ffmpeg
-    ...
-
-
-def _create_png():
-    # https://openimageio.readthedocs.io/en/v3.1.12.0/builtinplugins.html#png
-    ...
-
-
-def run_shot_processor(
-        args,
-        # cli: bool = False,
-):
-    """
-    cli: if the processor was invoked from the cli or not.
-    """
-    # LOGGER.setLevel(args.loglevel)
-
-    LOGGER.debug("Running Shot Processor with args %s", args)
-
-    # global args_
-    # args_ = args
-    # global kitsu_task_dict
-
-    # _expand_args(args_)
-
-    # return
-
-    # Open this file once
-    if args.kitsu_task_json.exists():
-        LOGGER.info(f"Kitsu Task JSON found")
-        LOGGER.info(f"Reading JSON: {args.kitsu_task_json.as_posix()}")
-        with open(args.kitsu_task_json) as fr:
-            kitsu_task_dict = json.load(fr)
-        LOGGER.debug(f"Kitsu Task JSON loaded: {kitsu_task_dict}")
-    else:
-        kitsu_task_dict = {}
-        LOGGER.warning(f"Kitsu Task JSON not found, using default values: {kitsu_task_dict = }")
-
-    # kitsu_task_json = pathlib.Path(args_.kitsu_task_json)
-
-    # Path.walk was added in Python 3.12
-    # - https://stackoverflow.com/a/79132718
-    for root, dirs, files in os.walk(args.exr_sequence_dir):
-        # sort:
-        # - [](https://stackoverflow.com/a/18282401)
-        for dir_ in sorted(dirs):
-            LOGGER.debug("Processing directory %s", dir_)
-        for file_ in sorted(files):
-            filepath = pathlib.Path(root, file_)
-            LOGGER.debug("Processing file %s", filepath)
-            _process_image(
-                image_filepath=filepath,
-                args=args
-            )
+# def run_shot_processor(
+#         args,
+#         # cli: bool = False,
+# ):
+#     """
+#     cli: if the processor was invoked from the cli or not.
+#     """
+#     # LOGGER.setLevel(args.loglevel)
+#
+#     LOGGER.debug("Running Shot Processor with args %s", args)
+#
+#     # global args_
+#     # args_ = args
+#     # global kitsu_task_dict
+#
+#     # _expand_args(args_)
+#
+#     # return
+#
+#     # Open this file once
+#     if args.kitsu_task_json.exists():
+#         LOGGER.info(f"Kitsu Task JSON found")
+#         LOGGER.info(f"Reading JSON: {args.kitsu_task_json.as_posix()}")
+#         with open(args.kitsu_task_json) as fr:
+#             kitsu_task_dict = json.load(fr)
+#         LOGGER.debug(f"Kitsu Task JSON loaded: {kitsu_task_dict}")
+#     else:
+#         kitsu_task_dict = {}
+#         LOGGER.warning(f"Kitsu Task JSON not found, using default values: {kitsu_task_dict = }")
+#
+#     # kitsu_task_json = pathlib.Path(args_.kitsu_task_json)
+#
+#     # Path.walk was added in Python 3.12
+#     # - https://stackoverflow.com/a/79132718
+#     for root, dirs, files in os.walk(args.exr_sequence_dir):
+#         # sort:
+#         # - [](https://stackoverflow.com/a/18282401)
+#         for dir_ in sorted(dirs):
+#             LOGGER.debug("Processing directory %s", dir_)
+#         for file_ in sorted(files):
+#             filepath = pathlib.Path(root, file_)
+#             LOGGER.debug("Processing file %s", filepath)
+#             _process_image(
+#                 image_filepath=filepath,
+#                 args=args
+#             )
