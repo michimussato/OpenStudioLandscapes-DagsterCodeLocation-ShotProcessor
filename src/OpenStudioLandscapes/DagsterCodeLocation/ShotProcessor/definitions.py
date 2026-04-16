@@ -53,6 +53,70 @@ render_version_directory = AssetSpec(
 )
 external_assets.append(render_version_directory)
 
+# [ ] image_sequence
+# [ ] raw_to_oiio
+# [x] job_info
+render_output_filename = AssetSpec(
+    key=AssetKey(
+        [
+            *ASSET_HEADER_JOB_PROCESSOR["key_prefix"],
+            "render_output_filename"
+        ],
+    ),
+    group_name=ASSET_HEADER_JOB_PROCESSOR["group_name"],
+    description="Entry point for "
+                "`OpenStudioLandscapes.DagsterCodeLocation.JobProcessor.dagster_job_processor.assets.read_yaml.render_output_filename`.",
+)
+external_assets.append(render_output_filename)
+
+# [ ] image_sequence
+# [ ] raw_to_oiio
+# [x] job_info
+batch_name = AssetSpec(
+    key=AssetKey(
+        [
+            *ASSET_HEADER_JOB_PROCESSOR["key_prefix"],
+            "batch_name"
+        ],
+    ),
+    group_name=ASSET_HEADER_JOB_PROCESSOR["group_name"],
+    description="Entry point for "
+                "`OpenStudioLandscapes.DagsterCodeLocation.JobProcessor.dagster_job_processor.assets.read_yaml.batch_name`.",
+)
+external_assets.append(batch_name)
+
+# [ ] image_sequence
+# [ ] raw_to_oiio
+# [x] job_info
+job_title_str = AssetSpec(
+    key=AssetKey(
+        [
+            *ASSET_HEADER_JOB_PROCESSOR["key_prefix"],
+            "job_title_str"
+        ],
+    ),
+    group_name=ASSET_HEADER_JOB_PROCESSOR["group_name"],
+    description="Entry point for "
+                "`OpenStudioLandscapes.DagsterCodeLocation.JobProcessor.dagster_job_processor.assets.read_yaml.job_title_str`.",
+)
+external_assets.append(job_title_str)
+
+# [ ] image_sequence
+# [ ] raw_to_oiio
+# [x] job_info
+frames = AssetSpec(
+    key=AssetKey(
+        [
+            *ASSET_HEADER_JOB_PROCESSOR["key_prefix"],
+            "frames"
+        ],
+    ),
+    group_name=ASSET_HEADER_JOB_PROCESSOR["group_name"],
+    description="Entry point for "
+                "`OpenStudioLandscapes.DagsterCodeLocation.JobProcessor.dagster_job_processor.assets.read_yaml.frames`.",
+)
+external_assets.append(frames)
+
 # [x] image_sequence
 output_format = AssetSpec(
     key=AssetKey(
