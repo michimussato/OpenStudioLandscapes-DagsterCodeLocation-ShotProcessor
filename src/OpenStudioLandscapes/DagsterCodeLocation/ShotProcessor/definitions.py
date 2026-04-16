@@ -228,11 +228,11 @@ external_assets.append(read_job_yaml)
 render_arguments = AssetSpec(
     key=AssetKey(
         [
-            *ASSET_HEADER_JOB_PROCESSOR_READER["key_prefix"],
+            *ASSET_HEADER_JOB_PROCESSOR["key_prefix"],
             "render_arguments"
         ],
     ),
-    group_name=ASSET_HEADER_JOB_PROCESSOR_READER["group_name"],
+    group_name=ASSET_HEADER_JOB_PROCESSOR["group_name"],
     description="Entry point for "
                 "`OpenStudioLandscapes.DagsterCodeLocation.JobProcessor.dagster_job_processor.assets.read_yaml.plugin_info_model`.",
 )
