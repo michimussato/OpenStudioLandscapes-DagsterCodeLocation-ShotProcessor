@@ -806,9 +806,9 @@ def job_info(
         "render_output_directory": AssetIn(
             AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "render_output_directory"])
         ),
-        "render_arguments": AssetIn(
-            AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "render_arguments"])
-        ),
+        # "render_arguments": AssetIn(
+        #     AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "render_arguments"])
+        # ),
         # "job_model": AssetIn(
         #     AssetKey([*ASSET_HEADER_JOB_PROCESSOR_READER["key_prefix"], "read_job_yaml"])
         # ),
@@ -820,7 +820,7 @@ def job_info(
 def plugin_info(
         context: AssetExecutionContext,
         render_output_directory: pathlib.Path,
-        render_arguments: str,
+        # render_arguments: str,
         # job_model: JobBase,
         cmd_png_to_mov: List,
 ) -> Generator[Output[pathlib.Path] | AssetMaterialization | Any, Any, None]:
@@ -832,7 +832,7 @@ def plugin_info(
     context.log.debug(f"{path = }")
 
     SHELL = [
-        "/bin/bash"
+        "/bin/bash",
     ]
 
     plugin_info_dict = {
