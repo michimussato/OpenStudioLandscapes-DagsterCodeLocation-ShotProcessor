@@ -551,7 +551,7 @@ def png_to_mov(
     #  - [ ] add in timestamp
     #  - [ ] add out timestamp
     cmd: List[str] = [
-        "ffmpeg",
+        "/usr/bin/ffmpeg",
         "-hide_banner",
         "-y",
         "-framerate", f"{float(CONFIG_OIIO.fps):.3f}",
@@ -838,6 +838,7 @@ def plugin_info(
     plugin_info_dict = {
         "Executable": SHELL[0],
         "Arguments": f'-c "{shlex.join(cmd_png_to_mov)}"',
+        # "Arguments": f"-c <QUOTE>{shlex.join(cmd_png_to_mov)}<QUOTE>",
     }
 
     plugin_info = models_submission.CommandLinePluginInfo(
