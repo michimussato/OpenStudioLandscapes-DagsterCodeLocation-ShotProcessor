@@ -34,7 +34,7 @@ from OpenStudioLandscapes.DagsterCodeLocation.JobProcessor.dagster_job_processor
 from OpenStudioLandscapes.DagsterCodeLocation.JobProcessor.deadline_templates.jobs.job_base import JobBase
 from OpenStudioLandscapes.DagsterCodeLocation.JobProcessor.deadline_templates.jobs import models_submission
 
-from OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.api import process_image, create_buf_from_raw
+from OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.api import create_buf_from_raw
 from OpenStudioLandscapes.DagsterCodeLocation.StreamingProcess import submit_cmds
 
 # Asset data across code locations:

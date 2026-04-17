@@ -1,0 +1,6 @@
+fps: 25.0
+text_border: 10
+text_spacing: 4
+handle_marker_height: 10
+overlay_text_size_frame: 24
+overlay_text_size_scaledown: 8

@@ -40,11 +40,9 @@ def parse_args(args) -> argparse.Namespace:
     Returns:
       :obj:`argparse.Namespace`: command line parameters namespace
     """
-    parser = argparse.ArgumentParser(description="Takes an input directory where the raw EXR renders live, "
-                                                 "and creates a new EXR sequence based on them with "
-                                                 "additional metadata. It also creates handle and text overlay "
-                                                 "EXR sequences for comp and editorial. The original raw EXR files "
-                                                 "remain unchanged by this processor.")
+    parser = argparse.ArgumentParser(description="Takes an input EXR "
+                                                 "and creates a new file based on it "
+                                                 "by specifying the relevant sub-command.")
     # parser.add_argument(
     #     "--version",
     #     action="version",

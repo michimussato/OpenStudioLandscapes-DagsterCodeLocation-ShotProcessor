@@ -109,3 +109,4 @@ docker/.volumes/dagster/dagster-home/*
 
 docker/.volumes/postgres-dagster/*
 !docker/.volumes/postgres-dagster/.gitkeep
+/tests/fixtures/v123/oiio_out/

@@ -1,8 +1,5 @@
-# import json
-# import os
 import pathlib
-# import re
-# from gettext import npgettext
+import re
 from typing import Tuple, Dict, Union
 
 from dagster import (
@@ -49,6 +46,23 @@ LOGGER = get_dagster_logger(__name__)
 
 # args_: ShotProcessorArgs
 # kitsu_task_dict: Dict = {}
+
+
+def get_frame_number(
+    image: pathlib.Path,
+):
+    f_no_ = re.findall(
+        r"\.[0-9]+\.",
+        image.name
+    )
+
+    if not bool(f_no_):
+        raise RuntimeError(f"No frame number found in {image.name}")
+
+    f_no = int(f_no_[-1].replace(".", ""))
+    return f_no
+
+    # context.log.debug(f"Frame number: {f_no}")
 
 
 def create_buf_from_raw(
@@ -112,7 +126,7 @@ def _update_raw_spec(
     return raw_spec_
 
 
-def get_overlay_text_buf(
+def _get_overlay_text_buf(
     *,
     CONFIG_OIIO: ConfigOIIO,
     spec_buf_overlay: OIIO.ImageSpec,
@@ -242,7 +256,7 @@ def get_overlay_text_buf(
     return buf
 
 
-def get_overlay_handle_buf(
+def _get_overlay_handle_buf(
     *,
     CONFIG_OIIO: ConfigOIIO,
     spec_buf_overlay: oiio.ImageSpec,
@@ -436,7 +450,7 @@ def create_text_overlay(
     spec_buf_overlay.channelnames = ("R", "G", "B", "A")
     spec_buf_overlay.alpha_channel = 3
 
-    overlay_text_buf = get_overlay_text_buf(
+    overlay_text_buf = _get_overlay_text_buf(
         CONFIG_OIIO=CONFIG_OIIO,
         spec_buf_overlay=spec_buf_overlay,
         frame_number=frame_number,
@@ -446,12 +460,6 @@ def create_text_overlay(
     overlay_text_buf_out.parent.mkdir(parents=True, exist_ok=True)
     overlay_text_buf.write(overlay_text_buf_out.as_posix())
     LOGGER.info(f"Overlay text image saved: {overlay_text_buf_out.as_posix()}")
-
-    # ret.update(
-    #     {
-    #         "overlay_text_buf_out": overlay_text_buf_out,
-    #     }
-    # )
 
     return overlay_text_buf_out
 
@@ -490,7 +498,7 @@ def create_handle_overlay(
     spec_buf_overlay.channelnames = ("R", "G", "B", "A")
     spec_buf_overlay.alpha_channel = 3
 
-    overlay_handle_buf = get_overlay_handle_buf(
+    overlay_handle_buf = _get_overlay_handle_buf(
         CONFIG_OIIO=CONFIG_OIIO,
         spec_buf_overlay=spec_buf_overlay,
         frame_is_handle=bool(spec_buf_overlay["openstudiolandscapes.is_handle"]),
@@ -605,227 +613,227 @@ def create_png(
     return png_out_
 
 
-def process_image(
-    *,
-    context: Union[AssetExecutionContext, OpExecutionContext] = None,
-    # raw_buf: OIIO.ImageBuf,
-    raw_spec: OIIO.ImageSpec,
-    CONFIG_OIIO: ConfigOIIO,
-    image_filepath: pathlib.Path,
-    frame_number: int,
-    kitsu_task_dict: Dict,
-    version: str,
-    output_dir: pathlib.Path,
-    create_exr_from_raw_with_custom_metadata: bool = True,
-    create_text_overlay: bool = False,
-    create_handle_overlay: bool = False,
-    create_png: bool = False,
-) -> Dict[str, pathlib.Path]:
-
-    ret = {}
-
-    if context is not None:
-        LOGGER = context.log
-
-    # Get Some Metadata
-    # frame = raw_spec.getattribute("Frame")
-    camera = raw_spec.getattribute("Camera")
-    # resolution = f"{raw_spec.width}x{raw_spec.height}"
-    # render_time = raw_spec.getattribute("RenderTime")
-    # scene_file = raw_spec.getattribute("File")
-
-    raw_spec_updated: OIIO.ImageSpec = _update_raw_spec(
-        CONFIG_OIIO=CONFIG_OIIO,
-        raw_spec=raw_spec,
-        kitsu_task_dict=kitsu_task_dict,
-        version=version,
-        frame_number=frame_number,
-    )
-
-    create_overlay = any(
-        [
-            create_text_overlay,
-            create_handle_overlay,
-        ]
-    )
-
-    # Create overlay ImagaBuf (with alpha)
-    if create_overlay:
-        spec_buf_overlay = raw_spec_updated.copy()
-        spec_buf_overlay.nchannels = 4
-        spec_buf_overlay.channelnames = ("R", "G", "B", "A")
-        spec_buf_overlay.alpha_channel = 3
-
-        if create_text_overlay:
-
-            overlay_text_buf = get_overlay_text_buf(
-                CONFIG_OIIO=CONFIG_OIIO,
-                spec_buf_overlay=spec_buf_overlay,
-                frame_number=frame_number,
-                camera=camera,
-            )
-            overlay_text_buf_out: pathlib.Path = output_dir / image_filepath.name
-            overlay_text_buf_out.parent.mkdir(parents=True, exist_ok=True)
-            overlay_text_buf.write(overlay_text_buf_out.as_posix())
-            LOGGER.info(f"Overlay text image saved: {overlay_text_buf_out.as_posix()}")
-
-            ret.update(
-                {
-                    "overlay_text_buf_out": overlay_text_buf_out,
-                }
-            )
-
-        if create_handle_overlay:
-
-            overlay_handle_buf = get_overlay_handle_buf(
-                CONFIG_OIIO=CONFIG_OIIO,
-                spec_buf_overlay=spec_buf_overlay,
-                frame_is_handle=bool(spec_buf_overlay["openstudiolandscapes.is_handle"]),
-            )
-            png_buf_out: pathlib.Path = output_dir / "oiio_overlay_handle" / image_filepath.name
-            png_buf_out.parent.mkdir(parents=True, exist_ok=True)
-            overlay_handle_buf.write(png_buf_out.as_posix())
-            LOGGER.info(f"Overlay handle image saved: {png_buf_out.as_posix()}")
-
-            ret.update(
-                {
-                    "png_buf_out": png_buf_out,
-                }
-            )
-
-    if create_exr_from_raw_with_custom_metadata:
-
-        exr_touched_out = output_dir / "oiio_exr" / image_filepath.name
-        exr_touched_out.parent.mkdir(parents=True, exist_ok=True)
-        exr_from_raw_with_custom_metadata(
-            raw=image_filepath,
-            exr_out=exr_touched_out,
-            spec=raw_spec_updated,
-        )
-
-        ret.update(
-            {
-                "exr_touched_out": exr_touched_out,
-            }
-        )
-
-    if create_png:
-        # https://dev.to/plinecom/convert-openexr-to-jpeg-using-openimageiooiio-in-python-52f8
-        extension = ".png"
-        spec_buf_png = raw_spec_updated.copy()
-        channels = ("R", "G", "B")
-        spec_buf_png.nchannels = len(channels)
-        spec_buf_png.channelnames = channels
-        try:
-            spec_buf_png.alpha_channel = channels.index("A")
-        except ValueError:
-            # no alpha channel
-            spec_buf_png.alpha_channel = -1
-        # file_name = image_filepath.name
-        png_out: pathlib.Path = output_dir / "oiio_proxy_png" / f"{image_filepath.stem}{extension}"
-        png_out.parent.mkdir(parents=True, exist_ok=True)
-        # png_buf.write(png_buf_out.as_posix())
-        # LOGGER.info(f"PNG image saved: {png_buf_out.as_posix()}")
-
-        png_out_ = png_from_raw(
-            raw=image_filepath,
-            png_out=png_out,
-            # CONFIG_OIIO=CONFIG_OIIO,
-            spec=spec_buf_png,
-            # raw_buf=raw_buf,
-            # spec_buf_overlay=spec_buf_overlay,
-            # frame_is_handle=bool(spec_buf_overlay["openstudiolandscapes.is_handle"]),
-        )
-
-        ret.update(
-            {
-                "png_out": png_out_,
-            }
-        )
-
-    return ret
-
-    # def mov_from_exr_touched(
-    #         mov_out: pathlib.Path,
-    # ):
-    #     # Todo
-    #     #  - [ ] implement mov generation
-    #     #  - [ ] upload to Kitsu
-    #     pass
-    #
-    # def gif_from_exr_touched(
-    #         gif_out: pathlib.Path,
-    # ):
-    #     # Todo
-    #     #  - [ ] implement gif generation
-    #     pass
-    #
-    # def png_from_exr_touched(
-    #         png_out: pathlib.Path,
-    # ):
-    #     # Todo
-    #     #  - [ ] implement png sequence generation
-    #     pass
-
-
-# def _create_gif():
-#     # https://openimageio.readthedocs.io/en/v3.1.12.0/builtinplugins.html#gif
-#     ...
+# def process_image(
+#     *,
+#     context: Union[AssetExecutionContext, OpExecutionContext] = None,
+#     # raw_buf: OIIO.ImageBuf,
+#     raw_spec: OIIO.ImageSpec,
+#     CONFIG_OIIO: ConfigOIIO,
+#     image_filepath: pathlib.Path,
+#     frame_number: int,
+#     kitsu_task_dict: Dict,
+#     version: str,
+#     output_dir: pathlib.Path,
+#     create_exr_from_raw_with_custom_metadata: bool = True,
+#     create_text_overlay: bool = False,
+#     create_handle_overlay: bool = False,
+#     create_png: bool = False,
+# ) -> Dict[str, pathlib.Path]:
 #
+#     ret = {}
 #
-# def _create_mov():
-#     # https://openimageio.readthedocs.io/en/v3.1.12.0/builtinplugins.html#movie-formats-using-ffmpeg
-#     ...
+#     if context is not None:
+#         LOGGER = context.log
 #
+#     # Get Some Metadata
+#     # frame = raw_spec.getattribute("Frame")
+#     camera = raw_spec.getattribute("Camera")
+#     # resolution = f"{raw_spec.width}x{raw_spec.height}"
+#     # render_time = raw_spec.getattribute("RenderTime")
+#     # scene_file = raw_spec.getattribute("File")
 #
-# def _create_png():
-#     # https://openimageio.readthedocs.io/en/v3.1.12.0/builtinplugins.html#png
-#     ...
-
-
-# def run_shot_processor(
-#         args,
-#         # cli: bool = False,
-# ):
-#     """
-#     cli: if the processor was invoked from the cli or not.
-#     """
-#     # LOGGER.setLevel(args.loglevel)
+#     raw_spec_updated: OIIO.ImageSpec = _update_raw_spec(
+#         CONFIG_OIIO=CONFIG_OIIO,
+#         raw_spec=raw_spec,
+#         kitsu_task_dict=kitsu_task_dict,
+#         version=version,
+#         frame_number=frame_number,
+#     )
 #
-#     LOGGER.debug("Running Shot Processor with args %s", args)
+#     create_overlay = any(
+#         [
+#             create_text_overlay,
+#             create_handle_overlay,
+#         ]
+#     )
 #
-#     # global args_
-#     # args_ = args
-#     # global kitsu_task_dict
+#     # Create overlay ImagaBuf (with alpha)
+#     if create_overlay:
+#         spec_buf_overlay = raw_spec_updated.copy()
+#         spec_buf_overlay.nchannels = 4
+#         spec_buf_overlay.channelnames = ("R", "G", "B", "A")
+#         spec_buf_overlay.alpha_channel = 3
 #
-#     # _expand_args(args_)
+#         if create_text_overlay:
 #
-#     # return
-#
-#     # Open this file once
-#     if args.kitsu_task_json.exists():
-#         LOGGER.info(f"Kitsu Task JSON found")
-#         LOGGER.info(f"Reading JSON: {args.kitsu_task_json.as_posix()}")
-#         with open(args.kitsu_task_json) as fr:
-#             kitsu_task_dict = json.load(fr)
-#         LOGGER.debug(f"Kitsu Task JSON loaded: {kitsu_task_dict}")
-#     else:
-#         kitsu_task_dict = {}
-#         LOGGER.warning(f"Kitsu Task JSON not found, using default values: {kitsu_task_dict = }")
-#
-#     # kitsu_task_json = pathlib.Path(args_.kitsu_task_json)
-#
-#     # Path.walk was added in Python 3.12
-#     # - https://stackoverflow.com/a/79132718
-#     for root, dirs, files in os.walk(args.exr_sequence_dir):
-#         # sort:
-#         # - [](https://stackoverflow.com/a/18282401)
-#         for dir_ in sorted(dirs):
-#             LOGGER.debug("Processing directory %s", dir_)
-#         for file_ in sorted(files):
-#             filepath = pathlib.Path(root, file_)
-#             LOGGER.debug("Processing file %s", filepath)
-#             _process_image(
-#                 image_filepath=filepath,
-#                 args=args
+#             overlay_text_buf = _get_overlay_text_buf(
+#                 CONFIG_OIIO=CONFIG_OIIO,
+#                 spec_buf_overlay=spec_buf_overlay,
+#                 frame_number=frame_number,
+#                 camera=camera,
 #             )
+#             overlay_text_buf_out: pathlib.Path = output_dir / image_filepath.name
+#             overlay_text_buf_out.parent.mkdir(parents=True, exist_ok=True)
+#             overlay_text_buf.write(overlay_text_buf_out.as_posix())
+#             LOGGER.info(f"Overlay text image saved: {overlay_text_buf_out.as_posix()}")
+#
+#             ret.update(
+#                 {
+#                     "overlay_text_buf_out": overlay_text_buf_out,
+#                 }
+#             )
+#
+#         if create_handle_overlay:
+#
+#             overlay_handle_buf = _get_overlay_handle_buf(
+#                 CONFIG_OIIO=CONFIG_OIIO,
+#                 spec_buf_overlay=spec_buf_overlay,
+#                 frame_is_handle=bool(spec_buf_overlay["openstudiolandscapes.is_handle"]),
+#             )
+#             png_buf_out: pathlib.Path = output_dir / "oiio_overlay_handle" / image_filepath.name
+#             png_buf_out.parent.mkdir(parents=True, exist_ok=True)
+#             overlay_handle_buf.write(png_buf_out.as_posix())
+#             LOGGER.info(f"Overlay handle image saved: {png_buf_out.as_posix()}")
+#
+#             ret.update(
+#                 {
+#                     "png_buf_out": png_buf_out,
+#                 }
+#             )
+#
+#     if create_exr_from_raw_with_custom_metadata:
+#
+#         exr_touched_out = output_dir / "oiio_exr" / image_filepath.name
+#         exr_touched_out.parent.mkdir(parents=True, exist_ok=True)
+#         exr_from_raw_with_custom_metadata(
+#             raw=image_filepath,
+#             exr_out=exr_touched_out,
+#             spec=raw_spec_updated,
+#         )
+#
+#         ret.update(
+#             {
+#                 "exr_touched_out": exr_touched_out,
+#             }
+#         )
+#
+#     if create_png:
+#         # https://dev.to/plinecom/convert-openexr-to-jpeg-using-openimageiooiio-in-python-52f8
+#         extension = ".png"
+#         spec_buf_png = raw_spec_updated.copy()
+#         channels = ("R", "G", "B")
+#         spec_buf_png.nchannels = len(channels)
+#         spec_buf_png.channelnames = channels
+#         try:
+#             spec_buf_png.alpha_channel = channels.index("A")
+#         except ValueError:
+#             # no alpha channel
+#             spec_buf_png.alpha_channel = -1
+#         # file_name = image_filepath.name
+#         png_out: pathlib.Path = output_dir / "oiio_proxy_png" / f"{image_filepath.stem}{extension}"
+#         png_out.parent.mkdir(parents=True, exist_ok=True)
+#         # png_buf.write(png_buf_out.as_posix())
+#         # LOGGER.info(f"PNG image saved: {png_buf_out.as_posix()}")
+#
+#         png_out_ = png_from_raw(
+#             raw=image_filepath,
+#             png_out=png_out,
+#             # CONFIG_OIIO=CONFIG_OIIO,
+#             spec=spec_buf_png,
+#             # raw_buf=raw_buf,
+#             # spec_buf_overlay=spec_buf_overlay,
+#             # frame_is_handle=bool(spec_buf_overlay["openstudiolandscapes.is_handle"]),
+#         )
+#
+#         ret.update(
+#             {
+#                 "png_out": png_out_,
+#             }
+#         )
+#
+#     return ret
+#
+#     # def mov_from_exr_touched(
+#     #         mov_out: pathlib.Path,
+#     # ):
+#     #     # Todo
+#     #     #  - [ ] implement mov generation
+#     #     #  - [ ] upload to Kitsu
+#     #     pass
+#     #
+#     # def gif_from_exr_touched(
+#     #         gif_out: pathlib.Path,
+#     # ):
+#     #     # Todo
+#     #     #  - [ ] implement gif generation
+#     #     pass
+#     #
+#     # def png_from_exr_touched(
+#     #         png_out: pathlib.Path,
+#     # ):
+#     #     # Todo
+#     #     #  - [ ] implement png sequence generation
+#     #     pass
+#
+#
+# # def _create_gif():
+# #     # https://openimageio.readthedocs.io/en/v3.1.12.0/builtinplugins.html#gif
+# #     ...
+# #
+# #
+# # def _create_mov():
+# #     # https://openimageio.readthedocs.io/en/v3.1.12.0/builtinplugins.html#movie-formats-using-ffmpeg
+# #     ...
+# #
+# #
+# # def _create_png():
+# #     # https://openimageio.readthedocs.io/en/v3.1.12.0/builtinplugins.html#png
+# #     ...
+
+
+def run_shot_processor(
+        args,
+        # cli: bool = False,
+):
+    """
+    cli: if the processor was invoked from the cli or not.
+    """
+    # LOGGER.setLevel(args.loglevel)
+
+    LOGGER.debug("Running Shot Processor with args %s", args)
+
+    # global args_
+    # args_ = args
+    # global kitsu_task_dict
+
+    # _expand_args(args_)
+
+    # return
+
+    # Open this file once
+    if args.kitsu_task_json.exists():
+        LOGGER.info(f"Kitsu Task JSON found")
+        LOGGER.info(f"Reading JSON: {args.kitsu_task_json.as_posix()}")
+        with open(args.kitsu_task_json) as fr:
+            kitsu_task_dict = json.load(fr)
+        LOGGER.debug(f"Kitsu Task JSON loaded: {kitsu_task_dict}")
+    else:
+        kitsu_task_dict = {}
+        LOGGER.warning(f"Kitsu Task JSON not found, using default values: {kitsu_task_dict = }")
+
+    # kitsu_task_json = pathlib.Path(args_.kitsu_task_json)
+
+    # Path.walk was added in Python 3.12
+    # - https://stackoverflow.com/a/79132718
+    for root, dirs, files in os.walk(args.exr_sequence_dir):
+        # sort:
+        # - [](https://stackoverflow.com/a/18282401)
+        for dir_ in sorted(dirs):
+            LOGGER.debug("Processing directory %s", dir_)
+        for file_ in sorted(files):
+            filepath = pathlib.Path(root, file_)
+            LOGGER.debug("Processing file %s", filepath)
+            _process_image(
+                image_filepath=filepath,
+                args=args
+            )
