@@ -35,6 +35,7 @@ from OpenStudioLandscapes.DagsterCodeLocation.JobProcessor.dagster_job_processor
 
 from OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.base.assets import (
     ASSET_HEADER_JOB_PROCESSOR,
+    ASSET_HEADER_OIIO_PROCESSOR,
 )
 
 
@@ -76,9 +77,9 @@ ASSET_HEADER_OIIO_PROCESSOR_CREATE_TEXT_OVERLAY = {
         "render_output_filename": AssetIn(
             AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "render_output_filename"]),
         ),
-        # "CONFIG_OIIO": AssetIn(
-        #     AssetKey([*ASSET_HEADER_OIIO_PROCESSOR["key_prefix"], "CONFIG_OIIO"]),
-        # ),
+        "CONFIG_OIIO_YAML": AssetIn(
+            AssetKey([*ASSET_HEADER_OIIO_PROCESSOR["key_prefix"], "CONFIG_OIIO_YAML"]),
+        ),
         "CONFIG": AssetIn(
             AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "CONFIG"]),
         ),
@@ -95,7 +96,7 @@ def create_text_overlay(
         version: str,
         render_output_filename: Dict,
         # image_sequence_raw: List[pathlib.Path],
-        # CONFIG_OIIO: ConfigOIIO,
+        CONFIG_OIIO_YAML: pathlib.Path,
         CONFIG: DefaultConstants,
         # job_id_raw: str,
 ) -> Generator[Output[List] | AssetMaterialization | Any, Any, None]:
@@ -158,7 +159,7 @@ def create_text_overlay(
         "shot-processor",
         "--exr-image", input_dir.joinpath(render_output_filename["padding_deadline_batch_startframe"]).as_posix(),
         "--kitsu-task-json", render_output_directory.joinpath("kitsu_task.json").as_posix(),
-        "--oiio-config-yaml", "yaml",
+        "--oiio-config-yaml", CONFIG_OIIO_YAML.as_posix(),
         "--version", version,
         # https://docs.thinkboxsoftware.com/products/deadline/10.2/1_User%20Manual/manual/manual-submission.html#arbitrary-command-line-jobs
         "--frame-number", "<STARTFRAME%4>",

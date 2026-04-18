@@ -45,19 +45,72 @@ ASSET_HEADER_OIIO_PROCESSOR = {
 
 
 @multi_asset(
+    ins={
+        "render_output_directory": AssetIn(
+            AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "render_output_directory"]),
+        ),
+        # "render_output_directory": AssetIn(
+        #     AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "render_output_directory"]),
+        # ),
+    },
     outs={
         "CONFIG_OIIO": AssetOut(
             **ASSET_HEADER_OIIO_PROCESSOR,
             dagster_type=ConfigOIIO,
             description="Todo",
         ),
+        "CONFIG_OIIO_YAML": AssetOut(
+            **ASSET_HEADER_OIIO_PROCESSOR,
+            dagster_type=pathlib.Path,
+            description="Todo",
+        ),
     },
 )
 def CONFIG_OIIO(
         context: AssetExecutionContext,
+        render_output_directory: pathlib.Path,
 ) -> Generator[Output[List[pathlib.Path]] | AssetMaterialization | Any, Any, None]:
 
-    config_oiio: ConfigOIIO = ConfigOIIO()
+    config_oiio_yaml = render_output_directory.joinpath("config_oiio.yaml")
+    config_oiio_yaml.parent.mkdir(parents=True, exist_ok=True)
+
+    if config_oiio_yaml.exists():
+        with open(config_oiio_yaml, "r") as fr:
+            config_oiio_dict = yaml.safe_load(fr)
+
+        config_oiio: ConfigOIIO = ConfigOIIO(
+            **config_oiio_dict,
+        )
+    else:
+        config_oiio: ConfigOIIO = ConfigOIIO()
+
+        with open(config_oiio_yaml, "w") as fw:
+            fw.write(yaml.safe_dump(config_oiio.model_dump_json(fallback=str, indent=2)))
+        # config_oiio_yaml = {}
+
+    # _out = render_version_directory / version
+    # _out.mkdir(parents=True, exist_ok=True)
+
+    # if bool(job_model.kitsu_task):
+    #     entity_type = get_entity_type(get_kitsu_task_dict)
+    #     if entity_type == 'Shot':
+    #         # filename = f'{str(handles)}_{str(job_model.cut_in - job_model.handles).zfill(CONFIG.PADDING)}-{str(job_model.cut_out + job_model.handles).zfill(CONFIG.PADDING)}_{str(handles)}'
+    #         # with open(_out / filename, "w") as fw:
+    #         #     fw.write(f"{str(job_model.kitsu_task) = }")
+    #         # with open(_out / "kitsu_task_id.txt", "w") as fw:
+    #         #     fw.write(str(job_model.kitsu_task))
+    #         with open(_out / "kitsu_task.json", "w") as fw:
+    #             json.dump(
+    #                 get_kitsu_task_dict,
+    #                 fw,
+    #                 indent=2,
+    #                 default=str,
+    #                 ensure_ascii=True,
+    #                 sort_keys=True,
+    #             )
+    #
+    # with open(pathlib.Path(__file__).parent / "config_oiio.yaml") as fw:
+    #     fw.
 
     ###############
     # CONFIG_OIIO #
@@ -78,6 +131,26 @@ def CONFIG_OIIO(
             ): MetadataValue.md(
                 f"```yaml\n{yaml.safe_dump(json.loads(config_oiio.model_dump_json(fallback=str, indent=2)))}\n```"
             ),
+        },
+    )
+
+    ####################
+    # CONFIG_OIIO_YAML #
+    ####################
+
+    output_name = "CONFIG_OIIO_YAML"
+
+    yield Output(
+        output_name=output_name,
+        value=config_oiio_yaml,
+    )
+
+    yield AssetMaterialization(
+        asset_key=context.asset_key_for_output(output_name),
+        metadata={
+            "__".join(
+                context.asset_key_for_output(output_name).path
+            ): MetadataValue.path(config_oiio_yaml),
         },
     )
 
