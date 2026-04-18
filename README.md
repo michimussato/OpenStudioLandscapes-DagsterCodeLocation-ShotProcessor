@@ -128,3 +128,152 @@ in case `print` or `LOGGER` output is required.
 > 
 > In Pycharm:
 > ![Modify Run Configuration](media/images/Screenshot_20260407_110349.png)
+
+
+
+```
+dagster._core.errors.DagsterInvalidDefinitionError: Input asset '["OpenStudioLandscapes_DagsterCodeLocation_JobProcessor_Reader", "read_job_yaml"]' for asset '["OpenStudioLandscapes_DagsterCodeLocation_JobProcessor_OIIO_Processor_create_text_overlay", "job"]' is not produced by any of the provided asset ops and is not one of the provided sources.
+
+  File "/opt/python3.11/lib/python3.11/site-packages/dagster/_grpc/server.py", line 417, in __init__
+    self._loaded_repositories: Optional[LoadedRepositories] = LoadedRepositories(
+                                                              ^^^^^^^^^^^^^^^^^^^
+  File "/opt/python3.11/lib/python3.11/site-packages/dagster/_grpc/server.py", line 271, in __init__
+    repo_def = recon_repo.get_definition()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/python3.11/lib/python3.11/site-packages/dagster/_core/definitions/reconstruct.py", line 111, in get_definition
+    return reconstruct_repository_def_from_pointer(self.pointer, self.repository_load_data)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/python3.11/lib/python3.11/site-packages/dagster/_core/definitions/reconstruct.py", line 798, in reconstruct_repository_def_from_pointer
+    repo_def = _repository_def_from_target_def_inner(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/python3.11/lib/python3.11/site-packages/dagster/_core/definitions/reconstruct.py", line 708, in _repository_def_from_target_def_inner
+    return target.get_repository_def()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/python3.11/lib/python3.11/site-packages/dagster/_utils/cached_method.py", line 135, in _cached_method_wrapper
+    result = method(self, *args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/python3.11/lib/python3.11/site-packages/dagster/_core/definitions/definitions_class.py", line 572, in get_repository_def
+    return _create_repository_using_definitions_args(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/python3.11/lib/python3.11/site-packages/dagster/_core/definitions/definitions_class.py", line 278, in _create_repository_using_definitions_args
+    @repository(
+     ^^^^^^^^^^^
+  File "/opt/python3.11/lib/python3.11/site-packages/dagster/_core/definitions/decorators/repository_decorator.py", line 146, in __call__
+    repository_data = CachingRepositoryData.from_list(
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/python3.11/lib/python3.11/site-packages/dagster/_core/definitions/repository_definition/repository_data.py", line 380, in from_list
+    return build_caching_repository_data_from_list(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/python3.11/lib/python3.11/site-packages/dagster/_core/definitions/repository_definition/repository_data_builder.py", line 309, in build_caching_repository_data_from_list
+    asset_graph = AssetGraph.from_assets(
+                  ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/python3.11/lib/python3.11/site-packages/dagster/_core/definitions/asset_graph.py", line 250, in from_assets
+    assets_defs = cls.normalize_assets(assets)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/python3.11/lib/python3.11/site-packages/dagster/_core/definitions/asset_graph.py", line 206, in normalize_assets
+    resolved_deps = ResolvedAssetDependencies(assets_defs, [])
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/python3.11/lib/python3.11/site-packages/dagster/_core/definitions/resolved_asset_deps.py", line 24, in __init__
+    self._deps_by_assets_def_id = resolve_assets_def_deps(assets_defs, source_assets)
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/python3.11/lib/python3.11/site-packages/dagster/_core/definitions/resolved_asset_deps.py", line 207, in resolve_assets_def_deps
+    raise DagsterInvalidDefinitionError(msg)
+```
+
+```
+dagster._core.errors.DagsterInvalidDefinitionError: Input asset '["OpenStudioLandscapes_DagsterCodeLocation_JobProcessor_PreProcessor", "render_output_directory"]' for asset '["OpenStudioLandscapes_DagsterCodeLocation_JobProcessor_OIIO_Processor_create_text_overlay", "plugin_info_model"]' is not produced by any of the provided asset ops and is not one of the provided sources.
+
+  File "/opt/python3.11/lib/python3.11/site-packages/dagster/_grpc/server.py", line 417, in __init__
+    self._loaded_repositories: Optional[LoadedRepositories] = LoadedRepositories(
+                                                              ^^^^^^^^^^^^^^^^^^^
+  File "/opt/python3.11/lib/python3.11/site-packages/dagster/_grpc/server.py", line 271, in __init__
+    repo_def = recon_repo.get_definition()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/python3.11/lib/python3.11/site-packages/dagster/_core/definitions/reconstruct.py", line 111, in get_definition
+    return reconstruct_repository_def_from_pointer(self.pointer, self.repository_load_data)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/python3.11/lib/python3.11/site-packages/dagster/_core/definitions/reconstruct.py", line 798, in reconstruct_repository_def_from_pointer
+    repo_def = _repository_def_from_target_def_inner(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/python3.11/lib/python3.11/site-packages/dagster/_core/definitions/reconstruct.py", line 708, in _repository_def_from_target_def_inner
+    return target.get_repository_def()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/python3.11/lib/python3.11/site-packages/dagster/_utils/cached_method.py", line 135, in _cached_method_wrapper
+    result = method(self, *args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/python3.11/lib/python3.11/site-packages/dagster/_core/definitions/definitions_class.py", line 572, in get_repository_def
+    return _create_repository_using_definitions_args(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/python3.11/lib/python3.11/site-packages/dagster/_core/definitions/definitions_class.py", line 278, in _create_repository_using_definitions_args
+    @repository(
+     ^^^^^^^^^^^
+  File "/opt/python3.11/lib/python3.11/site-packages/dagster/_core/definitions/decorators/repository_decorator.py", line 146, in __call__
+    repository_data = CachingRepositoryData.from_list(
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/python3.11/lib/python3.11/site-packages/dagster/_core/definitions/repository_definition/repository_data.py", line 380, in from_list
+    return build_caching_repository_data_from_list(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/python3.11/lib/python3.11/site-packages/dagster/_core/definitions/repository_definition/repository_data_builder.py", line 309, in build_caching_repository_data_from_list
+    asset_graph = AssetGraph.from_assets(
+                  ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/python3.11/lib/python3.11/site-packages/dagster/_core/definitions/asset_graph.py", line 250, in from_assets
+    assets_defs = cls.normalize_assets(assets)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/python3.11/lib/python3.11/site-packages/dagster/_core/definitions/asset_graph.py", line 206, in normalize_assets
+    resolved_deps = ResolvedAssetDependencies(assets_defs, [])
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/python3.11/lib/python3.11/site-packages/dagster/_core/definitions/resolved_asset_deps.py", line 24, in __init__
+    self._deps_by_assets_def_id = resolve_assets_def_deps(assets_defs, source_assets)
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/python3.11/lib/python3.11/site-packages/dagster/_core/definitions/resolved_asset_deps.py", line 207, in resolve_assets_def_deps
+    raise DagsterInvalidDefinitionError(msg)
+```
+
+```
+dagster._core.errors.DagsterInvalidDefinitionError: Input asset '["OpenStudioLandscapes_DagsterCodeLocation_JobProcessor_Reader", "read_job_yaml"]' for asset '["OpenStudioLandscapes_DagsterCodeLocation_JobProcessor_OIIO_Processor_create_text_overlay", "job"]' is not produced by any of the provided asset ops and is not one of the provided sources.
+
+  File "/opt/python3.11/lib/python3.11/site-packages/dagster/_grpc/server.py", line 417, in __init__
+    self._loaded_repositories: Optional[LoadedRepositories] = LoadedRepositories(
+                                                              ^^^^^^^^^^^^^^^^^^^
+  File "/opt/python3.11/lib/python3.11/site-packages/dagster/_grpc/server.py", line 271, in __init__
+    repo_def = recon_repo.get_definition()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/python3.11/lib/python3.11/site-packages/dagster/_core/definitions/reconstruct.py", line 111, in get_definition
+    return reconstruct_repository_def_from_pointer(self.pointer, self.repository_load_data)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/python3.11/lib/python3.11/site-packages/dagster/_core/definitions/reconstruct.py", line 798, in reconstruct_repository_def_from_pointer
+    repo_def = _repository_def_from_target_def_inner(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/python3.11/lib/python3.11/site-packages/dagster/_core/definitions/reconstruct.py", line 708, in _repository_def_from_target_def_inner
+    return target.get_repository_def()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/python3.11/lib/python3.11/site-packages/dagster/_utils/cached_method.py", line 135, in _cached_method_wrapper
+    result = method(self, *args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/python3.11/lib/python3.11/site-packages/dagster/_core/definitions/definitions_class.py", line 572, in get_repository_def
+    return _create_repository_using_definitions_args(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/python3.11/lib/python3.11/site-packages/dagster/_core/definitions/definitions_class.py", line 278, in _create_repository_using_definitions_args
+    @repository(
+     ^^^^^^^^^^^
+  File "/opt/python3.11/lib/python3.11/site-packages/dagster/_core/definitions/decorators/repository_decorator.py", line 146, in __call__
+    repository_data = CachingRepositoryData.from_list(
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/python3.11/lib/python3.11/site-packages/dagster/_core/definitions/repository_definition/repository_data.py", line 380, in from_list
+    return build_caching_repository_data_from_list(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/python3.11/lib/python3.11/site-packages/dagster/_core/definitions/repository_definition/repository_data_builder.py", line 309, in build_caching_repository_data_from_list
+    asset_graph = AssetGraph.from_assets(
+                  ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/python3.11/lib/python3.11/site-packages/dagster/_core/definitions/asset_graph.py", line 250, in from_assets
+    assets_defs = cls.normalize_assets(assets)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/python3.11/lib/python3.11/site-packages/dagster/_core/definitions/asset_graph.py", line 206, in normalize_assets
+    resolved_deps = ResolvedAssetDependencies(assets_defs, [])
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/python3.11/lib/python3.11/site-packages/dagster/_core/definitions/resolved_asset_deps.py", line 24, in __init__
+    self._deps_by_assets_def_id = resolve_assets_def_deps(assets_defs, source_assets)
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/python3.11/lib/python3.11/site-packages/dagster/_core/definitions/resolved_asset_deps.py", line 207, in resolve_assets_def_deps
+    raise DagsterInvalidDefinitionError(msg)
+```

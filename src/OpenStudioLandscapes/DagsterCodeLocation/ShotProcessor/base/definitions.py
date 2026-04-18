@@ -6,7 +6,7 @@ from dagster import (
 )
 
 import OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.base.assets
-
+# from OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.external_assets import assets_external
 
 assets_base = load_assets_from_modules([OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.base.assets])
 
@@ -14,5 +14,6 @@ assets_base = load_assets_from_modules([OpenStudioLandscapes.DagsterCodeLocation
 defs = Definitions(
     assets=[
         *assets_base,
+        # *assets_external,
     ],
 )
