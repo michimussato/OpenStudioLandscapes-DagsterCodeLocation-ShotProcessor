@@ -264,9 +264,9 @@ def create_text_overlay(
         "job_model": AssetIn(
             AssetKey([*ASSET_HEADER_JOB_PROCESSOR_READER["key_prefix"], "read_job_yaml"])
         ),
-        # "job_id_raw": AssetIn(
-        #     AssetKey([*ASSET_HEADER_JOB_PROCESSOR_DEADLINE["key_prefix"], "job_id_raw"]),
-        # ),
+        "job_id_raw": AssetIn(
+            AssetKey([*ASSET_HEADER_JOB_PROCESSOR_DEADLINE["key_prefix"], "job_id_raw"]),
+        ),
         "Deadline_OutputDirectory": AssetIn(
             AssetKey([*ASSET_HEADER_OIIO_PROCESSOR_CREATE_TEXT_OVERLAY["key_prefix"], "Deadline_OutputDirectory"]),
         ),
@@ -283,12 +283,12 @@ def job_info(
         # frames: str,
         # render_output_filename: Dict,
         job_model: JobBase,
-        # job_id_raw: str,
+        job_id_raw: str,
         Deadline_OutputDirectory: pathlib.Path,
         Deadline_OutputFilename: str,
 ) -> Generator[Output[pathlib.Path] | AssetMaterialization | Any, Any, None]:
 
-    job_id_raw = job_id_parent = "asdf"
+    job_id_parent = job_id_raw
 
     # https://docs.thinkboxsoftware.com/products/deadline/10.2/1_User%20Manual/manual/manual-submission.html#job-info-file-options
     # render_output_directory.mkdir(parents=True, exist_ok=True)

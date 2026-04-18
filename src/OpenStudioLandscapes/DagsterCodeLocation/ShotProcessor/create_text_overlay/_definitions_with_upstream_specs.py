@@ -12,16 +12,19 @@ from OpenStudioLandscapes.DagsterCodeLocation.JobProcessor.dagster_job_processor
     version,
     render_output_directory,
     CONFIG,
+    submit_request_raw,
 )
 
 from OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.base.assets import (
     CONFIG_OIIO,
 )
-# from OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.png_to_mov.definitions import render_output_directory
-
-# from OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.external_assets import assets_external
 
 assets_external = []
+
+# base
+assets_external.extend(CONFIG.specs)
+
+# JobProcessor
 assets_external.extend(batch_name.specs)
 assets_external.extend(job_title_str.specs)
 assets_external.extend(read_job_yaml.specs)
@@ -29,8 +32,7 @@ assets_external.extend(render_output_filename.specs)
 assets_external.extend(render_output_directory.specs)
 assets_external.extend(version.specs)
 assets_external.extend(CONFIG_OIIO.specs)
-assets_external.extend(CONFIG.specs)
-
+assets_external.extend(submit_request_raw.specs)
 
 defs = Definitions(
     assets=[
