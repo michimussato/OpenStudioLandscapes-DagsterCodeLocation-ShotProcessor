@@ -1,4 +1,6 @@
 import pathlib
+from types import NoneType
+
 import yaml
 import json
 import shlex
@@ -63,7 +65,7 @@ ASSET_HEADER_OIIO_PROCESSOR_CREATE_TEXT_OVERLAY = {
         ),
         "Deadline_OutputFilename": AssetOut(
             **ASSET_HEADER_OIIO_PROCESSOR_CREATE_TEXT_OVERLAY,
-            dagster_type=str,
+            dagster_type=NoneType,
             description="Todo",
         ),
     },
@@ -215,26 +217,26 @@ def create_text_overlay(
         }
     )
 
-    # ###########################
-    # # Deadline_OutputFilename #
-    # ###########################
-    #
-    # output_name = "Deadline_OutputFilename"
-    #
-    # yield Output(
-    #     output_name=output_name,
-    #     value=ffmpeg_out.name,
-    # )
-    #
-    # yield AssetMaterialization(
-    #     asset_key=context.asset_key_for_output(output_name),
-    #     metadata={
-    #         "__".join(
-    #             context.asset_key_for_output(output_name).path
-    #         ): MetadataValue.path(ffmpeg_out.name),
-    #         "ffmpeg_out": MetadataValue.path(ffmpeg_out),
-    #     }
-    # )
+    ###########################
+    # Deadline_OutputFilename #
+    ###########################
+
+    output_name = "Deadline_OutputFilename"
+
+    yield Output(
+        output_name=output_name,
+        value=None,
+    )
+
+    yield AssetMaterialization(
+        asset_key=context.asset_key_for_output(output_name),
+        metadata={
+            "__".join(
+                context.asset_key_for_output(output_name).path
+            ): MetadataValue.null(None),
+            # "ffmpeg_out": MetadataValue.path(ffmpeg_out),
+        }
+    )
 
 
 @multi_asset(
@@ -270,9 +272,9 @@ def create_text_overlay(
         "Deadline_OutputDirectory": AssetIn(
             AssetKey([*ASSET_HEADER_OIIO_PROCESSOR_CREATE_TEXT_OVERLAY["key_prefix"], "Deadline_OutputDirectory"]),
         ),
-        "Deadline_OutputFilename": AssetIn(
-            AssetKey([*ASSET_HEADER_OIIO_PROCESSOR_CREATE_TEXT_OVERLAY["key_prefix"], "Deadline_OutputFilename"]),
-        ),
+        # "Deadline_OutputFilename": AssetIn(
+        #     AssetKey([*ASSET_HEADER_OIIO_PROCESSOR_CREATE_TEXT_OVERLAY["key_prefix"], "Deadline_OutputFilename"]),
+        # ),
     }
 )
 def job_info(
@@ -285,7 +287,7 @@ def job_info(
         job_model: JobBase,
         job_id_raw: str,
         Deadline_OutputDirectory: pathlib.Path,
-        Deadline_OutputFilename: str,
+        # Deadline_OutputFilename: str,
 ) -> Generator[Output[pathlib.Path] | AssetMaterialization | Any, Any, None]:
 
     job_id_parent = job_id_raw
@@ -327,7 +329,7 @@ def job_info(
         # Todo:
         #  - [ ] integrate these into model (not being used so far)
         "OutputDirectory0": Deadline_OutputDirectory.as_posix(),
-        "OutputFilename0": Deadline_OutputFilename,
+        # "OutputFilename0": Deadline_OutputFilename,
     }
 
     job_info = models_submission.JobInfo(
