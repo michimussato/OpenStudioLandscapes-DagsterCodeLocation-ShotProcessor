@@ -22,7 +22,7 @@ from OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.base.assets import (
 assets_external = []
 
 # base
-assets_external.extend(CONFIG.specs)
+assets_external.extend(CONFIG_OIIO.specs)
 
 # JobProcessor
 assets_external.extend(batch_name.specs)
@@ -31,7 +31,7 @@ assets_external.extend(read_job_yaml.specs)
 assets_external.extend(render_output_filename.specs)
 assets_external.extend(render_output_directory.specs)
 assets_external.extend(version.specs)
-assets_external.extend(CONFIG_OIIO.specs)
+assets_external.extend(CONFIG.specs)
 assets_external.extend(submit_request_raw.specs)
 
 defs = Definitions(

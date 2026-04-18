@@ -22,24 +22,19 @@ from dagster import (
     MetadataValue,
 )
 
-from OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.config.models import ConfigOIIO
+# from OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.config.models import ConfigOIIO
 from OpenStudioLandscapes.DagsterCodeLocation.JobProcessor.deadline_templates.jobs import models_submission
 from OpenStudioLandscapes.DagsterCodeLocation.JobProcessor.dagster_job_processor.config.models import DefaultConstants
 
 from OpenStudioLandscapes.DagsterCodeLocation.JobProcessor.deadline_templates.jobs.job_base import JobBase
 
 from OpenStudioLandscapes.DagsterCodeLocation.JobProcessor.dagster_job_processor.assets.read_yaml import (
-    # ASSET_HEADER_JOB_PROCESSOR,
-    # ASSET_HEADER_JOB_PROCESSOR_PREPROCESSOR_KITSU,
     ASSET_HEADER_JOB_PROCESSOR_DEADLINE,
     ASSET_HEADER_JOB_PROCESSOR_READER,
 )
 
 from OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.base.assets import (
-    ASSET_HEADER_OIIO_PROCESSOR,
     ASSET_HEADER_JOB_PROCESSOR,
-    # ASSET_HEADER_JOB_PROCESSOR_DEADLINE,
-    # ASSET_HEADER_JOB_PROCESSOR_READER,
 )
 
 
@@ -81,8 +76,11 @@ ASSET_HEADER_OIIO_PROCESSOR_CREATE_TEXT_OVERLAY = {
         "render_output_filename": AssetIn(
             AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "render_output_filename"]),
         ),
-        "CONFIG_OIIO": AssetIn(
-            AssetKey([*ASSET_HEADER_OIIO_PROCESSOR["key_prefix"], "CONFIG_OIIO"]),
+        # "CONFIG_OIIO": AssetIn(
+        #     AssetKey([*ASSET_HEADER_OIIO_PROCESSOR["key_prefix"], "CONFIG_OIIO"]),
+        # ),
+        "CONFIG": AssetIn(
+            AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "CONFIG"]),
         ),
         # "job_id_raw": AssetIn(
         #     AssetKey([*ASSET_HEADER_JOB_PROCESSOR_DEADLINE["key_prefix"], "job_id_raw"]),
@@ -97,7 +95,8 @@ def create_text_overlay(
         version: str,
         render_output_filename: Dict,
         # image_sequence_raw: List[pathlib.Path],
-        CONFIG_OIIO: ConfigOIIO,
+        # CONFIG_OIIO: ConfigOIIO,
+        CONFIG: DefaultConstants,
         # job_id_raw: str,
 ) -> Generator[Output[List] | AssetMaterialization | Any, Any, None]:
     # https://stackoverflow.com/questions/24961127/how-to-create-a-video-from-images-with-ffmpeg
@@ -109,15 +108,15 @@ def create_text_overlay(
     #  - [x] Remove hard code
     input_dir: pathlib.Path = render_output_directory.joinpath(
         # version,
-        DefaultConstants.RENDER_RAW_OUT,
+        CONFIG.RENDER_RAW_OUT,
     )
 
     # Todo
     #  - [x] Remove hard code
     output_dir: pathlib.Path = render_output_directory.joinpath(
         # version,
-        DefaultConstants.OIIO_BASE_OUT,
-        DefaultConstants.OIIO_TEXT_OVERLAY_OUT,
+        CONFIG.OIIO_BASE_OUT,
+        CONFIG.OIIO_TEXT_OVERLAY_OUT,
     )
     output_dir.mkdir(parents=True, exist_ok=True)
 
