@@ -38,6 +38,7 @@ requires-python = ">=3.11"
 dev = [
     "dagster-webserver==1.9.11",
     "pytest",
+    "OpenStudioLandscapes @ git+https://github.com/michimussato/OpenStudioLandscapes.git",
 ]
 
 [project.readme]
