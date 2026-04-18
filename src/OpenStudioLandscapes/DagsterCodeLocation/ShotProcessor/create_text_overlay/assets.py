@@ -31,7 +31,7 @@ from OpenStudioLandscapes.DagsterCodeLocation.JobProcessor.deadline_templates.jo
 from OpenStudioLandscapes.DagsterCodeLocation.JobProcessor.dagster_job_processor.assets.read_yaml import (
     # ASSET_HEADER_JOB_PROCESSOR,
     # ASSET_HEADER_JOB_PROCESSOR_PREPROCESSOR_KITSU,
-    # ASSET_HEADER_JOB_PROCESSOR_DEADLINE,
+    ASSET_HEADER_JOB_PROCESSOR_DEADLINE,
     ASSET_HEADER_JOB_PROCESSOR_READER,
 )
 
