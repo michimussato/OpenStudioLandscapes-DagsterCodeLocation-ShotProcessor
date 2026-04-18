@@ -65,11 +65,11 @@ ASSET_HEADER_OIIO_PROCESSOR_CREATE_TEXT_OVERLAY = {
             dagster_type=pathlib.Path,
             description="Todo",
         ),
-        # "Deadline_OutputFilename": AssetOut(
-        #     **ASSET_HEADER_OIIO_PROCESSOR_CREATE_TEXT_OVERLAY,
-        #     dagster_type=str,
-        #     description="Todo",
-        # ),
+        "Deadline_OutputFilename": AssetOut(
+            **ASSET_HEADER_OIIO_PROCESSOR_CREATE_TEXT_OVERLAY,
+            dagster_type=str,
+            description="Todo",
+        ),
     },
     ins={
         "version": AssetIn(
