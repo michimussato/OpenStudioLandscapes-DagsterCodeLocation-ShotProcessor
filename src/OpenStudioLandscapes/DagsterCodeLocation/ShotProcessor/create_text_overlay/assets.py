@@ -156,8 +156,8 @@ def create_text_overlay(
     #  - [ ] add out timestamp
     cmd: List[str] = [
         "shot-processor",
-        "--exr-image", input_dir / render_output_filename["padding_deadline_batch_startframe"],
-        "--kitsu-task-json", render_output_directory / "kitsu_task.json",
+        "--exr-image", input_dir.joinpath(render_output_filename["padding_deadline_batch_startframe"]).as_posix(),
+        "--kitsu-task-json", render_output_directory.joinpath("kitsu_task.json").as_posix(),
         "--oiio-config-yaml", "yaml",
         "--version", version,
         # https://docs.thinkboxsoftware.com/products/deadline/10.2/1_User%20Manual/manual/manual-submission.html#arbitrary-command-line-jobs
@@ -183,9 +183,9 @@ def create_text_overlay(
             "__".join(
                 context.asset_key_for_output(output_name).path
             ): MetadataValue.json(cmd),
-            "cmd": MetadataValue.md(
-                f"```yaml\n{yaml.safe_dump(cmd)}\n```"
-            ),
+            # "cmd": MetadataValue.md(
+            #     f"```yaml\n{yaml.safe_dump(cmd)}\n```"
+            # ),
             # "logs": MetadataValue.md(
             #     f"```yaml\n{yaml.safe_dump(logs)}\n```"
             # ),
