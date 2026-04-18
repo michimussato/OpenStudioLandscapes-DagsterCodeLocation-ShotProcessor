@@ -233,7 +233,7 @@ def create_text_overlay(
         metadata={
             "__".join(
                 context.asset_key_for_output(output_name).path
-            ): MetadataValue.null(None),
+            ): MetadataValue.null(),
             # "ffmpeg_out": MetadataValue.path(ffmpeg_out),
         }
     )
