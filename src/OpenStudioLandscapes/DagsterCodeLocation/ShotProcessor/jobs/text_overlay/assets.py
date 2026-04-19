@@ -246,7 +246,7 @@ def exr_to_png(
         # ),
     }
 )
-def job_info_exr_to_png(
+def job_info_text_overlay(
         context: AssetExecutionContext,
         batch_name: str,
         job_title_str: str,
