@@ -101,7 +101,7 @@ options:
 > pip3 install \
 >     --root-user-action=ignore \
 >     --force-reinstall \
->     --editable 'OpenStudioLandscapes-DagsterCodeLocation-ShotProcessor @ git+https://github.com/michimussato/OpenStudioLandscapes-DagsterCodeLocation-ShotProcessor.git@main'
+>     'OpenStudioLandscapes-DagsterCodeLocation-ShotProcessor @ git+https://github.com/michimussato/OpenStudioLandscapes-DagsterCodeLocation-ShotProcessor.git@main'
 > ```
 
 # Development
