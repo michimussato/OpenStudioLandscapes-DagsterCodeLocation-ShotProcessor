@@ -123,37 +123,6 @@ def create_text_overlay(
     )
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    # png_seq: List[pathlib.Path] = []
-
-    # for d_image in raw_to_oiio:
-    #     png: Union[pathlib.Path, None]
-    #     png = d_image.get("png_out", None)
-    #     if png is not None:
-    #         png_seq.append(png)
-
-    # context.log.debug(f"{png_seq = }")
-
-    # # cmds: List[List[str]] = []
-    # ffmpeg_out = pathlib.Path(output_dir).joinpath(
-    #     f"{output_format_}.{output_format_}"
-    # )
-
-    # if bool(png_seq):
-    # i_seq = []
-    # f: pathlib.Path
-    # for f in png_seq:
-    #     i_seq.extend(["-i", f.as_posix()])
-
-    # with tempfile.NamedTemporaryFile(
-    #         delete=False,
-    #         prefix="ffmpeg_images_list__",
-    #         suffix=".txt",
-    #         mode="w",
-    # ) as file_out:
-    #
-    #     for f in png_seq:
-    #         file_out.write(f"file {f.as_posix()}\n")
-
     # Todo:
     #  - [ ] add in timestamp
     #  - [ ] add out timestamp
