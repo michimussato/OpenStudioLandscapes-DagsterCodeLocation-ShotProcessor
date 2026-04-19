@@ -1,5 +1,3 @@
-# from typing import NamedTuple
-
 from dagster import get_dagster_logger
 from pydantic import (
     BaseModel,
@@ -12,6 +10,30 @@ LOGGER = get_dagster_logger(__name__)
 # class Resolution(NamedTuple):
 #     x: int
 #     y: int
+
+
+# class ShotProcessorConfig(BaseModel):
+#     OIIO_BASE_OUT: str = Field(
+#         default="oiio",
+#         description="The base subfolder where the processed raw renders will go."
+#     )
+#     OIIO_TEXT_OVERLAY_OUT: str = Field(
+#         default="oiio_text_overlay",
+#         description="The subfolder where the text overlay images will go."
+#     )
+#     OIIO_HANDLE_OVERLAY_OUT: str = Field(
+#         default="oiio_handle_overlay",
+#         description="The subfolder where the handle overlay images will go."
+#     )
+#     OIIO_EXR_WITH_CUSTOM_METADATA: str = Field(
+#         default="oiio_exr_with_custom_metadata",
+#         description="The subfolder where the EXR images with extra "
+#                     "metadata will go."
+#     )
+#     OIIO_PNG: str = Field(
+#         default="oiio_png",
+#         description="The subfolder where the PNG images will go."
+#     )
 
 
 class ConfigOIIO(BaseModel):
