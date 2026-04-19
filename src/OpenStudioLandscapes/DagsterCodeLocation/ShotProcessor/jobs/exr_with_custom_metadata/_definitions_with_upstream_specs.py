@@ -2,7 +2,7 @@ from dagster import (
     Definitions,
 )
 
-from OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.text_overlay.definitions import assets_base
+from OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.jobs.exr_with_custom_metadata.definitions import assets_base
 
 from OpenStudioLandscapes.DagsterCodeLocation.JobProcessor.dagster_job_processor.assets.read_yaml import (
     batch_name,

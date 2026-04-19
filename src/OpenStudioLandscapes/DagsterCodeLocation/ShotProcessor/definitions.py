@@ -3,8 +3,9 @@ from dagster import (
 )
 
 from OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.base.definitions import assets_base
-from OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.text_overlay.definitions import assets_base as assets_text_overlay
-from OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.handle_overlay.definitions import assets_base as assets_handle_overlay
+from OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.jobs.text_overlay.definitions import assets_base as assets_text_overlay
+from OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.jobs.handle_overlay.definitions import assets_base as assets_handle_overlay
+from OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.jobs.exr_with_custom_metadata.definitions import assets_base as assets_exr_with_custom_metadata
 
 from OpenStudioLandscapes.DagsterCodeLocation.JobProcessor.dagster_job_processor.assets.read_yaml import (
     batch_name,
@@ -48,6 +49,7 @@ defs = Definitions(
         *assets_base,
         *assets_text_overlay,
         *assets_handle_overlay,
+        *assets_exr_with_custom_metadata,
         *assets_external,
     ],
 )

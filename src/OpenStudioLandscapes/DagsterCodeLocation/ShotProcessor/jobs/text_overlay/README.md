@@ -11,5 +11,5 @@
 
 ```shell
 pip install --editable .[dev]
-dagster dev --workspace src/OpenStudioLandscapes/DagsterCodeLocation/ShotProcessor/create_text_overlay/workspace.yaml
+dagster dev --workspace src/OpenStudioLandscapes/DagsterCodeLocation/ShotProcessor/jobs/text_overlay/workspace.yaml
 ```
