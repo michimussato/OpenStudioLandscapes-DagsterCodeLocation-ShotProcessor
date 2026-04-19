@@ -1,15 +1,15 @@
 <!-- TOC -->
 * [ShotProcessor](#shotprocessor)
-  * [create_text_overlay](#create_text_overlay)
+  * [exr_to_png](#exr_to_png)
 <!-- TOC -->
 
 ---
 
 # ShotProcessor
 
-## create_text_overlay
+## exr_to_png
 
 ```shell
 pip install --editable .[dev]
-dagster dev --workspace src/OpenStudioLandscapes/DagsterCodeLocation/ShotProcessor/jobs/text_overlay/workspace.yaml
+dagster dev --workspace src/OpenStudioLandscapes/DagsterCodeLocation/ShotProcessor/jobs/exr_to_png/workspace.yaml
 ```

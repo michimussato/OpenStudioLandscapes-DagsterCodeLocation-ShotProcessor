@@ -2,5 +2,5 @@
 
 load_from:
   - python_module:
-      module_name: OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.jobs.text_overlay._definitions_with_upstream_specs
-      location_name: "OpenStudioLandscapes-DagsterCodeLocation-ShotProcessor (create_text_overlay)"
+      module_name: OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.jobs.exr_to_png._definitions_with_upstream_specs
+      location_name: "OpenStudioLandscapes-DagsterCodeLocation-ShotProcessor (create_png)"

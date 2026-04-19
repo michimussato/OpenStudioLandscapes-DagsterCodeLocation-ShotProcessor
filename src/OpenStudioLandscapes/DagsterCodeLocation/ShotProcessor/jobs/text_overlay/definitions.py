@@ -5,10 +5,10 @@ from dagster import (
     load_assets_from_modules,
 )
 
-import OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.jobs.text_overlay.assets
+import OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.jobs.exr_to_png.assets
 
 
-assets_base = load_assets_from_modules([OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.jobs.text_overlay.assets])
+assets_base = load_assets_from_modules([OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.jobs.exr_to_png.assets])
 
 
 defs = Definitions(
