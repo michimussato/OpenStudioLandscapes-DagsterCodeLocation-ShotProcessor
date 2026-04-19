@@ -302,7 +302,7 @@ def job_info_handle_overlay(
         "Plugin": models_submission.DeadlinePlugins.CommandLine.value,
         # create_handle_overlay is a single task
         "Frames": frames,
-        "Name": f"{job_title_str} - Text Overlay",
+        "Name": f"{job_title_str} - Handle Overlay",
         "Comment": job_model.comment,
         # "Department"
         "BatchName": batch_name,

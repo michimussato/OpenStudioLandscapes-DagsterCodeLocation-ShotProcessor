@@ -271,7 +271,7 @@ def job_info_exr_with_custom_metadata(
         "Plugin": models_submission.DeadlinePlugins.CommandLine.value,
         # exr_with_custom_metadata is a single task
         "Frames": frames,
-        "Name": f"{job_title_str} - Text Overlay",
+        "Name": f"{job_title_str} - EXR with Custom Metadata",
         "Comment": job_model.comment,
         # "Department"
         "BatchName": batch_name,
