@@ -19,6 +19,8 @@ __url__ = "https://github.com/michimussato/OpenStudioLandscapes"
 __license__ = "GNU Affero General Public License v3.0"
 
 from OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.config.models import ConfigOIIO
+# from OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor import __version__
+
 
 LOGGER = get_dagster_logger(__name__)
 
@@ -46,7 +48,7 @@ def parse_args(args) -> argparse.Namespace:
     # parser.add_argument(
     #     "--version",
     #     action="version",
-    #     version=f"moon-clock {__version__}",
+    #     version=f"shot-processor version {__version__}",
     # )
     # parser.add_argument(dest="n", help="n-th Fibonacci number", type=int, metavar="INT")
     parser.add_argument(
@@ -230,7 +232,10 @@ def setup_logging(loglevel):
 
 def main(args):
     args = parse_args(args)
-    setup_logging(args.loglevel)
+    if args.loglevel is not None:
+        # Todo
+        #  - [ ] Dagster logger prints DEBUG even in INFO level
+        setup_logging(args.loglevel)
 
     # Open this file once
     def parse_kitsu_task_json(
@@ -264,7 +269,7 @@ def main(args):
             output_dir=args.output_dir,
         )
 
-        sys.stdout.write(result.as_posix())
+        sys.stdout.write(f"{result.as_posix()}\n")
         return 0
 
     elif args.sub_command == "create-handle-overlay":
@@ -283,7 +288,7 @@ def main(args):
             output_dir=args.output_dir,
         )
 
-        sys.stdout.write(result.as_posix())
+        sys.stdout.write(f"{result.as_posix()}\n")
         return 0
 
     elif args.sub_command == "exr-with-custom-metadata":
@@ -302,7 +307,7 @@ def main(args):
             output_dir=args.output_dir,
         )
 
-        sys.stdout.write(result.as_posix())
+        sys.stdout.write(f"{result.as_posix()}\n")
         return 0
 
     elif args.sub_command == "create-png":
@@ -321,7 +326,7 @@ def main(args):
             output_dir=args.output_dir,
         )
 
-        sys.stdout.write(result.as_posix())
+        sys.stdout.write(f"{result.as_posix()}\n")
         return 0
 
     # args["kitsu_task_dict"] = parse_kitsu_task_json(args.kitsu_task_json)

@@ -302,7 +302,7 @@ def job_info(
         "Plugin": models_submission.DeadlinePlugins.CommandLine.value,
         # create_text_overlay is a single task
         "Frames": "1",
-        "Name": f"{job_title_str} - PNG to MOV",
+        "Name": f"{job_title_str} - Text Overlay",
         "Comment": job_model.comment,
         # "Department"
         "BatchName": batch_name,
