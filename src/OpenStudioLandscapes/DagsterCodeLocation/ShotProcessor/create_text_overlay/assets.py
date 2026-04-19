@@ -173,6 +173,252 @@ def create_text_overlay(
     # cmd #
     #######
 
+    """
+    =======================================================
+    Error
+    =======================================================
+    Error: FailRenderException : Process returned non-zero exit code '127'
+       at Deadline.Plugins.DeadlinePlugin.FailRender(String message) (Python.Runtime.PythonException)
+      File "/var/lib/Thinkbox/Deadline10/workers/minion05-deadline-10-2-worker/plugins/69e408f7f32c64522835830d/CommandLine.py", line 79, in RenderTasks
+        self.FailRender( "Process returned non-zero exit code '{}'".format( exitCode ) )
+       at Python.Runtime.Dispatcher.Dispatch(ArrayList args)
+       at __FranticX_GenericDelegate0Dispatcher.Invoke()
+       at Deadline.Plugins.DeadlinePlugin.RenderTasks()
+       at Deadline.Plugins.DeadlinePlugin.DoRenderTasks()
+       at Deadline.Plugins.PluginWrapper.RenderTasks(Task task, String& outMessage, AbortLevel& abortLevel)
+       at Deadline.Plugins.PluginWrapper.RenderTasks(Task task, String& outMessage, AbortLevel& abortLevel)
+    
+    =======================================================
+    Type
+    =======================================================
+    RenderPluginException
+    
+    =======================================================
+    Stack Trace
+    =======================================================
+       at Deadline.Plugins.SandboxedPlugin.d(DeadlineMessage bgt, CancellationToken bgu)
+       at Deadline.Plugins.SandboxedPlugin.RenderTask(Task task, CancellationToken cancellationToken)
+       at Deadline.Slaves.SlaveRenderThread.c(TaskLogWriter ajy, CancellationToken ajz)
+    
+    =======================================================
+    Log
+    =======================================================
+    2026-04-18 22:50:17:  0: Loading Job's Plugin timeout is Disabled
+    2026-04-18 22:50:17:  0: SandboxedPlugin: Render Job As User disabled, running as current user 'root'
+    2026-04-18 22:50:22:  0: Executing plugin command of type 'Initialize Plugin'
+    2026-04-18 22:50:22:  0: INFO: Executing plugin script '/var/lib/Thinkbox/Deadline10/workers/minion05-deadline-10-2-worker/plugins/69e408f7f32c64522835830d/CommandLine.py'
+    2026-04-18 22:50:22:  0: INFO: Plugin execution sandbox using Python version 3
+    2026-04-18 22:50:22:  0: INFO: Single Frames Only: False
+    2026-04-18 22:50:22:  0: INFO: About: Command Line Plugin for Deadline
+    2026-04-18 22:50:22:  0: INFO: The job's environment will be merged with the current environment before rendering
+    2026-04-18 22:50:22:  0: Done executing plugin command of type 'Initialize Plugin'
+    2026-04-18 22:50:23:  0: Start Job timeout is disabled.
+    2026-04-18 22:50:23:  0: Task timeout is disabled.
+    2026-04-18 22:50:23:  0: Loaded job: Test Production - SH030 - 4_1201-1250_4 - Rendering - sh030_001.blend - 101 - blender - Text Overlay (69e408f7f32c64522835830d)
+    2026-04-18 22:50:23:  0: Executing plugin command of type 'Start Job'
+    2026-04-18 22:50:23:  0: DEBUG: S3BackedCache Client is not installed.
+    2026-04-18 22:50:23:  0: INFO: Executing global asset transfer preload script '/var/lib/Thinkbox/Deadline10/workers/minion05-deadline-10-2-worker/plugins/69e408f7f32c64522835830d/GlobalAssetTransferPreLoad.py'
+    2026-04-18 22:50:23:  0: INFO: Looking for legacy (pre-10.0.26) AWS Portal File Transfer...
+    2026-04-18 22:50:23:  0: INFO: Looking for legacy (pre-10.0.26) File Transfer controller in /opt/Thinkbox/S3BackedCache/bin/task.py...
+    2026-04-18 22:50:23:  0: INFO: Could not find legacy (pre-10.0.26) AWS Portal File Transfer.
+    2026-04-18 22:50:23:  0: INFO: Legacy (pre-10.0.26) AWS Portal File Transfer is not installed on the system.
+    2026-04-18 22:50:23:  0: Done executing plugin command of type 'Start Job'
+    2026-04-18 22:50:23:  0: Plugin rendering frame(s): 1
+    2026-04-18 22:50:23:  0: Executing plugin command of type 'Render Task'
+    2026-04-18 22:50:23:  0: INFO: Executable: /bin/bash
+    2026-04-18 22:50:23:  0: INFO: Arguments: -c "shot-processor --exr-image '/data/share/AWSPortalRoot1/out/Test Production/Shot/SH030/Rendering/101/raw/sh030_001.0001.exr' --kitsu-task-json '/data/share/AWSPortalRoot1/out/Test Production/Shot/SH030/Rendering/101/kitsu_task.json' --oiio-config-yaml '/data/share/AWSPortalRoot1/out/Test Production/Shot/SH030/Rendering/101/config_oiio.yaml' --version 101 --frame-number '0001' --output-dir '/data/share/AWSPortalRoot1/out/Test Production/Shot/SH030/Rendering/101/oiio/oiio_text_overlay' create-text-overlay"
+    2026-04-18 22:50:23:  0: INFO: Execute in Shell: False
+    2026-04-18 22:50:23:  0: INFO: Invoking: Run Process
+    2026-04-18 22:50:23:  0: STDOUT: /bin/bash: line 1: shot-processor: command not found
+    2026-04-18 22:50:23:  0: INFO: Process returned: 127
+    2026-04-18 22:50:23:  0: Done executing plugin command of type 'Render Task'
+    
+    =======================================================
+    Details
+    =======================================================
+    Date: 04/18/2026 22:50:27
+    Frames: 1
+    Elapsed Time: 00:00:00:10
+    Job Submit Date: 04/18/2026 22:43:03
+    Job User: michael
+    Average RAM Usage: 1682622720 (11%)
+    Peak RAM Usage: 1685450752 (11%)
+    Average CPU Usage: 24%
+    Peak CPU Usage: 37%
+    Used CPU Clocks (x10^6 cycles): 6131
+    Total CPU Clocks (x10^6 cycles): 25545
+    
+    =======================================================
+    Worker Information
+    =======================================================
+    Worker Name: minion05-deadline-10-2-worker
+    Version: v10.2.1.1 Release (094cbe890)
+    Operating System: Linux
+    Machine User: root
+    IP Address: 192.168.178.20
+    MAC Address: 5E:48:2B:DA:D0:CC
+    CPU Architecture: x86_64
+    CPUs: 4
+    CPU Usage: 30%
+    Memory Usage: 1.6 GB / 15.5 GB (10%)
+    Free Disk Space: 3.220 GB 
+    Video Card: 
+    """
+
+    """
+    Job Info Parameters
+    
+    BatchName=Batch: Test Production - SH030 - 4_1201-1250_4 - Rendering - sh030_001.blend - 101 - blender
+    Comment=This is a new Bender job comment
+    Denylist=
+    EventOptIns=
+    ForceReloadPlugin=True
+    Frames=1
+    JobDependency0=69e406cff32c64522835830c
+    JobDependencyPercentage=100
+    MachineName=lenovo
+    Name=Test Production - SH030 - 4_1201-1250_4 - Rendering - sh030_001.blend - 101 - blender - Text Overlay
+    OverrideTaskExtraInfoNames=False
+    Plugin=CommandLine
+    Priority=70
+    Region=
+    ScheduledStartDateTime=19/04/2026 00:43
+    UserName=michael
+    """
+
+    """
+    Plugin Info Parameters
+    
+    Arguments=-c "shot-processor --exr-image '/data/share/AWSPortalRoot1/out/Test Production/Shot/SH030/Rendering/101/raw/sh030_001.<STARTFRAME%4>.exr' --kitsu-task-json '/data/share/AWSPortalRoot1/out/Test Production/Shot/SH030/Rendering/101/kitsu_task.json' --oiio-config-yaml '/data/share/AWSPortalRoot1/out/Test Production/Shot/SH030/Rendering/101/config_oiio.yaml' --version 101 --frame-number '<STARTFRAME%4>' --output-dir '/data/share/AWSPortalRoot1/out/Test Production/Shot/SH030/Rendering/101/oiio/oiio_text_overlay' create-text-overlay"
+    Executable=/bin/bash
+    """
+
+    """
+    BatchName=Batch: Test Production - SH030 - 4_1201-1250_4 - Rendering - sh030_001.blend - 101 - blender
+    Comment=This is a new Bender job comment
+    Denylist=
+    EventOptIns=
+    ForceReloadPlugin=True
+    Frames=1197,1213,1229,1245,1205,1221,1237,1253,1201,1209,1217,1225,1233,1241,1249,1199,1203,1207,1211,1215,1219,1223,1227,1231,1235,1239,1243,1247,1251,1198,1200,1202,1204,1206,1208,1210,1212,1214,1216,1218,1220,1222,1224,1226,1228,1230,1232,1234,1236,1238,1240,1242,1244,1246,1248,1250,1252,1254
+    JobDependency0=69e406cff32c64522835830c
+    JobDependencyPercentage=100
+    MachineName=lenovo
+    Name=Test Production - SH030 - 4_1201-1250_4 - Rendering - sh030_001.blend - 101 - blender - Text Overlay
+    OverrideTaskExtraInfoNames=False
+    Plugin=CommandLine
+    Priority=70
+    Region=
+    ScheduledStartDateTime=19/04/2026 00:43
+    UserName=michael
+    """
+
+    """
+    =======================================================
+    Error
+    =======================================================
+    Error: FailRenderException : Process returned non-zero exit code '1'
+       at Deadline.Plugins.DeadlinePlugin.FailRender(String message) (Python.Runtime.PythonException)
+      File "/var/lib/Thinkbox/Deadline10/workers/minion05-deadline-10-2-worker/plugins/69e408f7f32c64522835830d/CommandLine.py", line 79, in RenderTasks
+        self.FailRender( "Process returned non-zero exit code '{}'".format( exitCode ) )
+       at Python.Runtime.Dispatcher.Dispatch(ArrayList args)
+       at __FranticX_GenericDelegate0Dispatcher.Invoke()
+       at Deadline.Plugins.DeadlinePlugin.RenderTasks()
+       at Deadline.Plugins.DeadlinePlugin.DoRenderTasks()
+       at Deadline.Plugins.PluginWrapper.RenderTasks(Task task, String& outMessage, AbortLevel& abortLevel)
+       at Deadline.Plugins.PluginWrapper.RenderTasks(Task task, String& outMessage, AbortLevel& abortLevel)
+    
+    =======================================================
+    Type
+    =======================================================
+    RenderPluginException
+    
+    =======================================================
+    Stack Trace
+    =======================================================
+       at Deadline.Plugins.SandboxedPlugin.d(DeadlineMessage bgt, CancellationToken bgu)
+       at Deadline.Plugins.SandboxedPlugin.RenderTask(Task task, CancellationToken cancellationToken)
+       at Deadline.Slaves.SlaveRenderThread.c(TaskLogWriter ajy, CancellationToken ajz)
+    
+    =======================================================
+    Log
+    =======================================================
+    2026-04-19 06:56:42:  0: Loading Job's Plugin timeout is Disabled
+    2026-04-19 06:56:42:  0: SandboxedPlugin: Render Job As User disabled, running as current user 'root'
+    2026-04-19 06:56:47:  0: Executing plugin command of type 'Initialize Plugin'
+    2026-04-19 06:56:47:  0: INFO: Executing plugin script '/var/lib/Thinkbox/Deadline10/workers/minion05-deadline-10-2-worker/plugins/69e408f7f32c64522835830d/CommandLine.py'
+    2026-04-19 06:56:47:  0: INFO: Plugin execution sandbox using Python version 3
+    2026-04-19 06:56:47:  0: INFO: Single Frames Only: False
+    2026-04-19 06:56:47:  0: INFO: About: Command Line Plugin for Deadline
+    2026-04-19 06:56:47:  0: INFO: The job's environment will be merged with the current environment before rendering
+    2026-04-19 06:56:47:  0: Done executing plugin command of type 'Initialize Plugin'
+    2026-04-19 06:56:47:  0: Start Job timeout is disabled.
+    2026-04-19 06:56:47:  0: Task timeout is disabled.
+    2026-04-19 06:56:47:  0: Loaded job: Test Production - SH030 - 4_1201-1250_4 - Rendering - sh030_001.blend - 101 - blender - Text Overlay (69e408f7f32c64522835830d)
+    2026-04-19 06:56:47:  0: Executing plugin command of type 'Start Job'
+    2026-04-19 06:56:47:  0: DEBUG: S3BackedCache Client is not installed.
+    2026-04-19 06:56:47:  0: INFO: Executing global asset transfer preload script '/var/lib/Thinkbox/Deadline10/workers/minion05-deadline-10-2-worker/plugins/69e408f7f32c64522835830d/GlobalAssetTransferPreLoad.py'
+    2026-04-19 06:56:48:  0: INFO: Looking for legacy (pre-10.0.26) AWS Portal File Transfer...
+    2026-04-19 06:56:48:  0: INFO: Looking for legacy (pre-10.0.26) File Transfer controller in /opt/Thinkbox/S3BackedCache/bin/task.py...
+    2026-04-19 06:56:48:  0: INFO: Could not find legacy (pre-10.0.26) AWS Portal File Transfer.
+    2026-04-19 06:56:48:  0: INFO: Legacy (pre-10.0.26) AWS Portal File Transfer is not installed on the system.
+    2026-04-19 06:56:48:  0: Done executing plugin command of type 'Start Job'
+    2026-04-19 06:56:48:  0: Plugin rendering frame(s): 1213
+    2026-04-19 06:56:48:  0: Executing plugin command of type 'Render Task'
+    2026-04-19 06:56:48:  0: INFO: Executable: /bin/bash
+    2026-04-19 06:56:48:  0: INFO: Arguments: -c "shot-processor --exr-image '/data/share/AWSPortalRoot1/out/Test Production/Shot/SH030/Rendering/101/raw/sh030_001.1213.exr' --kitsu-task-json '/data/share/AWSPortalRoot1/out/Test Production/Shot/SH030/Rendering/101/kitsu_task.json' --oiio-config-yaml '/data/share/AWSPortalRoot1/out/Test Production/Shot/SH030/Rendering/101/config_oiio.yaml' --version 101 --frame-number '1213' --output-dir '/data/share/AWSPortalRoot1/out/Test Production/Shot/SH030/Rendering/101/oiio/oiio_text_overlay' create-text-overlay"
+    2026-04-19 06:56:48:  0: INFO: Execute in Shell: False
+    2026-04-19 06:56:48:  0: INFO: Invoking: Run Process
+    2026-04-19 06:56:50:  0: STDOUT: Traceback (most recent call last):
+    2026-04-19 06:56:50:  0: STDOUT:   File "/opt/python3.11/bin/shot-processor", line 6, in <module>
+    2026-04-19 06:56:50:  0: STDOUT:     sys.exit(run())
+    2026-04-19 06:56:50:  0: STDOUT:              ^^^^^
+    2026-04-19 06:56:50:  0: STDOUT:   File "/opt/python3.11/lib/python3.11/site-packages/OpenStudioLandscapes/DagsterCodeLocation/ShotProcessor/cli.py", line 338, in run
+    2026-04-19 06:56:50:  0: STDOUT:     main(sys.argv[1:])
+    2026-04-19 06:56:50:  0: STDOUT:   File "/opt/python3.11/lib/python3.11/site-packages/OpenStudioLandscapes/DagsterCodeLocation/ShotProcessor/cli.py", line 233, in main
+    2026-04-19 06:56:50:  0: STDOUT:     setup_logging(args.loglevel)
+    2026-04-19 06:56:50:  0: STDOUT:   File "/opt/python3.11/lib/python3.11/site-packages/OpenStudioLandscapes/DagsterCodeLocation/ShotProcessor/cli.py", line 228, in setup_logging
+    2026-04-19 06:56:50:  0: STDOUT:     LOGGER.setLevel(loglevel)
+    2026-04-19 06:56:50:  0: STDOUT:   File "/opt/python3.11/lib/python3.11/logging/__init__.py", line 1464, in setLevel
+    2026-04-19 06:56:50:  0: STDOUT:     self.level = _checkLevel(level)
+    2026-04-19 06:56:50:  0: STDOUT:                  ^^^^^^^^^^^^^^^^^^
+    2026-04-19 06:56:50:  0: STDOUT:   File "/opt/python3.11/lib/python3.11/logging/__init__.py", line 210, in _checkLevel
+    2026-04-19 06:56:50:  0: STDOUT:     raise TypeError("Level not an integer or a valid string: %r"
+    2026-04-19 06:56:50:  0: STDOUT: TypeError: Level not an integer or a valid string: None
+    2026-04-19 06:56:50:  0: INFO: Process returned: 1
+    2026-04-19 06:56:50:  0: Done executing plugin command of type 'Render Task'
+    
+    =======================================================
+    Details
+    =======================================================
+    Date: 04/19/2026 06:56:54
+    Frames: 1213
+    Elapsed Time: 00:00:00:12
+    Job Submit Date: 04/18/2026 22:43:03
+    Job User: michael
+    Average RAM Usage: 1789409024 (11%)
+    Peak RAM Usage: 1833238528 (12%)
+    Average CPU Usage: 31%
+    Peak CPU Usage: 57%
+    Used CPU Clocks (x10^6 cycles): 5003
+    Total CPU Clocks (x10^6 cycles): 16137
+    
+    =======================================================
+    Worker Information
+    =======================================================
+    Worker Name: minion05-deadline-10-2-worker
+    Version: v10.2.1.1 Release (094cbe890)
+    Operating System: Linux
+    Machine User: root
+    IP Address: 192.168.178.20
+    MAC Address: 5E:48:2B:DA:D0:CC
+    CPU Architecture: x86_64
+    CPUs: 4
+    CPU Usage: 28%
+    Memory Usage: 1.7 GB / 15.5 GB (10%)
+    Free Disk Space: 1.978 GB 
+    Video Card: 
+    """
+
     output_name = "cmd"
 
     yield Output(
@@ -257,9 +503,9 @@ def create_text_overlay(
         "render_output_directory": AssetIn(
             AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "render_output_directory"])
         ),
-        # "frames": AssetIn(
-        #     AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "frames"])
-        # ),
+        "frames": AssetIn(
+            AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "frames"])
+        ),
         # "render_output_filename": AssetIn(
         #     AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "render_output_filename"])
         # ),
@@ -282,7 +528,7 @@ def job_info(
         batch_name: str,
         job_title_str: str,
         render_output_directory: pathlib.Path,
-        # frames: str,
+        frames: str,
         # render_output_filename: Dict,
         job_model: JobBase,
         job_id_raw: str,
@@ -301,7 +547,7 @@ def job_info(
     job_info_dict = {
         "Plugin": models_submission.DeadlinePlugins.CommandLine.value,
         # create_text_overlay is a single task
-        "Frames": "1",
+        "Frames": frames,
         "Name": f"{job_title_str} - Text Overlay",
         "Comment": job_model.comment,
         # "Department"

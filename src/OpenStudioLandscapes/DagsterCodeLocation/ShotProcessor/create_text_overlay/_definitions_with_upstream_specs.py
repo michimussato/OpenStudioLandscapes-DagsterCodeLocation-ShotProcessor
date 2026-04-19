@@ -7,6 +7,7 @@ from OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.create_text_overlay.
 from OpenStudioLandscapes.DagsterCodeLocation.JobProcessor.dagster_job_processor.assets.read_yaml import (
     batch_name,
     job_title_str,
+    frames,
     read_job_yaml,
     render_output_filename,
     version,
@@ -27,6 +28,7 @@ assets_external.extend(CONFIG_OIIO.specs)
 # JobProcessor
 assets_external.extend(batch_name.specs)
 assets_external.extend(job_title_str.specs)
+assets_external.extend(frames.specs)
 assets_external.extend(read_job_yaml.specs)
 assets_external.extend(render_output_filename.specs)
 assets_external.extend(render_output_directory.specs)
