@@ -41,30 +41,33 @@ from OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.base.assets import (
 )
 
 
-GROUP_OIIO_PROCESSOR_TEMPLATE = "OpenStudioLandscapes_DagsterCodeLocation_JobProcessor_OIIO_Processor_template"
-# KEY_CONSTANTS_DEFAULT = [GROUP_CONSTANTS_DEFAULT, "Constants"]
-KEY_OIIO_PROCESSOR_TEMPLATE = [GROUP_OIIO_PROCESSOR_TEMPLATE]
+JOB = "mov_to_kitsu"
 
-ASSET_HEADER_OIIO_PROCESSOR_TEMPLATE = {
-    "group_name": GROUP_OIIO_PROCESSOR_TEMPLATE,
-    "key_prefix": KEY_OIIO_PROCESSOR_TEMPLATE,
+
+GROUP = f"OpenStudioLandscapes_DagsterCodeLocation_JobProcessor_OIIO_Processor_{JOB}"
+# KEY_CONSTANTS_DEFAULT = [GROUP_CONSTANTS_DEFAULT, "Constants"]
+KEY_PREFIX = [GROUP]
+
+ASSET_HEADER = {
+    "group_name": GROUP,
+    "key_prefix": KEY_PREFIX,
 }
 
 
 @multi_asset(
     outs={
         "cmd": AssetOut(
-            **ASSET_HEADER_OIIO_PROCESSOR_TEMPLATE,
+            **ASSET_HEADER,
             dagster_type=List,
             description="Todo",
         ),
         "Deadline_OutputDirectory": AssetOut(
-            **ASSET_HEADER_OIIO_PROCESSOR_TEMPLATE,
+            **ASSET_HEADER,
             dagster_type=pathlib.Path,
             description="Todo",
         ),
         "Deadline_OutputFilename": AssetOut(
-            **ASSET_HEADER_OIIO_PROCESSOR_TEMPLATE,
+            **ASSET_HEADER,
             dagster_type=NoneType,
             description="Todo",
         ),
@@ -243,7 +246,7 @@ def _template(
 @multi_asset(
     outs={
         "job_info_model": AssetOut(
-            **ASSET_HEADER_OIIO_PROCESSOR_TEMPLATE,
+            **ASSET_HEADER,
             dagster_type=models_submission.JobInfo,
             description="",
         ),
@@ -271,7 +274,7 @@ def _template(
             AssetKey([*ASSET_HEADER_JOB_PROCESSOR_DEADLINE["key_prefix"], "job_id_raw"]),
         ),
         "Deadline_OutputDirectory": AssetIn(
-            AssetKey([*ASSET_HEADER_OIIO_PROCESSOR_TEMPLATE["key_prefix"], "Deadline_OutputDirectory"]),
+            AssetKey([*ASSET_HEADER["key_prefix"], "Deadline_OutputDirectory"]),
         ),
         # "Deadline_OutputFilename": AssetIn(
         #     AssetKey([*ASSET_HEADER_OIIO_PROCESSOR_CREATE_TEXT_OVERLAY["key_prefix"], "Deadline_OutputFilename"]),
@@ -302,8 +305,11 @@ def job_info_template(
     job_info_dict = {
         "Plugin": models_submission.DeadlinePlugins.CommandLine.value,
         # _template is a single task
-        "Frames": frames,
-        "Name": f"{job_title_str} - Text Overlay",
+        "Frames": {
+            "multi_task": frames,
+            "single_task": "1",
+        },
+        "Name": f"{job_title_str} - {JOB}",
         "Comment": job_model.comment,
         # "Department"
         "BatchName": batch_name,
@@ -312,7 +318,7 @@ def job_info_template(
         # "Pool"
         # "SecondaryPool"
         # "Group"
-        "Priority": job_model.job_priority,
+        "Priority": job_model.job_priority + 1,
         "ChunkSize": 1,
         # "ConcurrentTasks"
         # "LimitConcurrentTasksToNumberOfCpus"
@@ -359,7 +365,7 @@ def job_info_template(
 @multi_asset(
     outs={
         "plugin_info_model": AssetOut(
-            **ASSET_HEADER_OIIO_PROCESSOR_TEMPLATE,
+            **ASSET_HEADER,
             dagster_type=models_submission.CommandLinePluginInfo,
             description="",
         ),
@@ -375,7 +381,7 @@ def job_info_template(
         #     AssetKey([*ASSET_HEADER_JOB_PROCESSOR_READER["key_prefix"], "read_job_yaml"])
         # ),
         "cmd": AssetIn(
-            AssetKey([*ASSET_HEADER_OIIO_PROCESSOR_TEMPLATE["key_prefix"], "cmd"])
+            AssetKey([*ASSET_HEADER["key_prefix"], "cmd"])
         ),
     }
 )
@@ -429,16 +435,16 @@ def plugin_info_template(
 
 
 @asset(
-    **ASSET_HEADER_OIIO_PROCESSOR_TEMPLATE,
+    **ASSET_HEADER,
     ins={
         "CONFIG": AssetIn(
             AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "CONFIG"]),
         ),
         "job_info_model": AssetIn(
-            AssetKey([*ASSET_HEADER_OIIO_PROCESSOR_TEMPLATE["key_prefix"], "job_info_model"]),
+            AssetKey([*ASSET_HEADER["key_prefix"], "job_info_model"]),
         ),
         "plugin_info_model": AssetIn(
-            AssetKey([*ASSET_HEADER_OIIO_PROCESSOR_TEMPLATE["key_prefix"], "plugin_info_model"]),
+            AssetKey([*ASSET_HEADER["key_prefix"], "plugin_info_model"]),
         ),
         # "job_id_raw": AssetIn(
         #     AssetKey([*ASSET_HEADER_JOB_PROCESSOR_DEADLINE["key_prefix"], "job_id_raw"]),
@@ -493,13 +499,13 @@ def payload_request(
 @multi_asset(
     outs={
         "job": AssetOut(
-            **ASSET_HEADER_OIIO_PROCESSOR_TEMPLATE,
+            **ASSET_HEADER,
             dagster_type=Dict,
             description="The resulting job details received "
                         "from Deadline.",
         ),
         "job_id": AssetOut(
-            **ASSET_HEADER_OIIO_PROCESSOR_TEMPLATE,
+            **ASSET_HEADER,
             dagster_type=str,
             description="The job ID received from Deadline.",
         ),
@@ -509,7 +515,7 @@ def payload_request(
             AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "CONFIG"]),
         ),
         "payload_request": AssetIn(
-            AssetKey([*ASSET_HEADER_OIIO_PROCESSOR_TEMPLATE["key_prefix"], "payload_request"]),
+            AssetKey([*ASSET_HEADER["key_prefix"], "payload_request"]),
         ),
         "job_model": AssetIn(
             AssetKey([*ASSET_HEADER_JOB_PROCESSOR_READER["key_prefix"], "read_job_yaml"])
