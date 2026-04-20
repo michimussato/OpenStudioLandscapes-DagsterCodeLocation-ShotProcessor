@@ -274,7 +274,7 @@ def job_info_text_overlay(
         "Plugin": models_submission.DeadlinePlugins.CommandLine.value,
         # exr_to_png is a single task
         "Frames": frames,
-        "Name": f"{job_title_str} - Text Overlay",
+        "Name": f"{job_title_str} - {JOB}",
         "Comment": job_model.comment,
         # "Department"
         "BatchName": batch_name,
