@@ -8,6 +8,7 @@ from OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.jobs.handle_overlay.
 from OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.jobs.exr_with_custom_metadata.definitions import assets_base as assets_exr_with_custom_metadata
 from OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.jobs.exr_to_png.definitions import assets_base as assets_exr_to_png
 from OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.jobs.png_to_mov.definitions import assets_base as assets_png_to_mov
+from OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.jobs.mov_to_kitsu.definitions import assets_base as assets_mov_to_kitsu
 
 from OpenStudioLandscapes.DagsterCodeLocation.JobProcessor.dagster_job_processor.assets.read_yaml import (
     batch_name,
@@ -62,6 +63,7 @@ defs = Definitions(
         *assets_handle_overlay,
         *assets_png_to_mov,
         *assets_text_overlay,
+        *assets_mov_to_kitsu,
         *assets_external,
     ],
     sensors=all_sensors,

@@ -37,14 +37,13 @@ from OpenStudioLandscapes.DagsterCodeLocation.JobProcessor.dagster_job_processor
 
 from OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.base.assets import (
     ASSET_HEADER_JOB_PROCESSOR,
+    ASSET_HEADER_OIIO_PROCESSOR,
 )
 
-from OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.jobs.exr_to_png.assets import (
-    ASSET_HEADER_OIIO_PROCESSOR_EXR_TO_PNG,
-)
+from OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.jobs.png_to_mov.assets import ASSET_HEADER as ASSET_HEADER_PNG_TO_MOV
 
 
-JOB = "png_to_mov"
+JOB = "mov_to_kitsu"
 
 
 GROUP = f"OpenStudioLandscapes_DagsterCodeLocation_JobProcessor_OIIO_Processor_{JOB}"
@@ -76,21 +75,18 @@ ASSET_HEADER = {
         ),
     },
     ins={
-        # "version": AssetIn(
-        #     AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "version"]),
-        # ),
-        "fps": AssetIn(
-            AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "fps"]),
+        "version": AssetIn(
+            AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "version"]),
         ),
         "render_output_directory": AssetIn(
             AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "render_output_directory"]),
         ),
-        # "render_output_filename": AssetIn(
-        #     AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "render_output_filename"]),
-        # ),
-        # "CONFIG_OIIO_YAML": AssetIn(
-        #     AssetKey([*ASSET_HEADER_OIIO_PROCESSOR["key_prefix"], "CONFIG_OIIO_YAML"]),
-        # ),
+        "render_output_filename": AssetIn(
+            AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "render_output_filename"]),
+        ),
+        "CONFIG_OIIO_YAML": AssetIn(
+            AssetKey([*ASSET_HEADER_OIIO_PROCESSOR["key_prefix"], "CONFIG_OIIO_YAML"]),
+        ),
         "CONFIG": AssetIn(
             AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "CONFIG"]),
         ),
@@ -99,16 +95,15 @@ ASSET_HEADER = {
         # ),
     }
 )
-def png_to_mov(
+def mov_to_kitsu(
         context: AssetExecutionContext,
         # raw_to_oiio: List[Dict],
         # render_version_directory: pathlib.Path,
         render_output_directory: pathlib.Path,
-        # version: str,
-        fps: float,
-        # render_output_filename: Dict,
+        version: str,
+        render_output_filename: Dict,
         # image_sequence_raw: List[pathlib.Path],
-        # CONFIG_OIIO_YAML: pathlib.Path,
+        CONFIG_OIIO_YAML: pathlib.Path,
         CONFIG: DefaultConstants,
         # job_id_raw: str,
 ) -> Generator[Output[List] | AssetMaterialization | Any, Any, None]:
@@ -121,8 +116,7 @@ def png_to_mov(
     #  - [x] Remove hard code
     input_dir: pathlib.Path = render_output_directory.joinpath(
         # version,
-        CONFIG.OIIO_BASE_OUT,
-        CONFIG.OIIO_RAW_TO_PNG,
+        CONFIG.RENDER_RAW_OUT,
     )
 
     # Todo
@@ -130,30 +124,55 @@ def png_to_mov(
     output_dir: pathlib.Path = render_output_directory.joinpath(
         # version,
         CONFIG.OIIO_BASE_OUT,
-        CONFIG.OIIO_PNG_TO_MOV,
+        CONFIG.OIIO_TEXT_OVERLAY_OUT,
     )
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    output_format_ = "mp4"
-    # cmds: List[List[str]] = []
-    ffmpeg_out = pathlib.Path(output_dir).joinpath(
-        f"proxy.{output_format_}"
-    )
+    # png_seq: List[pathlib.Path] = []
+
+    # for d_image in raw_to_oiio:
+    #     png: Union[pathlib.Path, None]
+    #     png = d_image.get("png_out", None)
+    #     if png is not None:
+    #         png_seq.append(png)
+
+    # context.log.debug(f"{png_seq = }")
+
+    # # cmds: List[List[str]] = []
+    # ffmpeg_out = pathlib.Path(output_dir).joinpath(
+    #     f"{output_format_}.{output_format_}"
+    # )
+
+    # if bool(png_seq):
+    # i_seq = []
+    # f: pathlib.Path
+    # for f in png_seq:
+    #     i_seq.extend(["-i", f.as_posix()])
+
+    # with tempfile.NamedTemporaryFile(
+    #         delete=False,
+    #         prefix="ffmpeg_images_list__",
+    #         suffix=".txt",
+    #         mode="w",
+    # ) as file_out:
+    #
+    #     for f in png_seq:
+    #         file_out.write(f"file {f.as_posix()}\n")
 
     # Todo:
     #  - [ ] add in timestamp
     #  - [ ] add out timestamp
     cmd: List[str] = [
-        "/usr/bin/ffmpeg",
-        "-hide_banner",
-        "-y",
-        "-framerate", f"{float(fps):.3f}",
-        # "-an",
-        "-pattern_type", "glob",
-        "-i", f"{input_dir.as_posix()}/*.png",
-        "-c:v", "libx264",
-        "-pix_fmt", "yuv420p",
-        f"{ffmpeg_out.as_posix()}",
+        # CMD to execute
+        # "shot-processor",
+        # "--exr-image", input_dir.joinpath(render_output_filename["padding_deadline_batch_startframe"]).as_posix(),
+        # "--kitsu-task-json", render_output_directory.joinpath("kitsu_task.json").as_posix(),
+        # "--oiio-config-yaml", CONFIG_OIIO_YAML.as_posix(),
+        # "--version", version,
+        # # https://docs.thinkboxsoftware.com/products/deadline/10.2/1_User%20Manual/manual/manual-submission.html#arbitrary-command-line-jobs
+        # "--frame-number", "<STARTFRAME%4>",
+        # "--output-dir", output_dir.as_posix(),
+        # "create-png",
     ]
 
     #######
@@ -244,9 +263,9 @@ def png_to_mov(
         "render_output_directory": AssetIn(
             AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "render_output_directory"])
         ),
-        # "frames": AssetIn(
-        #     AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "frames"])
-        # ),
+        "frames": AssetIn(
+            AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "frames"])
+        ),
         # "render_output_filename": AssetIn(
         #     AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "render_output_filename"])
         # ),
@@ -254,7 +273,7 @@ def png_to_mov(
             AssetKey([*ASSET_HEADER_JOB_PROCESSOR_READER["key_prefix"], "read_job_yaml"])
         ),
         "job_id_parent": AssetIn(
-            AssetKey([*ASSET_HEADER_OIIO_PROCESSOR_EXR_TO_PNG["key_prefix"], "job_id"]),
+            AssetKey([*ASSET_HEADER_PNG_TO_MOV["key_prefix"], "job_id"]),
         ),
         "Deadline_OutputDirectory": AssetIn(
             AssetKey([*ASSET_HEADER["key_prefix"], "Deadline_OutputDirectory"]),
@@ -264,12 +283,12 @@ def png_to_mov(
         # ),
     }
 )
-def job_info_png_to_mov(
+def job_info_mov_to_kitsu(
         context: AssetExecutionContext,
         batch_name: str,
         job_title_str: str,
         render_output_directory: pathlib.Path,
-        # frames: str,
+        frames: str,
         # render_output_filename: Dict,
         job_model: JobBase,
         job_id_parent: str,
@@ -277,7 +296,7 @@ def job_info_png_to_mov(
         # Deadline_OutputFilename: str,
 ) -> Generator[Output[pathlib.Path] | AssetMaterialization | Any, Any, None]:
 
-    # job_id_parent = job_id_parent
+    # job_id_parent = job_id_raw
 
     # https://docs.thinkboxsoftware.com/products/deadline/10.2/1_User%20Manual/manual/manual-submission.html#job-info-file-options
     # render_output_directory.mkdir(parents=True, exist_ok=True)
@@ -287,9 +306,12 @@ def job_info_png_to_mov(
 
     job_info_dict = {
         "Plugin": models_submission.DeadlinePlugins.CommandLine.value,
-        # png_to_mov is a single task
-        "Frames": "1",
-        "Name": f"{job_title_str} - PNG to MOV",
+        # _template is a single task
+        "Frames": {
+            "multi_task": frames,
+            "single_task": "1",
+        }["multi_task"],
+        "Name": f"{job_title_str} - {JOB}",
         "Comment": job_model.comment,
         # "Department"
         "BatchName": batch_name,
@@ -354,14 +376,22 @@ def job_info_png_to_mov(
         "render_output_directory": AssetIn(
             AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "render_output_directory"])
         ),
+        # "render_arguments": AssetIn(
+        #     AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "render_arguments"])
+        # ),
+        # "job_model": AssetIn(
+        #     AssetKey([*ASSET_HEADER_JOB_PROCESSOR_READER["key_prefix"], "read_job_yaml"])
+        # ),
         "cmd": AssetIn(
             AssetKey([*ASSET_HEADER["key_prefix"], "cmd"])
         ),
     }
 )
-def plugin_info_png_to_mov(
+def plugin_info_mov_to_kitsu(
         context: AssetExecutionContext,
         render_output_directory: pathlib.Path,
+        # render_arguments: str,
+        # job_model: JobBase,
         cmd: List,
 ) -> Generator[Output[pathlib.Path] | AssetMaterialization | Any, Any, None]:
 
@@ -494,7 +524,7 @@ def payload_request(
         ),
     },
 )
-def submit_request_png_to_mov(
+def submit_request_mov_to_kitsu(
         context: AssetExecutionContext,
         CONFIG: DefaultConstants,
         payload_request: Dict,
