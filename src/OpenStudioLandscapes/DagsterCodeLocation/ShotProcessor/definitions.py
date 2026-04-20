@@ -21,6 +21,8 @@ from OpenStudioLandscapes.DagsterCodeLocation.JobProcessor.dagster_job_processor
     submit_request_raw,
 )
 
+from OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.base.sensors.auto_materialize_sensor import shot_processor_auto_materialize_sensor
+
 # from OpenStudioLandscapes.DagsterCodeLocation.JobProcessor.dagster_job_processor.assets.read_yaml import (
 #     # output_format,
 #     # CONFIG,
@@ -44,6 +46,10 @@ assets_external.extend(frames.specs)
 assets_external.extend(render_output_directory.specs)
 assets_external.extend(submit_request_raw.specs)
 
+all_sensors = [
+    shot_processor_auto_materialize_sensor,
+]
+
 
 defs = Definitions(
     assets=[
@@ -54,4 +60,5 @@ defs = Definitions(
         *assets_exr_to_png,
         *assets_external,
     ],
+    sensors=all_sensors,
 )
