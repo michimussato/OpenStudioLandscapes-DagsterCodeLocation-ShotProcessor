@@ -93,6 +93,9 @@ ASSET_HEADER = {
         # "job_id_raw": AssetIn(
         #     AssetKey([*ASSET_HEADER_JOB_PROCESSOR_DEADLINE["key_prefix"], "job_id_raw"]),
         # ),
+        "job_model": AssetIn(
+            AssetKey([*ASSET_HEADER_JOB_PROCESSOR_READER["key_prefix"], "read_job_yaml"])
+        ),
     }
 )
 def mov_to_kitsu(
@@ -106,6 +109,7 @@ def mov_to_kitsu(
         CONFIG_OIIO_YAML: pathlib.Path,
         CONFIG: DefaultConstants,
         # job_id_raw: str,
+        job_model: JobBase,
 ) -> Generator[Output[List] | AssetMaterialization | Any, Any, None]:
     # https://stackoverflow.com/questions/24961127/how-to-create-a-video-from-images-with-ffmpeg
     # https://www.ffmpeg.media/articles/image-sequences-timelapse-photos-to-video
@@ -116,17 +120,20 @@ def mov_to_kitsu(
     #  - [x] Remove hard code
     input_dir: pathlib.Path = render_output_directory.joinpath(
         # version,
-        CONFIG.RENDER_RAW_OUT,
+        CONFIG.OIIO_BASE_OUT,
+        CONFIG.OIIO_PNG_TO_MOV,
     )
+
+    input_mov: pathlib.Path = input_dir.joinpath("proxy.mp4")
 
     # Todo
     #  - [x] Remove hard code
-    output_dir: pathlib.Path = render_output_directory.joinpath(
-        # version,
-        CONFIG.OIIO_BASE_OUT,
-        CONFIG.OIIO_TEXT_OVERLAY_OUT,
-    )
-    output_dir.mkdir(parents=True, exist_ok=True)
+    # output_dir: pathlib.Path = render_output_directory.joinpath(
+    #     # version,
+    #     CONFIG.OIIO_BASE_OUT,
+    #     CONFIG.OIIO_TEXT_OVERLAY_OUT,
+    # )
+    # output_dir.mkdir(parents=True, exist_ok=True)
 
     # png_seq: List[pathlib.Path] = []
 
@@ -173,6 +180,27 @@ def mov_to_kitsu(
         # "--frame-number", "<STARTFRAME%4>",
         # "--output-dir", output_dir.as_posix(),
         # "create-png",
+            'kitsu-submit',
+            '--very-verbose',
+            '--task-id', f'<QUOTE>{str(job_model.kitsu_task)}<QUOTE>',
+            '--comment', "No comment",  # f'<QUOTE>'
+            # f'Output directory: `{render_output_directory}`<br>'
+            # f'Version: `{version}`<br>'
+            # f'Frames: `{handles}_{frame_start_absolute}-{frame_end_absolute}_{handles}`<br>'
+            # f'Comment: {job_model.comment}<br>'
+            # f'<br>'
+            # f'---<br>'
+            # f'<br>'
+            # f'Execution Command: `{job_model.plugin_model.executable.as_posix()} {render_arguments}`<br>'
+            # f'Submission Command: Todo<br>'
+            # f'Job file: `{job_model.job_file.as_posix()}`<br>'
+            # f'<QUOTE>'
+            # f'',
+            '--host', f'<QUOTE>http://10.1.2.15:4545/api<QUOTE>',
+            '--user', f'<QUOTE>admin@example.com<QUOTE>',
+            '--password', f'<QUOTE>mysecretpassword<QUOTE>',
+            '--movie-file', f'<QUOTE>{input_mov.as_posix()}<QUOTE>',
+            '--version', f'<QUOTE>{version}<QUOTE>',
     ]
 
     #######
@@ -310,7 +338,7 @@ def job_info_mov_to_kitsu(
         "Frames": {
             "multi_task": frames,
             "single_task": "1",
-        }["multi_task"],
+        }["single_task"],
         "Name": f"{job_title_str} - {JOB}",
         "Comment": job_model.comment,
         # "Department"

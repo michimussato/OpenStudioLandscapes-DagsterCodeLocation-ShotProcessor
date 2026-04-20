@@ -26,6 +26,8 @@ from OpenStudioLandscapes.DagsterCodeLocation.JobProcessor.dagster_job_processor
 
 from OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.base.sensors.auto_materialize_sensor import shot_processor_auto_materialize_sensor
 
+from OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.resources.kitsu import KitsuResource
+
 # from OpenStudioLandscapes.DagsterCodeLocation.JobProcessor.dagster_job_processor.assets.read_yaml import (
 #     # output_format,
 #     # CONFIG,
@@ -55,6 +57,11 @@ all_sensors = [
 ]
 
 
+resources = {
+    "kitsu_resource": KitsuResource(),
+}
+
+
 defs = Definitions(
     assets=[
         *assets_base,
@@ -67,4 +74,5 @@ defs = Definitions(
         *assets_external,
     ],
     sensors=all_sensors,
+    # resources=resources,
 )

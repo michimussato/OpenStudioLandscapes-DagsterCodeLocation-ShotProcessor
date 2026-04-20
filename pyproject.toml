@@ -47,6 +47,7 @@ file = "README.md"
 
 [project.scripts]
 shot-processor = "OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.cli:run"
+kitsu-submit = "OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.resources.kitsu_submission_cli:run"
 
 [project.urls]
 Homepage = "https://github.com/michimussato/OpenStudioLandscapes-DagsterCodeLocation-ShotProcessor"
