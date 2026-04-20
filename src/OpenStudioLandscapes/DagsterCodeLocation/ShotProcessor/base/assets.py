@@ -55,7 +55,10 @@ ASSET_HEADER_OIIO_PROCESSOR = {
         # ),
     },
     deps=[
-        AssetKey([*ASSET_HEADER_JOB_PROCESSOR_DEADLINE["key_prefix"], "submit_request_raw"]),
+        # for deps, the multi_asset itself (submit_request_raw) does not
+        # account for the individual outputs.
+        AssetKey([*ASSET_HEADER_JOB_PROCESSOR_DEADLINE["key_prefix"], "job_id_raw"]),
+        AssetKey([*ASSET_HEADER_JOB_PROCESSOR_DEADLINE["key_prefix"], "job_raw"]),
     ],
     outs={
         "CONFIG_OIIO": AssetOut(
