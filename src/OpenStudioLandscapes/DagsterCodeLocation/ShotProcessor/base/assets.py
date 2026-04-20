@@ -27,6 +27,7 @@ from OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.config.models import
 from OpenStudioLandscapes.DagsterCodeLocation.JobProcessor.dagster_job_processor.config.models import DefaultConstants
 from OpenStudioLandscapes.DagsterCodeLocation.JobProcessor.dagster_job_processor.assets.read_yaml import (
     ASSET_HEADER_JOB_PROCESSOR,
+    ASSET_HEADER_JOB_PROCESSOR_DEADLINE,
 )
 
 # Asset data across code locations:
@@ -53,6 +54,9 @@ ASSET_HEADER_OIIO_PROCESSOR = {
         #     AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "render_output_directory"]),
         # ),
     },
+    deps=[
+        AssetKey([*ASSET_HEADER_JOB_PROCESSOR_DEADLINE["key_prefix"], "submit_request_raw"]),
+    ],
     outs={
         "CONFIG_OIIO": AssetOut(
             **ASSET_HEADER_OIIO_PROCESSOR,
