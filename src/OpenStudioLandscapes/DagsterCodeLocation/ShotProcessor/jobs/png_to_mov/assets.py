@@ -40,48 +40,55 @@ from OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.base.assets import (
     ASSET_HEADER_OIIO_PROCESSOR,
 )
 
+from OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.jobs.exr_to_png.assets import (
+    ASSET_HEADER_OIIO_PROCESSOR_EXR_TO_PNG,
+)
 
-GROUP_OIIO_PROCESSOR_CREATE_TEXT_OVERLAY = "OpenStudioLandscapes_DagsterCodeLocation_JobProcessor_OIIO_Processor_create_text_overlay"
+
+GROUP = "OpenStudioLandscapes_DagsterCodeLocation_JobProcessor_OIIO_Processor_png_to_mov"
 # KEY_CONSTANTS_DEFAULT = [GROUP_CONSTANTS_DEFAULT, "Constants"]
-KEY_OIIO_PROCESSOR_CREATE_TEXT_OVERLAY = [GROUP_OIIO_PROCESSOR_CREATE_TEXT_OVERLAY]
+KEY_PREFIX = [GROUP]
 
-ASSET_HEADER_OIIO_PROCESSOR_CREATE_TEXT_OVERLAY = {
-    "group_name": GROUP_OIIO_PROCESSOR_CREATE_TEXT_OVERLAY,
-    "key_prefix": KEY_OIIO_PROCESSOR_CREATE_TEXT_OVERLAY,
+ASSET_HEADER = {
+    "group_name": GROUP,
+    "key_prefix": KEY_PREFIX,
 }
 
 
 @multi_asset(
     outs={
         "cmd": AssetOut(
-            **ASSET_HEADER_OIIO_PROCESSOR_CREATE_TEXT_OVERLAY,
+            **ASSET_HEADER,
             dagster_type=List,
             description="Todo",
         ),
         "Deadline_OutputDirectory": AssetOut(
-            **ASSET_HEADER_OIIO_PROCESSOR_CREATE_TEXT_OVERLAY,
+            **ASSET_HEADER,
             dagster_type=pathlib.Path,
             description="Todo",
         ),
         "Deadline_OutputFilename": AssetOut(
-            **ASSET_HEADER_OIIO_PROCESSOR_CREATE_TEXT_OVERLAY,
+            **ASSET_HEADER,
             dagster_type=NoneType,
             description="Todo",
         ),
     },
     ins={
-        "version": AssetIn(
-            AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "version"]),
+        # "version": AssetIn(
+        #     AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "version"]),
+        # ),
+        "fps": AssetIn(
+            AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "fps"]),
         ),
         "render_output_directory": AssetIn(
             AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "render_output_directory"]),
         ),
-        "render_output_filename": AssetIn(
-            AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "render_output_filename"]),
-        ),
-        "CONFIG_OIIO_YAML": AssetIn(
-            AssetKey([*ASSET_HEADER_OIIO_PROCESSOR["key_prefix"], "CONFIG_OIIO_YAML"]),
-        ),
+        # "render_output_filename": AssetIn(
+        #     AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "render_output_filename"]),
+        # ),
+        # "CONFIG_OIIO_YAML": AssetIn(
+        #     AssetKey([*ASSET_HEADER_OIIO_PROCESSOR["key_prefix"], "CONFIG_OIIO_YAML"]),
+        # ),
         "CONFIG": AssetIn(
             AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "CONFIG"]),
         ),
@@ -90,15 +97,16 @@ ASSET_HEADER_OIIO_PROCESSOR_CREATE_TEXT_OVERLAY = {
         # ),
     }
 )
-def raw_to_png(
+def png_to_mov(
         context: AssetExecutionContext,
         # raw_to_oiio: List[Dict],
         # render_version_directory: pathlib.Path,
         render_output_directory: pathlib.Path,
-        version: str,
-        render_output_filename: Dict,
+        # version: str,
+        fps: float,
+        # render_output_filename: Dict,
         # image_sequence_raw: List[pathlib.Path],
-        CONFIG_OIIO_YAML: pathlib.Path,
+        # CONFIG_OIIO_YAML: pathlib.Path,
         CONFIG: DefaultConstants,
         # job_id_raw: str,
 ) -> Generator[Output[List] | AssetMaterialization | Any, Any, None]:
@@ -111,7 +119,8 @@ def raw_to_png(
     #  - [x] Remove hard code
     input_dir: pathlib.Path = render_output_directory.joinpath(
         # version,
-        CONFIG.RENDER_RAW_OUT,
+        CONFIG.OIIO_BASE_OUT,
+        CONFIG.OIIO_RAW_TO_PNG,
     )
 
     # Todo
@@ -119,23 +128,30 @@ def raw_to_png(
     output_dir: pathlib.Path = render_output_directory.joinpath(
         # version,
         CONFIG.OIIO_BASE_OUT,
-        CONFIG.OIIO_RAW_TO_PNG,
+        CONFIG.OIIO_PNG_TO_MOV,
     )
     output_dir.mkdir(parents=True, exist_ok=True)
+
+    output_format_ = "mp4"
+    # cmds: List[List[str]] = []
+    ffmpeg_out = pathlib.Path(output_dir).joinpath(
+        f"proxy.{output_format_}"
+    )
 
     # Todo:
     #  - [ ] add in timestamp
     #  - [ ] add out timestamp
     cmd: List[str] = [
-        "shot-processor",
-        "--exr-image", input_dir.joinpath(render_output_filename["padding_deadline_batch_startframe"]).as_posix(),
-        "--kitsu-task-json", render_output_directory.joinpath("kitsu_task.json").as_posix(),
-        "--oiio-config-yaml", CONFIG_OIIO_YAML.as_posix(),
-        "--version", version,
-        # https://docs.thinkboxsoftware.com/products/deadline/10.2/1_User%20Manual/manual/manual-submission.html#arbitrary-command-line-jobs
-        "--frame-number", "<STARTFRAME%4>",
-        "--output-dir", output_dir.as_posix(),
-        "create-png",
+        "/usr/bin/ffmpeg",
+        "-hide_banner",
+        "-y",
+        "-framerate", f"{float(fps):.3f}",
+        # "-an",
+        "-pattern_type", "glob",
+        "-i", f"{input_dir.as_posix()}/*.png",
+        "-c:v", "libx264",
+        "-pix_fmt", "yuv420p",
+        f"{ffmpeg_out.as_posix()}",
     ]
 
     #######
@@ -211,7 +227,7 @@ def raw_to_png(
 @multi_asset(
     outs={
         "job_info_model": AssetOut(
-            **ASSET_HEADER_OIIO_PROCESSOR_CREATE_TEXT_OVERLAY,
+            **ASSET_HEADER,
             dagster_type=models_submission.JobInfo,
             description="",
         ),
@@ -226,40 +242,40 @@ def raw_to_png(
         "render_output_directory": AssetIn(
             AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "render_output_directory"])
         ),
-        "frames": AssetIn(
-            AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "frames"])
-        ),
+        # "frames": AssetIn(
+        #     AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "frames"])
+        # ),
         # "render_output_filename": AssetIn(
         #     AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "render_output_filename"])
         # ),
         "job_model": AssetIn(
             AssetKey([*ASSET_HEADER_JOB_PROCESSOR_READER["key_prefix"], "read_job_yaml"])
         ),
-        "job_id_raw": AssetIn(
-            AssetKey([*ASSET_HEADER_JOB_PROCESSOR_DEADLINE["key_prefix"], "job_id_raw"]),
+        "job_id_parent": AssetIn(
+            AssetKey([*ASSET_HEADER_OIIO_PROCESSOR_EXR_TO_PNG["key_prefix"], "job_id"]),
         ),
         "Deadline_OutputDirectory": AssetIn(
-            AssetKey([*ASSET_HEADER_OIIO_PROCESSOR_CREATE_TEXT_OVERLAY["key_prefix"], "Deadline_OutputDirectory"]),
+            AssetKey([*ASSET_HEADER["key_prefix"], "Deadline_OutputDirectory"]),
         ),
         # "Deadline_OutputFilename": AssetIn(
         #     AssetKey([*ASSET_HEADER_OIIO_PROCESSOR_CREATE_TEXT_OVERLAY["key_prefix"], "Deadline_OutputFilename"]),
         # ),
     }
 )
-def job_info_exr_to_png(
+def job_info_png_to_mov(
         context: AssetExecutionContext,
         batch_name: str,
         job_title_str: str,
         render_output_directory: pathlib.Path,
-        frames: str,
+        # frames: str,
         # render_output_filename: Dict,
         job_model: JobBase,
-        job_id_raw: str,
+        job_id_parent: str,
         Deadline_OutputDirectory: pathlib.Path,
         # Deadline_OutputFilename: str,
 ) -> Generator[Output[pathlib.Path] | AssetMaterialization | Any, Any, None]:
 
-    job_id_parent = job_id_raw
+    # job_id_parent = job_id_parent
 
     # https://docs.thinkboxsoftware.com/products/deadline/10.2/1_User%20Manual/manual/manual-submission.html#job-info-file-options
     # render_output_directory.mkdir(parents=True, exist_ok=True)
@@ -269,9 +285,9 @@ def job_info_exr_to_png(
 
     job_info_dict = {
         "Plugin": models_submission.DeadlinePlugins.CommandLine.value,
-        # create_text_overlay is a single task
-        "Frames": frames,
-        "Name": f"{job_title_str} - EXR to PNG",
+        # png_to_mov is a single task
+        "Frames": 1,
+        "Name": f"{job_title_str} - PNG to MOV",
         "Comment": job_model.comment,
         # "Department"
         "BatchName": batch_name,
@@ -280,7 +296,7 @@ def job_info_exr_to_png(
         # "Pool"
         # "SecondaryPool"
         # "Group"
-        "Priority": job_model.job_priority,
+        "Priority": job_model.job_priority + 1,
         "ChunkSize": 1,
         # "ConcurrentTasks"
         # "LimitConcurrentTasksToNumberOfCpus"
@@ -327,7 +343,7 @@ def job_info_exr_to_png(
 @multi_asset(
     outs={
         "plugin_info_model": AssetOut(
-            **ASSET_HEADER_OIIO_PROCESSOR_CREATE_TEXT_OVERLAY,
+            **ASSET_HEADER,
             dagster_type=models_submission.CommandLinePluginInfo,
             description="",
         ),
@@ -336,22 +352,14 @@ def job_info_exr_to_png(
         "render_output_directory": AssetIn(
             AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "render_output_directory"])
         ),
-        # "render_arguments": AssetIn(
-        #     AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "render_arguments"])
-        # ),
-        # "job_model": AssetIn(
-        #     AssetKey([*ASSET_HEADER_JOB_PROCESSOR_READER["key_prefix"], "read_job_yaml"])
-        # ),
         "cmd": AssetIn(
-            AssetKey([*ASSET_HEADER_OIIO_PROCESSOR_CREATE_TEXT_OVERLAY["key_prefix"], "cmd"])
+            AssetKey([*ASSET_HEADER["key_prefix"], "cmd"])
         ),
     }
 )
-def plugin_info_text_overlay(
+def plugin_info_png_to_mov(
         context: AssetExecutionContext,
         render_output_directory: pathlib.Path,
-        # render_arguments: str,
-        # job_model: JobBase,
         cmd: List,
 ) -> Generator[Output[pathlib.Path] | AssetMaterialization | Any, Any, None]:
 
@@ -397,16 +405,16 @@ def plugin_info_text_overlay(
 
 
 @asset(
-    **ASSET_HEADER_OIIO_PROCESSOR_CREATE_TEXT_OVERLAY,
+    **ASSET_HEADER,
     ins={
         "CONFIG": AssetIn(
             AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "CONFIG"]),
         ),
         "job_info_model": AssetIn(
-            AssetKey([*ASSET_HEADER_OIIO_PROCESSOR_CREATE_TEXT_OVERLAY["key_prefix"], "job_info_model"]),
+            AssetKey([*ASSET_HEADER["key_prefix"], "job_info_model"]),
         ),
         "plugin_info_model": AssetIn(
-            AssetKey([*ASSET_HEADER_OIIO_PROCESSOR_CREATE_TEXT_OVERLAY["key_prefix"], "plugin_info_model"]),
+            AssetKey([*ASSET_HEADER["key_prefix"], "plugin_info_model"]),
         ),
         # "job_id_raw": AssetIn(
         #     AssetKey([*ASSET_HEADER_JOB_PROCESSOR_DEADLINE["key_prefix"], "job_id_raw"]),
@@ -461,13 +469,13 @@ def payload_request(
 @multi_asset(
     outs={
         "job": AssetOut(
-            **ASSET_HEADER_OIIO_PROCESSOR_CREATE_TEXT_OVERLAY,
+            **ASSET_HEADER,
             dagster_type=Dict,
             description="The resulting job details received "
                         "from Deadline.",
         ),
         "job_id": AssetOut(
-            **ASSET_HEADER_OIIO_PROCESSOR_CREATE_TEXT_OVERLAY,
+            **ASSET_HEADER,
             dagster_type=str,
             description="The job ID received from Deadline.",
         ),
@@ -477,14 +485,14 @@ def payload_request(
             AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "CONFIG"]),
         ),
         "payload_request": AssetIn(
-            AssetKey([*ASSET_HEADER_OIIO_PROCESSOR_CREATE_TEXT_OVERLAY["key_prefix"], "payload_request"]),
+            AssetKey([*ASSET_HEADER["key_prefix"], "payload_request"]),
         ),
         "job_model": AssetIn(
             AssetKey([*ASSET_HEADER_JOB_PROCESSOR_READER["key_prefix"], "read_job_yaml"])
         ),
     },
 )
-def submit_request_create_text_overlay(
+def submit_request_png_to_mov(
         context: AssetExecutionContext,
         CONFIG: DefaultConstants,
         payload_request: Dict,

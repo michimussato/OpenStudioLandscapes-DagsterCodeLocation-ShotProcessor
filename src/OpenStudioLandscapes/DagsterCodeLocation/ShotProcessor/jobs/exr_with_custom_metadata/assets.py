@@ -280,7 +280,7 @@ def job_info_exr_with_custom_metadata(
         # "Pool"
         # "SecondaryPool"
         # "Group"
-        "Priority": job_model.job_priority,
+        "Priority": job_model.job_priority + 1,
         "ChunkSize": 1,
         # "ConcurrentTasks"
         # "LimitConcurrentTasksToNumberOfCpus"

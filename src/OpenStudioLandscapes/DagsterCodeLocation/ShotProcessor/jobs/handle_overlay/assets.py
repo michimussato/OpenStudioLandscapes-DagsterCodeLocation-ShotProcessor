@@ -311,7 +311,7 @@ def job_info_handle_overlay(
         # "Pool"
         # "SecondaryPool"
         # "Group"
-        "Priority": job_model.job_priority,
+        "Priority": job_model.job_priority + 1,
         "ChunkSize": 1,
         # "ConcurrentTasks"
         # "LimitConcurrentTasksToNumberOfCpus"
@@ -515,7 +515,7 @@ def payload_request(
         ),
     },
 )
-def submit_request_create_handle_overlay(
+def submit_request_handle_overlay(
         context: AssetExecutionContext,
         CONFIG: DefaultConstants,
         payload_request: Dict,
