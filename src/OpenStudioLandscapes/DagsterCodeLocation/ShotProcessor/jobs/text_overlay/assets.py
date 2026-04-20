@@ -90,7 +90,7 @@ ASSET_HEADER_OIIO_PROCESSOR_EXR_TO_PNG = {
         # ),
     }
 )
-def exr_to_png(
+def create_text_overlay(
         context: AssetExecutionContext,
         # raw_to_oiio: List[Dict],
         # render_version_directory: pathlib.Path,
@@ -135,7 +135,7 @@ def exr_to_png(
         # https://docs.thinkboxsoftware.com/products/deadline/10.2/1_User%20Manual/manual/manual-submission.html#arbitrary-command-line-jobs
         "--frame-number", "<STARTFRAME%4>",
         "--output-dir", output_dir.as_posix(),
-        "create-png",
+        "create-text-overlay",
     ]
 
     #######

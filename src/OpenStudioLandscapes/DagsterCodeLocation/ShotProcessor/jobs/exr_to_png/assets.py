@@ -90,7 +90,7 @@ ASSET_HEADER_OIIO_PROCESSOR_CREATE_TEXT_OVERLAY = {
         # ),
     }
 )
-def create_text_overlay(
+def raw_to_png(
         context: AssetExecutionContext,
         # raw_to_oiio: List[Dict],
         # render_version_directory: pathlib.Path,
@@ -119,7 +119,7 @@ def create_text_overlay(
     output_dir: pathlib.Path = render_output_directory.joinpath(
         # version,
         CONFIG.OIIO_BASE_OUT,
-        CONFIG.OIIO_PNG,
+        CONFIG.OIIO_RAW_TO_PNG,
     )
     output_dir.mkdir(parents=True, exist_ok=True)
 
@@ -135,7 +135,7 @@ def create_text_overlay(
         # https://docs.thinkboxsoftware.com/products/deadline/10.2/1_User%20Manual/manual/manual-submission.html#arbitrary-command-line-jobs
         "--frame-number", "<STARTFRAME%4>",
         "--output-dir", output_dir.as_posix(),
-        "create-text-overlay",
+        "create-png",
     ]
 
     #######
