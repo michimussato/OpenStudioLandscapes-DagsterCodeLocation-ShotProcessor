@@ -41,7 +41,10 @@ from OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.base.assets import (
 )
 
 
-GROUP_OIIO_PROCESSOR_HANDLE_OVERLAY = "OpenStudioLandscapes_DagsterCodeLocation_JobProcessor_OIIO_Processor_create_handle_overlay"
+JOB = "handle_overlay"
+
+
+GROUP_OIIO_PROCESSOR_HANDLE_OVERLAY = f"OpenStudioLandscapes_DagsterCodeLocation_JobProcessor_OIIO_Processor_{JOB}"
 # KEY_CONSTANTS_DEFAULT = [GROUP_CONSTANTS_DEFAULT, "Constants"]
 KEY_OIIO_PROCESSOR_HANDLE_OVERLAY = [GROUP_OIIO_PROCESSOR_HANDLE_OVERLAY]
 

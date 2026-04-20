@@ -35,7 +35,7 @@ from OpenStudioLandscapes.DagsterCodeLocation.JobProcessor.dagster_job_processor
 # - [Asset obervations](https://release-1-8-9.dagster.dagster-docs.io/concepts/assets/asset-observations)
 
 
-GROUP_OIIO_PROCESSOR = "OpenStudioLandscapes_DagsterCodeLocation_JobProcessor_OIIO_Processor"
+GROUP_OIIO_PROCESSOR = "OpenStudioLandscapes_DagsterCodeLocation_ShotProcessor_OIIO_Processor"
 KEY_OIIO_PROCESSOR = [GROUP_OIIO_PROCESSOR]
 
 ASSET_HEADER_OIIO_PROCESSOR = {

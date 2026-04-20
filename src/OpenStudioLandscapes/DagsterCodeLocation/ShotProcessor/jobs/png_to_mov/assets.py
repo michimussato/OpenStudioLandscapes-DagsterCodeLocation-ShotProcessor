@@ -37,7 +37,7 @@ from OpenStudioLandscapes.DagsterCodeLocation.JobProcessor.dagster_job_processor
 
 from OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.base.assets import (
     ASSET_HEADER_JOB_PROCESSOR,
-    ASSET_HEADER_OIIO_PROCESSOR,
+    # ASSET_HEADER_OIIO_PROCESSOR,
 )
 
 from OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.jobs.exr_to_png.assets import (
@@ -45,7 +45,10 @@ from OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.jobs.exr_to_png.asse
 )
 
 
-GROUP = "OpenStudioLandscapes_DagsterCodeLocation_JobProcessor_OIIO_Processor_png_to_mov"
+JOB = "png_to_mov"
+
+
+GROUP = f"OpenStudioLandscapes_DagsterCodeLocation_JobProcessor_OIIO_Processor_{JOB}"
 # KEY_CONSTANTS_DEFAULT = [GROUP_CONSTANTS_DEFAULT, "Constants"]
 KEY_PREFIX = [GROUP]
 

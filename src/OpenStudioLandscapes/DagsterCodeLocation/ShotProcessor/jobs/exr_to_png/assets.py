@@ -41,7 +41,10 @@ from OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.base.assets import (
 )
 
 
-GROUP_OIIO_PROCESSOR_EXR_TO_PNG = "OpenStudioLandscapes_DagsterCodeLocation_JobProcessor_OIIO_Processor_exr_to_png"
+JOB = "exr_to_png"
+
+
+GROUP_OIIO_PROCESSOR_EXR_TO_PNG = f"OpenStudioLandscapes_DagsterCodeLocation_JobProcessor_OIIO_Processor_{JOB}"
 # KEY_CONSTANTS_DEFAULT = [GROUP_CONSTANTS_DEFAULT, "Constants"]
 KEY_OIIO_PROCESSOR_EXR_TO_PNG = [GROUP_OIIO_PROCESSOR_EXR_TO_PNG]
 

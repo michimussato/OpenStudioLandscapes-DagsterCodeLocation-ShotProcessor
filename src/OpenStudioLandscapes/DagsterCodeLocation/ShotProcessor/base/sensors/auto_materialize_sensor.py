@@ -6,7 +6,7 @@ from dagster import (
 
 shot_processor_auto_materialize_sensor = AutomationConditionSensorDefinition(
     "ShotProcessor_AutoMaterializeSensor",
-    target=AssetSelection.all(include_sources=False),
+    target=AssetSelection.all(include_sources=True),
     minimum_interval_seconds=15,
     default_status=DefaultSensorStatus.RUNNING,
 )
