@@ -56,7 +56,16 @@ ASSET_HEADER_OIIO_PROCESSOR = {
     },
     deps=[
         # for deps, the multi_asset itself (submit_request_raw) does not
-        # account for the individual outputs.
+        # account for the individual outputs. The lineage would look like:
+        #                               /> OpenStudioLandscapes_DagsterCodeLocation_ShotProcessor_OIIO_Processor / CONFIG_OIIO
+        # default / submit_request_raw
+        #                               \> OpenStudioLandscapes_DagsterCodeLocation_ShotProcessor_OIIO_Processor / CONFIG_OIIO_YAML
+        #
+        # instead of
+        # OpenStudioLandscapes_DagsterCodeLocation_JobProcessor_Deadline / job_raw       -> OpenStudioLandscapes_DagsterCodeLocation_ShotProcessor_OIIO_Processor / CONFIG_OIIO
+        #                                                                                \> OpenStudioLandscapes_DagsterCodeLocation_ShotProcessor_OIIO_Processor / CONFIG_OIIO_YAML
+        # OpenStudioLandscapes_DagsterCodeLocation_JobProcessor_Deadline / job_id_raw    -> OpenStudioLandscapes_DagsterCodeLocation_ShotProcessor_OIIO_Processor / CONFIG_OIIO
+        #                                                                                \> OpenStudioLandscapes_DagsterCodeLocation_ShotProcessor_OIIO_Processor / CONFIG_OIIO_YAML
         AssetKey([*ASSET_HEADER_JOB_PROCESSOR_DEADLINE["key_prefix"], "job_id_raw"]),
         AssetKey([*ASSET_HEADER_JOB_PROCESSOR_DEADLINE["key_prefix"], "job_raw"]),
     ],
