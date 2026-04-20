@@ -308,7 +308,7 @@ def job_info_template(
         "Frames": {
             "multi_task": frames,
             "single_task": "1",
-        },
+        }["multi_task"],
         "Name": f"{job_title_str} - {JOB}",
         "Comment": job_model.comment,
         # "Department"
