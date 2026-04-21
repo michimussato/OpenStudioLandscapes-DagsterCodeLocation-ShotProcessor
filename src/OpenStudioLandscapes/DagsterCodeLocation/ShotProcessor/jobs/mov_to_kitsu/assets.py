@@ -265,9 +265,9 @@ def mov_to_kitsu(
         "job_id_parent": AssetIn(
             AssetKey([*ASSET_HEADER_PNG_TO_MOV["key_prefix"], "job_id"]),
         ),
-        "Deadline_OutputDirectory": AssetIn(
-            AssetKey([*ASSET_HEADER["key_prefix"], "Deadline_OutputDirectory"]),
-        ),
+        # "Deadline_OutputDirectory": AssetIn(
+        #     AssetKey([*ASSET_HEADER["key_prefix"], "Deadline_OutputDirectory"]),
+        # ),
         # "Deadline_OutputFilename": AssetIn(
         #     AssetKey([*ASSET_HEADER_OIIO_PROCESSOR_CREATE_TEXT_OVERLAY["key_prefix"], "Deadline_OutputFilename"]),
         # ),
@@ -282,7 +282,7 @@ def job_info_mov_to_kitsu(
         # render_output_filename: Dict,
         job_model: JobBase,
         job_id_parent: str,
-        Deadline_OutputDirectory: pathlib.Path,
+        # Deadline_OutputDirectory: pathlib.Path,
         # Deadline_OutputFilename: str,
 ) -> Generator[Output[pathlib.Path] | AssetMaterialization | Any, Any, None]:
 
@@ -327,7 +327,7 @@ def job_info_mov_to_kitsu(
         # "StartupDirectory"
         # Todo:
         #  - [ ] integrate these into model (not being used so far)
-        "OutputDirectory0": Deadline_OutputDirectory.as_posix(),
+        # "OutputDirectory0": Deadline_OutputDirectory.as_posix(),
         # "OutputFilename0": Deadline_OutputFilename,
     }
 
