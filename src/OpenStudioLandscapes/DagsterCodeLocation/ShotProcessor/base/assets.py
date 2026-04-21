@@ -91,17 +91,28 @@ def CONFIG_OIIO(
     config_oiio_yaml.parent.mkdir(parents=True, exist_ok=True)
 
     if config_oiio_yaml.exists():
+        context.log.debug(f"Reading config file: {config_oiio_yaml}")
         with open(config_oiio_yaml, "r") as fr:
             config_oiio_dict = yaml.safe_load(fr)
+
+        context.log.debug(f"{config_oiio_dict = }")
 
         config_oiio: ConfigOIIO = ConfigOIIO(
             **config_oiio_dict,
         )
     else:
+        context.log.debug(f"No config_oiio.yaml file found. Using default config.")
+
         config_oiio: ConfigOIIO = ConfigOIIO()
 
         with open(config_oiio_yaml, "w") as fw:
-            fw.write(yaml.safe_dump(config_oiio.model_dump_json(fallback=str, indent=2)))
+            yaml.safe_dump(
+                data=config_oiio.model_dump_json(fallback=str, indent=2),
+                stream=fw,
+                default_flow_style=False
+            )
+
+        context.log.debug(f"{config_oiio_yaml.as_posix()} saved.")
         # config_oiio_yaml = {}
 
     # _out = render_version_directory / version
