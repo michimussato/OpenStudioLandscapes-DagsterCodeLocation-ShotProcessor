@@ -25,6 +25,6 @@ shot_processor_auto_materialize_sensor = AutomationConditionSensorDefinition(
     # ), # - AssetSelection.assets(
     # #     CONFIG_OIIO,
     # # ),
-    minimum_interval_seconds=15,
+    minimum_interval_seconds=30,
     default_status=DefaultSensorStatus.RUNNING,
 )

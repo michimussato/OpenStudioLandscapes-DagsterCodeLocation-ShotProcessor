@@ -82,7 +82,7 @@ defs = Definitions(
         *assets_external,
     ],
     sensors=[
-        *sensors_base,
+        # *sensors_base,  # Testing if this sensor is not needed
         shot_processor_auto_materialize_sensor,
     ],
     jobs=[
