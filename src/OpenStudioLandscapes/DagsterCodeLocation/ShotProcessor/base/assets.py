@@ -107,7 +107,9 @@ def CONFIG_OIIO(
 
         with open(config_oiio_yaml, "w") as fw:
             yaml.safe_dump(
-                data=config_oiio.model_dump_json(fallback=str, indent=2),
+                data=json.loads(
+                    config_oiio.model_dump_json(fallback=str, indent=2),
+                ),
                 stream=fw,
                 default_flow_style=False
             )
