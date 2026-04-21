@@ -67,7 +67,7 @@ assets_external.extend(fps.specs)
 
 # Sensors
 from OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.base.definitions import sensors_base
-from OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.sensors.auto_materialize_sensor import shot_processor_auto_materialize_sensor
+# from OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.sensors.auto_materialize_sensor import shot_processor_auto_materialize_sensor
 
 # Jobs
 from OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.base.definitions import jobs_base
@@ -83,7 +83,7 @@ defs = Definitions(
     ],
     sensors=[
         *sensors_base,  # Testing if this sensor is not needed
-        shot_processor_auto_materialize_sensor,
+        # shot_processor_auto_materialize_sensor,
     ],
     jobs=[
         *jobs_base,
