@@ -13,8 +13,10 @@ assets_base = load_assets_from_modules([OpenStudioLandscapes.DagsterCodeLocation
 
 # Sensors
 from OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.base.sensors.monitor_job_id_raw import trigger_shot_processor_sub_jobs
+# from OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.base.sensors.auto_materialize_sensor import shot_processor_auto_materialize_sensor
 sensors_base = [
     trigger_shot_processor_sub_jobs,
+    # shot_processor_auto_materialize_sensor,
 ]
 
 

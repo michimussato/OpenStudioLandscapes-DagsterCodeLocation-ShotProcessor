@@ -32,6 +32,15 @@ from OpenStudioLandscapes.DagsterCodeLocation.JobProcessor.dagster_job_processor
 #     # render_output_directory,
 # )
 
+assets_internal = []
+assets_internal.extend(assets_base)
+assets_internal.extend(assets_exr_to_png)
+assets_internal.extend(assets_exr_with_custom_metadata)
+assets_internal.extend(assets_handle_overlay)
+assets_internal.extend(assets_png_to_mov)
+assets_internal.extend(assets_text_overlay)
+assets_internal.extend(assets_mov_to_kitsu)
+
 # Assets
 assets_external = []
 
@@ -58,6 +67,7 @@ assets_external.extend(fps.specs)
 
 # Sensors
 from OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.base.definitions import sensors_base
+from OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.sensors.auto_materialize_sensor import shot_processor_auto_materialize_sensor
 
 # Jobs
 from OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.base.definitions import jobs_base
@@ -68,17 +78,12 @@ from OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.jobs.mov_to_kitsu.de
 
 defs = Definitions(
     assets=[
-        *assets_base,
-        *assets_exr_to_png,
-        *assets_exr_with_custom_metadata,
-        *assets_handle_overlay,
-        *assets_png_to_mov,
-        *assets_text_overlay,
-        *assets_mov_to_kitsu,
+        *assets_internal,
         *assets_external,
     ],
     sensors=[
         *sensors_base,
+        shot_processor_auto_materialize_sensor,
     ],
     jobs=[
         *jobs_base,

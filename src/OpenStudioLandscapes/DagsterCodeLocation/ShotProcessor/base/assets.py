@@ -111,7 +111,7 @@ def CONFIG_OIIO(
                     config_oiio.model_dump_json(fallback=str, indent=2),
                 ),
                 stream=fw,
-                default_flow_style=False
+                # default_flow_style=False,
             )
 
         context.log.debug(f"{config_oiio_yaml.as_posix()} saved.")
