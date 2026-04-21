@@ -58,6 +58,100 @@ ASSET_HEADER = {
 }
 
 
+"""
+=======================================================
+Error
+=======================================================
+Error: FailRenderException : Process returned non-zero exit code '2'
+   at Deadline.Plugins.DeadlinePlugin.FailRender(String message) (Python.Runtime.PythonException)
+  File "/var/lib/Thinkbox/Deadline10/workers/minion03-deadline-10-2-worker/plugins/69e7786ef94ab891a6899dc4/CommandLine.py", line 79, in RenderTasks
+    self.FailRender( "Process returned non-zero exit code '{}'".format( exitCode ) )
+   at Python.Runtime.Dispatcher.Dispatch(ArrayList args)
+   at __FranticX_GenericDelegate0Dispatcher.Invoke()
+   at Deadline.Plugins.DeadlinePlugin.RenderTasks()
+   at Deadline.Plugins.DeadlinePlugin.DoRenderTasks()
+   at Deadline.Plugins.PluginWrapper.RenderTasks(Task task, String& outMessage, AbortLevel& abortLevel)
+   at Deadline.Plugins.PluginWrapper.RenderTasks(Task task, String& outMessage, AbortLevel& abortLevel)
+
+=======================================================
+Type
+=======================================================
+RenderPluginException
+
+=======================================================
+Stack Trace
+=======================================================
+   at Deadline.Plugins.SandboxedPlugin.d(DeadlineMessage bgt, CancellationToken bgu)
+   at Deadline.Plugins.SandboxedPlugin.RenderTask(Task task, CancellationToken cancellationToken)
+   at Deadline.Slaves.SlaveRenderThread.c(TaskLogWriter ajy, CancellationToken ajz)
+
+=======================================================
+Log
+=======================================================
+2026-04-21 13:16:08:  0: Loading Job's Plugin timeout is Disabled
+2026-04-21 13:16:08:  0: SandboxedPlugin: Render Job As User disabled, running as current user 'root'
+2026-04-21 13:16:13:  0: Executing plugin command of type 'Initialize Plugin'
+2026-04-21 13:16:13:  0: INFO: Executing plugin script '/var/lib/Thinkbox/Deadline10/workers/minion03-deadline-10-2-worker/plugins/69e7786ef94ab891a6899dc4/CommandLine.py'
+2026-04-21 13:16:13:  0: INFO: Plugin execution sandbox using Python version 3
+2026-04-21 13:16:13:  0: INFO: Single Frames Only: False
+2026-04-21 13:16:13:  0: INFO: About: Command Line Plugin for Deadline
+2026-04-21 13:16:13:  0: INFO: The job's environment will be merged with the current environment before rendering
+2026-04-21 13:16:13:  0: Done executing plugin command of type 'Initialize Plugin'
+2026-04-21 13:16:13:  0: Start Job timeout is disabled.
+2026-04-21 13:16:13:  0: Task timeout is disabled.
+2026-04-21 13:16:13:  0: Loaded job: Test Production - SH030 - 4_1201-1250_4 - Rendering - sh030_001.blend - 119 - blender - mov_to_kitsu (69e7786ef94ab891a6899dc4)
+2026-04-21 13:16:13:  0: Executing plugin command of type 'Start Job'
+2026-04-21 13:16:13:  0: DEBUG: S3BackedCache Client is not installed.
+2026-04-21 13:16:13:  0: INFO: Executing global asset transfer preload script '/var/lib/Thinkbox/Deadline10/workers/minion03-deadline-10-2-worker/plugins/69e7786ef94ab891a6899dc4/GlobalAssetTransferPreLoad.py'
+2026-04-21 13:16:13:  0: INFO: Looking for legacy (pre-10.0.26) AWS Portal File Transfer...
+2026-04-21 13:16:13:  0: INFO: Looking for legacy (pre-10.0.26) File Transfer controller in /opt/Thinkbox/S3BackedCache/bin/task.py...
+2026-04-21 13:16:13:  0: INFO: Could not find legacy (pre-10.0.26) AWS Portal File Transfer.
+2026-04-21 13:16:13:  0: INFO: Legacy (pre-10.0.26) AWS Portal File Transfer is not installed on the system.
+2026-04-21 13:16:13:  0: Done executing plugin command of type 'Start Job'
+2026-04-21 13:16:13:  0: Plugin rendering frame(s): 1
+2026-04-21 13:16:14:  0: Executing plugin command of type 'Render Task'
+2026-04-21 13:16:14:  0: INFO: Executable: /bin/bash
+2026-04-21 13:16:14:  0: INFO: Arguments: -c "kitsu-submit --very-verbose --task-id '"b0cfdac7-afa9-4382-a75d-3c80a388e136"' --comment 'No comment' --host '"http://10.1.2.15:4545/api"' --user '"admin@example.com"' --password '"mysecretpassword"' --movie-file '"/data/share/AWSPortalRoot1/out/Test Production/Shot/SH030/Rendering/119/oiio/oiio_mov/proxy.mp4"' --version '"119"'"
+2026-04-21 13:16:14:  0: INFO: Execute in Shell: False
+2026-04-21 13:16:14:  0: INFO: Invoking: Run Process
+2026-04-21 13:16:14:  0: STDOUT: Production/Shot/SH030/Rendering/119/oiio/oiio_mov/proxy.mp4' --version '119': -c: line 1: unexpected EOF while looking for matching `''
+2026-04-21 13:16:14:  0: STDOUT: Production/Shot/SH030/Rendering/119/oiio/oiio_mov/proxy.mp4' --version '119': -c: line 2: syntax error: unexpected end of file
+2026-04-21 13:16:14:  0: INFO: Process returned: 2
+2026-04-21 13:16:14:  0: Done executing plugin command of type 'Render Task'
+
+=======================================================
+Details
+=======================================================
+Date: 04/21/2026 13:16:18
+Frames: 1
+Elapsed Time: 00:00:00:10
+Job Submit Date: 04/21/2026 13:15:26
+Job User: michael
+Average RAM Usage: 2042205568 (13%)
+Peak RAM Usage: 2048315392 (13%)
+Average CPU Usage: 22%
+Peak CPU Usage: 41%
+Used CPU Clocks (x10^6 cycles): 6095
+Total CPU Clocks (x10^6 cycles): 27703
+
+=======================================================
+Worker Information
+=======================================================
+Worker Name: minion03-deadline-10-2-worker
+Version: v10.2.1.1 Release (094cbe890)
+Operating System: Linux
+Machine User: root
+IP Address: 192.168.178.18
+MAC Address: 00:E0:4C:30:46:A8
+CPU Architecture: x86_64
+CPUs: 4
+CPU Usage: 25%
+Memory Usage: 1.9 GB / 15.5 GB (12%)
+Free Disk Space: 7.421 GB 
+Video Card: 
+"""
+
+
 @multi_asset(
     outs={
         "cmd": AssetOut(
