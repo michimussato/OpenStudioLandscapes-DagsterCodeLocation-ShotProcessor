@@ -21,7 +21,7 @@ asset_to_watch = AssetKey([*ASSET_HEADER_JOB_PROCESSOR_DEADLINE["key_prefix"], "
     asset_key=asset_to_watch,
     job_name="materialize_shot_processor_sub_jobs",
     minimum_interval_seconds=15,
-    default_status=DefaultSensorStatus.RUNNING,
+    default_status=DefaultSensorStatus.STOPPED,
 )
 def trigger_shot_processor_sub_jobs():
     return RunRequest()
