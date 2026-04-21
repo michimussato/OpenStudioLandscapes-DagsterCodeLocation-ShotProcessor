@@ -13,7 +13,7 @@ materialize_downstream_job = define_asset_job(
     # selection=[
     #     CONFIG_OIIO,
     # ],
-    target=AssetSelection.all(
+    selection=AssetSelection.all(
         include_sources=False,  # includes OpenStudioLandscapes_DagsterCodeLocation_ShotProcessor_OIIO_Processor_ / CONFIG_OIIO_YAML
     ),
 )
