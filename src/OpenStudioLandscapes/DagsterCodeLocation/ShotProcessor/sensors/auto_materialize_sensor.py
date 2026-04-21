@@ -15,7 +15,9 @@ from OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.base.assets import C
 
 shot_processor_auto_materialize_sensor = AutomationConditionSensorDefinition(
     "ShotProcessor_AutoMaterializeSensor",
-    target=AssetSelection.all() - AssetSelection.assets(
+    target=AssetSelection.all(
+        include_sources=False,
+    ) - AssetSelection.assets(
         CONFIG_OIIO,
     ),
     # target=AssetSelection.assets(
@@ -24,5 +26,5 @@ shot_processor_auto_materialize_sensor = AutomationConditionSensorDefinition(
     #     CONFIG_OIIO,
     # ),
     minimum_interval_seconds=15,
-    default_status=DefaultSensorStatus.STOPPED,
+    default_status=DefaultSensorStatus.RUNNING,
 )
