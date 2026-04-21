@@ -26,5 +26,5 @@ shot_processor_auto_materialize_sensor = AutomationConditionSensorDefinition(
     # #     CONFIG_OIIO,
     # # ),
     minimum_interval_seconds=60,
-    default_status=DefaultSensorStatus.RUNNING,
+    default_status=DefaultSensorStatus.STOPPED,
 )
