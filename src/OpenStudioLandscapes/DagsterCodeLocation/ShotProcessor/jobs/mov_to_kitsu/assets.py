@@ -177,12 +177,12 @@ Video Card:
         "render_output_directory": AssetIn(
             AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "render_output_directory"]),
         ),
-        "render_output_filename": AssetIn(
-            AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "render_output_filename"]),
-        ),
-        "CONFIG_OIIO_YAML": AssetIn(
-            AssetKey([*ASSET_HEADER_OIIO_PROCESSOR["key_prefix"], "CONFIG_OIIO_YAML"]),
-        ),
+        # "render_output_filename": AssetIn(
+        #     AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "render_output_filename"]),
+        # ),
+        # "CONFIG_OIIO_YAML": AssetIn(
+        #     AssetKey([*ASSET_HEADER_OIIO_PROCESSOR["key_prefix"], "CONFIG_OIIO_YAML"]),
+        # ),
         "CONFIG": AssetIn(
             AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "CONFIG"]),
         ),
@@ -201,9 +201,9 @@ def mov_to_kitsu(
         # render_version_directory: pathlib.Path,
         render_output_directory: pathlib.Path,
         version: str,
-        render_output_filename: Dict,
+        # render_output_filename: Dict,
         # image_sequence_raw: List[pathlib.Path],
-        CONFIG_OIIO_YAML: pathlib.Path,
+        # CONFIG_OIIO_YAML: pathlib.Path,
         CONFIG: DefaultConstants,
         # job_id_raw: str,
         job_model: JobBase,
@@ -239,7 +239,7 @@ def mov_to_kitsu(
         # "create-png",
             'kitsu-submit',
             '--very-verbose',
-            '--task-id', f'<QUOTE>{str(job_model.kitsu_task)}<QUOTE>',
+            '--task-id', str(job_model.kitsu_task),
             '--comment', "No comment",  # f'<QUOTE>'
             # f'Output directory: `{render_output_directory}`<br>'
             # f'Version: `{version}`<br>'
@@ -253,11 +253,11 @@ def mov_to_kitsu(
             # f'Job file: `{job_model.job_file.as_posix()}`<br>'
             # f'<QUOTE>'
             # f'',
-            '--host', f'<QUOTE>{kitsu_resource.host}<QUOTE>',
-            '--user', f'<QUOTE>{kitsu_resource.user}<QUOTE>',
-            '--password', f'<QUOTE>{kitsu_resource.password}<QUOTE>',
-            '--movie-file', f'<QUOTE>{input_mov.as_posix()}<QUOTE>',
-            '--version', f'<QUOTE>{version}<QUOTE>',
+            '--host', kitsu_resource.host,
+            '--user', kitsu_resource.user,
+            '--password', kitsu_resource.password,
+            '--movie-file', input_mov.as_posix(),
+            '--version', version,
     ]
 
     #######
