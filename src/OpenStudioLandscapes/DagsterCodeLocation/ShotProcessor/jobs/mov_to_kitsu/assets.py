@@ -48,7 +48,7 @@ from OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.jobs.mov_to_kitsu.re
 JOB = "mov_to_kitsu"
 
 
-GROUP = f"OpenStudioLandscapes_DagsterCodeLocation_JobProcessor_OIIO_Processor_{JOB}"
+GROUP = f"OpenStudioLandscapes_DagsterCodeLocation_ShotProcessor_OIIO_Processor_{JOB}"
 # KEY_CONSTANTS_DEFAULT = [GROUP_CONSTANTS_DEFAULT, "Constants"]
 KEY_PREFIX = [GROUP]
 

@@ -47,7 +47,7 @@ from OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.jobs.exr_to_png.asse
 JOB = "png_to_mov"
 
 
-GROUP = f"OpenStudioLandscapes_DagsterCodeLocation_JobProcessor_OIIO_Processor_{JOB}"
+GROUP = f"OpenStudioLandscapes_DagsterCodeLocation_ShotProcessor_OIIO_Processor_{JOB}"
 # KEY_CONSTANTS_DEFAULT = [GROUP_CONSTANTS_DEFAULT, "Constants"]
 KEY_PREFIX = [GROUP]
 

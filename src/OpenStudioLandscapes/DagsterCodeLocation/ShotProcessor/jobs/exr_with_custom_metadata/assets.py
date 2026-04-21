@@ -44,7 +44,7 @@ from OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.base.assets import (
 JOB = "exr_with_custom_metadata"
 
 
-GROUP_OIIO_PROCESSOR_EXR_WITH_CUSTOM_METADATA = f"OpenStudioLandscapes_DagsterCodeLocation_JobProcessor_OIIO_Processor_{JOB}"
+GROUP_OIIO_PROCESSOR_EXR_WITH_CUSTOM_METADATA = f"OpenStudioLandscapes_DagsterCodeLocation_ShotProcessor_OIIO_Processor_{JOB}"
 # KEY_CONSTANTS_DEFAULT = [GROUP_CONSTANTS_DEFAULT, "Constants"]
 KEY_OIIO_PROCESSOR_EXR_WITH_CUSTOM_METADATA = [GROUP_OIIO_PROCESSOR_EXR_WITH_CUSTOM_METADATA]
 

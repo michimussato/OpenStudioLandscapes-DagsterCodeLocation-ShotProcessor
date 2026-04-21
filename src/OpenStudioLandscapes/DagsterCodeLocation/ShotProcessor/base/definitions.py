@@ -3,12 +3,19 @@ from typing import List
 from dagster import (
     Definitions,
     load_assets_from_modules,
+    # AutoMaterializePolicy,
+    # AutoMaterializeRule,
 )
 
 
 # Assets
 import OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.base.assets
-assets_base = load_assets_from_modules([OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.base.assets])
+assets_base = load_assets_from_modules(
+    modules=[OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.base.assets],
+    # auto_materialize_policy=AutoMaterializePolicy.lazy().with_rules(
+    #         AutoMaterializeRule.materialize_on_parent_updated(),
+    # ),
+)
 
 
 # Sensors
