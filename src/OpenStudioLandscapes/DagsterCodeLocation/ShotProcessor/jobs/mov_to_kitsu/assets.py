@@ -42,6 +42,8 @@ from OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.base.assets import (
 
 from OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.jobs.png_to_mov.assets import ASSET_HEADER as ASSET_HEADER_PNG_TO_MOV
 
+from OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.jobs.mov_to_kitsu.resources.kitsu import KitsuResource
+
 
 JOB = "mov_to_kitsu"
 
@@ -100,6 +102,7 @@ ASSET_HEADER = {
 )
 def mov_to_kitsu(
         context: AssetExecutionContext,
+        kitsu_resource: KitsuResource,
         # raw_to_oiio: List[Dict],
         # render_version_directory: pathlib.Path,
         render_output_directory: pathlib.Path,
@@ -125,46 +128,6 @@ def mov_to_kitsu(
     )
 
     input_mov: pathlib.Path = input_dir.joinpath("proxy.mp4")
-
-    # Todo
-    #  - [x] Remove hard code
-    # output_dir: pathlib.Path = render_output_directory.joinpath(
-    #     # version,
-    #     CONFIG.OIIO_BASE_OUT,
-    #     CONFIG.OIIO_TEXT_OVERLAY_OUT,
-    # )
-    # output_dir.mkdir(parents=True, exist_ok=True)
-
-    # png_seq: List[pathlib.Path] = []
-
-    # for d_image in raw_to_oiio:
-    #     png: Union[pathlib.Path, None]
-    #     png = d_image.get("png_out", None)
-    #     if png is not None:
-    #         png_seq.append(png)
-
-    # context.log.debug(f"{png_seq = }")
-
-    # # cmds: List[List[str]] = []
-    # ffmpeg_out = pathlib.Path(output_dir).joinpath(
-    #     f"{output_format_}.{output_format_}"
-    # )
-
-    # if bool(png_seq):
-    # i_seq = []
-    # f: pathlib.Path
-    # for f in png_seq:
-    #     i_seq.extend(["-i", f.as_posix()])
-
-    # with tempfile.NamedTemporaryFile(
-    #         delete=False,
-    #         prefix="ffmpeg_images_list__",
-    #         suffix=".txt",
-    #         mode="w",
-    # ) as file_out:
-    #
-    #     for f in png_seq:
-    #         file_out.write(f"file {f.as_posix()}\n")
 
     # Todo:
     #  - [ ] add in timestamp
@@ -196,9 +159,9 @@ def mov_to_kitsu(
             # f'Job file: `{job_model.job_file.as_posix()}`<br>'
             # f'<QUOTE>'
             # f'',
-            '--host', f'<QUOTE>http://10.1.2.15:4545/api<QUOTE>',
-            '--user', f'<QUOTE>admin@example.com<QUOTE>',
-            '--password', f'<QUOTE>mysecretpassword<QUOTE>',
+            '--host', f'<QUOTE>{kitsu_resource.host}<QUOTE>',
+            '--user', f'<QUOTE>{kitsu_resource.user}<QUOTE>',
+            '--password', f'<QUOTE>{kitsu_resource.password}<QUOTE>',
             '--movie-file', f'<QUOTE>{input_mov.as_posix()}<QUOTE>',
             '--version', f'<QUOTE>{version}<QUOTE>',
     ]

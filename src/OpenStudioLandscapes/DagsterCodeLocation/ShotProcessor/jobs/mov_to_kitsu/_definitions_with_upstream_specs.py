@@ -23,6 +23,8 @@ from OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.base.assets import (
     CONFIG_OIIO,
 )
 
+
+# Assets
 assets_external = []
 
 # base
@@ -42,9 +44,14 @@ assets_external.extend(submit_request_raw.specs)
 # Parent Job
 assets_external.extend(submit_request_png_to_mov.specs)
 
+
+# Resources
+from OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.jobs.mov_to_kitsu.definitions import resources
+
 defs = Definitions(
     assets=[
         *assets_base,
         *assets_external,
     ],
+    resources=resources,
 )

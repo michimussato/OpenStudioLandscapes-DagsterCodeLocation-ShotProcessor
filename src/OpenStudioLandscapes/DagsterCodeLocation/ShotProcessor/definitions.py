@@ -24,9 +24,7 @@ from OpenStudioLandscapes.DagsterCodeLocation.JobProcessor.dagster_job_processor
     fps,
 )
 
-from OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.base.sensors.auto_materialize_sensor import shot_processor_auto_materialize_sensor
-
-from OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.resources.kitsu import KitsuResource
+# from OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.jobs.mov_to_kitsu.resources import KitsuResource
 
 # from OpenStudioLandscapes.DagsterCodeLocation.JobProcessor.dagster_job_processor.assets.read_yaml import (
 #     # output_format,
@@ -34,6 +32,7 @@ from OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.resources.kitsu impo
 #     # render_output_directory,
 # )
 
+# Assets
 assets_external = []
 
 # base
@@ -52,14 +51,19 @@ assets_external.extend(render_output_directory.specs)
 assets_external.extend(submit_request_raw.specs)
 assets_external.extend(fps.specs)
 
-all_sensors = [
-    shot_processor_auto_materialize_sensor,
-]
+# all_sensors = [
+#     shot_processor_auto_materialize_sensor,
+# ]
 
 
-resources = {
-    "kitsu_resource": KitsuResource(),
-}
+# Sensors
+from OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.base.definitions import sensors_base
+
+# Jobs
+from OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.base.definitions import jobs_base
+
+# Resources
+from OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.jobs.mov_to_kitsu.definitions import resources as resources_mov_to_kitsu
 
 
 defs = Definitions(
@@ -73,6 +77,13 @@ defs = Definitions(
         *assets_mov_to_kitsu,
         *assets_external,
     ],
-    sensors=all_sensors,
-    # resources=resources,
+    sensors=[
+        *sensors_base,
+    ],
+    jobs=[
+        *jobs_base,
+    ],
+    resources={
+        **resources_mov_to_kitsu,
+    },
 )

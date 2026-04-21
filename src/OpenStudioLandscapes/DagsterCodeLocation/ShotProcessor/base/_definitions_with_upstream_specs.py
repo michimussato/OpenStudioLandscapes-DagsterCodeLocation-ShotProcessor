@@ -3,6 +3,8 @@ from dagster import (
 )
 
 from OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.base.definitions import assets_base
+from OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.base.definitions import sensors_base
+from OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.base.definitions import jobs_base
 
 from OpenStudioLandscapes.DagsterCodeLocation.JobProcessor.dagster_job_processor.assets.read_yaml import (
     output_format,
@@ -22,5 +24,11 @@ defs = Definitions(
     assets=[
         *assets_base,
         *assets_external,
+    ],
+    sensors=[
+        *sensors_base,
+    ],
+    jobs=[
+        *jobs_base,
     ],
 )
