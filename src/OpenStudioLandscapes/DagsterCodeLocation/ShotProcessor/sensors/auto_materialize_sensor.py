@@ -16,7 +16,7 @@ from OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.definitions import a
 shot_processor_auto_materialize_sensor = AutomationConditionSensorDefinition(
     "ShotProcessor_AutoMaterializeSensor",
     target=AssetSelection.all(
-        include_sources=False,
+        include_sources=False,  # excludes OpenStudioLandscapes_DagsterCodeLocation_ShotProcessor_OIIO_Processor_ / CONFIG_OIIO_YAML
     ),  # - AssetSelection.assets(
     #     CONFIG_OIIO,
     # ),
@@ -25,6 +25,6 @@ shot_processor_auto_materialize_sensor = AutomationConditionSensorDefinition(
     # ), # - AssetSelection.assets(
     # #     CONFIG_OIIO,
     # # ),
-    minimum_interval_seconds=10,
+    minimum_interval_seconds=15,
     default_status=DefaultSensorStatus.RUNNING,
 )
