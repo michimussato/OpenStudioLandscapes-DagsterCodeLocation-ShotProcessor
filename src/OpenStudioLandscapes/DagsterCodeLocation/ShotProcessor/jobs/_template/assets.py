@@ -41,7 +41,7 @@ from OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.base.assets import (
 )
 
 
-JOB = "mov_to_kitsu"
+JOB = "template"
 
 
 GROUP = f"OpenStudioLandscapes_DagsterCodeLocation_ShotProcessor_OIIO_Processor_{JOB}"

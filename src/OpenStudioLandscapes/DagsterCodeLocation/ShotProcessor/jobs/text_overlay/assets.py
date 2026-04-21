@@ -41,10 +41,10 @@ from OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.base.assets import (
 )
 
 
-JOB = "exr_to_png"
+JOB = "text_overlay"
 
 
-GROUP_OIIO_PROCESSOR_TEXT_OVERLAY = "OpenStudioLandscapes_DagsterCodeLocation_ShotProcessor_OIIO_Processor_"
+GROUP_OIIO_PROCESSOR_TEXT_OVERLAY = f"OpenStudioLandscapes_DagsterCodeLocation_ShotProcessor_OIIO_Processor_{JOB}"
 # KEY_CONSTANTS_DEFAULT = [GROUP_CONSTANTS_DEFAULT, "Constants"]
 KEY_OIIO_PROCESSOR_TEXT_OVERLAY = [GROUP_OIIO_PROCESSOR_TEXT_OVERLAY]
 
