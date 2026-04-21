@@ -67,7 +67,7 @@ ASSET_HEADER = {
         ),
         "Deadline_OutputDirectory": AssetOut(
             **ASSET_HEADER,
-            dagster_type=pathlib.Path,
+            dagster_type=NoneType,
             description="Todo",
         ),
         "Deadline_OutputFilename": AssetOut(
@@ -201,7 +201,7 @@ def mov_to_kitsu(
 
     yield Output(
         output_name=output_name,
-        value=output_dir,
+        value=None,
     )
 
     yield AssetMaterialization(
@@ -209,8 +209,7 @@ def mov_to_kitsu(
         metadata={
             "__".join(
                 context.asset_key_for_output(output_name).path
-            ): MetadataValue.path(output_dir),
-            "input_dir": MetadataValue.path(input_dir),
+            ): MetadataValue.null(),
         }
     )
 
