@@ -129,17 +129,46 @@ def raw_to_png(
     # Todo:
     #  - [ ] add in timestamp
     #  - [ ] add out timestamp
-    cmd: List[str] = [
-        "shot-processor",
-        "--exr-image", input_dir.joinpath(render_output_filename["padding_deadline_batch_startframe"]).as_posix(),
-        "--kitsu-task-json", render_output_directory.joinpath("kitsu_task.json").as_posix(),
-        "--oiio-config-yaml", CONFIG_OIIO_YAML.as_posix(),
-        "--version", version,
-        # https://docs.thinkboxsoftware.com/products/deadline/10.2/1_User%20Manual/manual/manual-submission.html#arbitrary-command-line-jobs
-        "--frame-number", "<STARTFRAME%4>",
-        "--output-dir", output_dir.as_posix(),
-        "create-png",
+    # cmd: List[str] = [
+    #     "shot-processor",
+    #     "--exr-image", input_dir.joinpath(render_output_filename["padding_deadline_batch_startframe"]).as_posix(),
+    #     "--kitsu-task-json", render_output_directory.joinpath("kitsu_task.json").as_posix(),
+    #     "--oiio-config-yaml", CONFIG_OIIO_YAML.as_posix(),
+    #     "--version", version,
+    #     # https://docs.thinkboxsoftware.com/products/deadline/10.2/1_User%20Manual/manual/manual-submission.html#arbitrary-command-line-jobs
+    #     "--frame-number", "<STARTFRAME%4>",
+    #     "--output-dir", output_dir.as_posix(),
+    #     "create-png",
+    # ]
+
+    exr_ = render_output_filename["padding_deadline_batch_startframe"]
+    png_ = exr_.stem + ".png"
+
+    cmd_oiiotool: List[str] = [
+        "oiiotool",
+        "-i", input_dir.joinpath(exr_).as_posix(),
+        "--create-dir",
+        "-o", output_dir.joinpath(png_).as_posix(),
     ]
+    # Results in:
+    # oiiotool -i '/raw/vivi_025.<STARTFRAME%4>.exr' --create-dir -o '/oiio/oiio_png/vivi_025.<STARTFRAME%4>.png'
+    # oiiotool -i '/data/share/AWSPortalRoot1/out/Test Production/Shot/SH040/Rendering/133/raw/vivi_025.1017.exr' --create-dir -o '/data/share/AWSPortalRoot1/out/Test Production/Shot/SH040/Rendering/133/oiio/oiio_png/vivi_025.1017.png'
+
+    # # Todo:
+    # #  - [ ] add in timestamp
+    # #  - [ ] add out timestamp
+    # cmd: List[str] = [
+    #     "/usr/bin/ffmpeg",
+    #     "-hide_banner",
+    #     "-y",
+    #     "-framerate", f"{float(fps):.3f}",
+    #     # "-an",
+    #     "-pattern_type", "glob",
+    #     "-i", f"{input_dir.as_posix()}/*.png",
+    #     "-c:v", "libx264",
+    #     "-pix_fmt", "yuv420p",
+    #     f"{ffmpeg_out.as_posix()}",
+    # ]
 
     #######
     # cmd #
@@ -149,7 +178,7 @@ def raw_to_png(
 
     yield Output(
         output_name=output_name,
-        value=cmd,
+        value=cmd_oiiotool,
     )
 
     yield AssetMaterialization(
@@ -157,14 +186,14 @@ def raw_to_png(
         metadata={
             "__".join(
                 context.asset_key_for_output(output_name).path
-            ): MetadataValue.json(cmd),
+            ): MetadataValue.json(cmd_oiiotool),
             # "cmd": MetadataValue.md(
             #     f"```yaml\n{yaml.safe_dump(cmd)}\n```"
             # ),
             # "logs": MetadataValue.md(
             #     f"```yaml\n{yaml.safe_dump(logs)}\n```"
             # ),
-            "cmd_": MetadataValue.path(shlex.join(cmd)),
+            "cmd_": MetadataValue.path(shlex.join(cmd_oiiotool)),
         }
     )
 
