@@ -141,14 +141,14 @@ def raw_to_png(
     #     "create-png",
     # ]
 
-    exr_ = render_output_filename["padding_deadline_batch_startframe"]
-    png_ = exr_.stem + ".png"
+    exr_in: pathlib.Path = input_dir.joinpath(render_output_filename["padding_deadline_batch_startframe"])
+    png_out: pathlib.Path = output_dir.joinpath(exr_in.stem + ".png")
 
     cmd_oiiotool: List[str] = [
         "oiiotool",
-        "-i", input_dir.joinpath(exr_).as_posix(),
+        "-i", exr_in.as_posix(),
         "--create-dir",
-        "-o", output_dir.joinpath(png_).as_posix(),
+        "-o", png_out.as_posix(),
     ]
     # Results in:
     # oiiotool -i '/raw/vivi_025.<STARTFRAME%4>.exr' --create-dir -o '/oiio/oiio_png/vivi_025.<STARTFRAME%4>.png'
