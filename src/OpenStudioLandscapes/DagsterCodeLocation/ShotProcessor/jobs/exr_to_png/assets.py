@@ -79,9 +79,9 @@ ASSET_HEADER_OIIO_PROCESSOR_EXR_TO_PNG = {
         "render_output_filename": AssetIn(
             AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "render_output_filename"]),
         ),
-        "CONFIG_OIIO_YAML": AssetIn(
-            AssetKey([*ASSET_HEADER_OIIO_PROCESSOR["key_prefix"], "CONFIG_OIIO_YAML"]),
-        ),
+        # "CONFIG_OIIO_YAML": AssetIn(
+        #     AssetKey([*ASSET_HEADER_OIIO_PROCESSOR["key_prefix"], "CONFIG_OIIO_YAML"]),
+        # ),
         "CONFIG": AssetIn(
             AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "CONFIG"]),
         ),
