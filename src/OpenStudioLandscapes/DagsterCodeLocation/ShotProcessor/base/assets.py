@@ -48,25 +48,7 @@ ASSET_HEADER_OIIO_PROCESSOR = {
         "render_output_directory": AssetIn(
             AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "render_output_directory"]),
         ),
-        # "render_output_directory": AssetIn(
-        #     AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "render_output_directory"]),
-        # ),
     },
-    deps=[
-        # for deps, the multi_asset itself (submit_request_raw) does not
-        # account for the individual outputs. The lineage would look like:
-        #                               /> OpenStudioLandscapes_DagsterCodeLocation_ShotProcessor_OIIO_Processor / CONFIG_OIIO
-        # default / submit_request_raw
-        #                               \> OpenStudioLandscapes_DagsterCodeLocation_ShotProcessor_OIIO_Processor / CONFIG_OIIO_YAML
-        #
-        # instead of
-        # OpenStudioLandscapes_DagsterCodeLocation_JobProcessor_Deadline / job_raw       -> OpenStudioLandscapes_DagsterCodeLocation_ShotProcessor_OIIO_Processor / CONFIG_OIIO
-        #                                                                                \> OpenStudioLandscapes_DagsterCodeLocation_ShotProcessor_OIIO_Processor / CONFIG_OIIO_YAML
-        # OpenStudioLandscapes_DagsterCodeLocation_JobProcessor_Deadline / job_id_raw    -> OpenStudioLandscapes_DagsterCodeLocation_ShotProcessor_OIIO_Processor / CONFIG_OIIO
-        #                                                                                \> OpenStudioLandscapes_DagsterCodeLocation_ShotProcessor_OIIO_Processor / CONFIG_OIIO_YAML
-        # AssetKey([*ASSET_HEADER_JOB_PROCESSOR_DEADLINE["key_prefix"], "job_id_raw"]),
-        # AssetKey([*ASSET_HEADER_JOB_PROCESSOR_DEADLINE["key_prefix"], "job_raw"]),
-    ],
     outs={
         # "CONFIG_OIIO": AssetOut(
         #     **ASSET_HEADER_OIIO_PROCESSOR,
@@ -183,54 +165,3 @@ def CONFIG_OIIO(
             ),
         },
     )
-
-
-# @asset(
-#     **ASSET_HEADER_OIIO_PROCESSOR,
-#     ins={
-#         "render_output_directory": AssetIn(
-#             AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "render_output_directory"]),
-#         ),
-#         "output_format": AssetIn(
-#             AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "output_format"]),
-#         ),
-#         "CONFIG": AssetIn(
-#             AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "CONFIG"]),
-#         ),
-#     }
-# )
-# def image_sequence_raw(
-#         context: AssetExecutionContext,
-#         render_output_directory: pathlib.Path,
-#         output_format: str,
-#         CONFIG: DefaultConstants,
-# ) -> Generator[Output[List[pathlib.Path]] | AssetMaterialization | Any, Any, None]:
-#
-#     sequence_dir: pathlib.Path = render_output_directory / CONFIG.RENDER_RAW_OUT
-#
-#     ret = []
-#
-#     for root, dirs, files in os.walk(sequence_dir):
-#         # sort:
-#         # - [](https://stackoverflow.com/a/18282401)
-#         for dir_ in sorted(dirs):
-#             context.log.debug("Processing directory %s", dir_)
-#         for file_ in sorted(files):
-#             filepath = pathlib.Path(root, file_)
-#             context.log.debug("Processing file: %s", filepath)
-#             if file_.endswith(f".{output_format}"):
-#                 context.log.debug("Appending file to list: %s", filepath)
-#                 ret.append(filepath)
-#             else:
-#                 context.log.info(f"Skipping file because it does not have extension `.{output_format}`: %s", filepath)
-#
-#     yield Output(ret)
-#
-#     yield AssetMaterialization(
-#         asset_key=context.asset_key,
-#         metadata={
-#             "__".join(context.asset_key.path): MetadataValue.md(
-#                 f"```json\n{json.dumps(ret, indent=2, default=str)}\n```"
-#             ),
-#         }
-#     )
