@@ -6,15 +6,12 @@ from dagster import (
 )
 
 from OpenStudioLandscapes.DagsterCodeLocation.JobProcessor.dagster_job_processor.assets.read_yaml import (
-    # ASSET_HEADER_JOB_PROCESSOR,
     ASSET_HEADER_JOB_PROCESSOR_DEADLINE,
 )
 
 
 asset_to_watch = AssetKey([*ASSET_HEADER_JOB_PROCESSOR_DEADLINE["key_prefix"], "job_id_raw"])
 
-# Trigger `my_job` when the `daily_sales_data` asset is materialized
-#
 # Resources:
 # - https://docs.dagster.io/guides/automate/asset-sensors#cross-job-and-cross-code-location-dependencies
 @asset_sensor(
