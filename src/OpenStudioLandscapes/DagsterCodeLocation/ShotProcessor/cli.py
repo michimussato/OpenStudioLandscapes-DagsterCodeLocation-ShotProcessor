@@ -4,14 +4,13 @@ import argparse
 import pathlib
 import textwrap
 import logging
+from dataclasses import dataclass
 from typing import Dict
 
-# import yaml
 from dagster import (
     get_dagster_logger,
 )
 
-# from OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.api import run_shot_processor
 
 __author__ = "Michael Mussato"
 __copyright__ = "Michael Mussato"
@@ -23,6 +22,25 @@ from OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.config.models import
 
 
 LOGGER = get_dagster_logger(__name__)
+
+
+@dataclass
+class ShotProcessorArgs:
+    # loglevel: int
+    # Static code inspection for argparse
+    # - [](https://stackoverflow.com/a/71035314)
+    kitsu_task_dict: Dict
+    version: str
+    render_version_directory: pathlib.Path
+
+    exr_sequence_dir: pathlib.Path
+    output_dir: pathlib.Path
+    # fps: float = 25.0
+    # text_border: int = 10
+    # text_spacing: int = 4
+    handle_marker_height: int = 10
+    overlay_text_size_frame: int = 24
+    overlay_text_size_scaledown: int = 8
 
 
 # ---- CLI ----
@@ -74,8 +92,6 @@ def parse_args(args) -> argparse.Namespace:
         help="The full path to the Kitsu task JSON file.",
         type=pathlib.Path,
         required=True,
-        # action="store_const",
-        # const=logging.DEBUG,
     )
 
     parser.add_argument(
@@ -84,8 +100,6 @@ def parse_args(args) -> argparse.Namespace:
         help="The full path to the OIIO config YAML file.",
         type=pathlib.Path,
         required=True,
-        # action="store_const",
-        # const=logging.DEBUG,
     )
 
     parser.add_argument(
@@ -94,8 +108,6 @@ def parse_args(args) -> argparse.Namespace:
         help="The version (iteration) number.",
         type=str,
         required=True,
-        # action="store_const",
-        # const=logging.DEBUG,
     )
 
     parser.add_argument(
@@ -104,8 +116,6 @@ def parse_args(args) -> argparse.Namespace:
         help="The frame number.",
         type=int,
         required=True,
-        # action="store_const",
-        # const=logging.DEBUG,
     )
 
     parser.add_argument(
@@ -114,8 +124,6 @@ def parse_args(args) -> argparse.Namespace:
         help="The full path to the EXR file.",
         type=pathlib.Path,
         required=True,
-        # action="store_const",
-        # const=logging.DEBUG,
     )
 
     parser.add_argument(
@@ -124,8 +132,6 @@ def parse_args(args) -> argparse.Namespace:
         help="The full path to the output base directory. Subdirectories will be created.",
         type=pathlib.Path,
         required=True,
-        # action="store_const",
-        # const=logging.DEBUG,
     )
 
     subparsers = parser.add_subparsers(
@@ -135,86 +141,17 @@ def parse_args(args) -> argparse.Namespace:
 
     subparser_create_text_overlay = subparsers.add_parser(
         "create-text-overlay",
-        # aliases=["s"],
     )
 
     subparser_create_handle_overlay = subparsers.add_parser(
         "create-handle-overlay",
-        # aliases=["s"],
     )
 
     subparser_exr_with_custom_metadata = subparsers.add_parser(
         "exr-with-custom-metadata",
-        # aliases=["s"],
     )
 
-    subparser_exr_with_custom_metadata = subparsers.add_parser(
-        "create-png",
-        # aliases=["s"],
-    )
-
-    # parser.add_argument(
-    #     "--fps",
-    #     dest="fps",
-    #     help="The frame rate of the sequence.",
-    #     type=float,
-    #     default=ShotProcessorArgs.fps,
-    #     required=False,
-    #     # action="store_const",
-    #     # const=logging.DEBUG,
-    # )
-    # parser.add_argument(
-    #     "--text-border",
-    #     dest="text_border",
-    #     help="The separation of the text from the frame.",
-    #     type=int,
-    #     default=ShotProcessorArgs.text_border,
-    #     required=False,
-    #     # action="store_const",
-    #     # const=logging.DEBUG,
-    # )
-    # parser.add_argument(
-    #     "--text-spacing",
-    #     dest="text_spacing",
-    #     help="The text line spacing.",
-    #     type=int,
-    #     default=ShotProcessorArgs.text_spacing,
-    #     required=False,
-    #     # action="store_const",
-    #     # const=logging.DEBUG,
-    # )
-    # parser.add_argument(
-    #     "--handle-marker-height",
-    #     dest="handle_marker_height",
-    #     help="The height of the handle marker.",
-    #     type=int,
-    #     default=ShotProcessorArgs.handle_marker_height,
-    #     required=False,
-    #     # action="store_const",
-    #     # const=logging.DEBUG,
-    # )
-    # parser.add_argument(
-    #     "--overlay-text-size-frame",
-    #     dest="overlay_text_size_frame",
-    #     help="The size of the frame number.",
-    #     type=int,
-    #     default=ShotProcessorArgs.overlay_text_size_frame,
-    #     required=False,
-    #     # action="store_const",
-    #     # const=logging.DEBUG,
-    # )
-    # parser.add_argument(
-    #     "--overlay-text-size-scaledown",
-    #     dest="overlay_text_size_scaledown",
-    #     help="The rest of the text will be scaled down by this amount.",
-    #     type=int,
-    #     default=ShotProcessorArgs.overlay_text_size_scaledown,
-    #     required=False,
-    #     # action="store_const",
-    #     # const=logging.DEBUG,
-    # )
     return parser.parse_args(args)
-    return ShotProcessorArgs(**vars(parser.parse_args(args)))
 
 
 def setup_logging(loglevel):
@@ -309,34 +246,6 @@ def main(args):
 
         sys.stdout.write(f"{result.as_posix()}\n")
         return 0
-
-    elif args.sub_command == "create-png":
-        from OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.api import create_png
-        # with open(args.oiio_config_yaml, "r") as fr:
-        #     config_oiio_dict = yaml.safe_load(fr)
-        config_oiio = ConfigOIIO(
-            # **config_oiio_dict
-        )
-        result = create_png(
-            exr_src=args.exr_image,
-            CONFIG_OIIO=config_oiio,
-            kitsu_task_dict=parse_kitsu_task_json(args.kitsu_task_json),
-            version=args.version,
-            frame_number=args.frame_number,
-            output_dir=args.output_dir,
-        )
-
-        sys.stdout.write(f"{result.as_posix()}\n")
-        return 0
-
-    # args["kitsu_task_dict"] = parse_kitsu_task_json(args.kitsu_task_json)
-
-    # args_ = ShotProcessorArgs(**vars(args))
-
-    # run_shot_processor(
-    #     args=args,
-    #     cli=True,
-    # )
 
 
 def run():

@@ -73,9 +73,6 @@ ASSET_HEADER_OIIO_PROCESSOR_EXR_TO_PNG = {
         ),
     },
     ins={
-        "version": AssetIn(
-            AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "version"]),
-        ),
         "render_output_directory": AssetIn(
             AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "render_output_directory"]),
         ),
@@ -88,87 +85,43 @@ ASSET_HEADER_OIIO_PROCESSOR_EXR_TO_PNG = {
         "CONFIG": AssetIn(
             AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "CONFIG"]),
         ),
-        # "job_id_raw": AssetIn(
-        #     AssetKey([*ASSET_HEADER_JOB_PROCESSOR_DEADLINE["key_prefix"], "job_id_raw"]),
-        # ),
     }
 )
 def raw_to_png(
         context: AssetExecutionContext,
-        # raw_to_oiio: List[Dict],
-        # render_version_directory: pathlib.Path,
         render_output_directory: pathlib.Path,
-        version: str,
         render_output_filename: Dict,
-        # image_sequence_raw: List[pathlib.Path],
-        CONFIG_OIIO_YAML: pathlib.Path,
         CONFIG: DefaultConstants,
-        # job_id_raw: str,
 ) -> Generator[Output[List] | AssetMaterialization | Any, Any, None]:
     # https://stackoverflow.com/questions/24961127/how-to-create-a-video-from-images-with-ffmpeg
     # https://www.ffmpeg.media/articles/image-sequences-timelapse-photos-to-video
 
-    # input_format_ = ".png"
-    # output_format_ = "mp4"
-    # Todo
-    #  - [x] Remove hard code
     input_dir: pathlib.Path = render_output_directory.joinpath(
-        # version,
         CONFIG.RENDER_RAW_OUT,
     )
 
-    # Todo
-    #  - [x] Remove hard code
     output_dir: pathlib.Path = render_output_directory.joinpath(
-        # version,
         CONFIG.OIIO_BASE_OUT,
         CONFIG.OIIO_RAW_TO_PNG,
     )
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    # Todo:
-    #  - [ ] add in timestamp
-    #  - [ ] add out timestamp
-    # cmd: List[str] = [
-    #     "shot-processor",
-    #     "--exr-image", input_dir.joinpath(render_output_filename["padding_deadline_batch_startframe"]).as_posix(),
-    #     "--kitsu-task-json", render_output_directory.joinpath("kitsu_task.json").as_posix(),
-    #     "--oiio-config-yaml", CONFIG_OIIO_YAML.as_posix(),
-    #     "--version", version,
-    #     # https://docs.thinkboxsoftware.com/products/deadline/10.2/1_User%20Manual/manual/manual-submission.html#arbitrary-command-line-jobs
-    #     "--frame-number", "<STARTFRAME%4>",
-    #     "--output-dir", output_dir.as_posix(),
-    #     "create-png",
-    # ]
-
     exr_in: pathlib.Path = input_dir.joinpath(render_output_filename["padding_deadline_batch_startframe"])
     png_out: pathlib.Path = output_dir.joinpath(exr_in.stem + ".png")
 
+    # Todo:
+    #  - [ ] add in timestamp
+    #  - [ ] add out timestamp
     cmd_oiiotool: List[str] = [
         "oiiotool",
         "-i", exr_in.as_posix(),
         "--create-dir",
         "-o", png_out.as_posix(),
     ]
+    # <QUOTE> results in "
     # Results in:
     # oiiotool -i '/raw/vivi_025.<STARTFRAME%4>.exr' --create-dir -o '/oiio/oiio_png/vivi_025.<STARTFRAME%4>.png'
     # oiiotool -i '/data/share/AWSPortalRoot1/out/Test Production/Shot/SH040/Rendering/133/raw/vivi_025.1017.exr' --create-dir -o '/data/share/AWSPortalRoot1/out/Test Production/Shot/SH040/Rendering/133/oiio/oiio_png/vivi_025.1017.png'
-
-    # # Todo:
-    # #  - [ ] add in timestamp
-    # #  - [ ] add out timestamp
-    # cmd: List[str] = [
-    #     "/usr/bin/ffmpeg",
-    #     "-hide_banner",
-    #     "-y",
-    #     "-framerate", f"{float(fps):.3f}",
-    #     # "-an",
-    #     "-pattern_type", "glob",
-    #     "-i", f"{input_dir.as_posix()}/*.png",
-    #     "-c:v", "libx264",
-    #     "-pix_fmt", "yuv420p",
-    #     f"{ffmpeg_out.as_posix()}",
-    # ]
 
     #######
     # cmd #
@@ -187,12 +140,6 @@ def raw_to_png(
             "__".join(
                 context.asset_key_for_output(output_name).path
             ): MetadataValue.json(cmd_oiiotool),
-            # "cmd": MetadataValue.md(
-            #     f"```yaml\n{yaml.safe_dump(cmd)}\n```"
-            # ),
-            # "logs": MetadataValue.md(
-            #     f"```yaml\n{yaml.safe_dump(logs)}\n```"
-            # ),
             "cmd_": MetadataValue.path(shlex.join(cmd_oiiotool)),
         }
     )
