@@ -457,14 +457,6 @@ def payload_request(
         # job_id_raw: str,
 ) -> Generator[Output[Dict] | AssetMaterialization | Any, Any, None]:
 
-    """
-    Before:
-    cat "/data/share/AWSPortalRoot1/out/Test Production/Shot/SH030/Rendering/037/4_1197-1254_4/combined_dict.json"
-
-    After
-    cat "/data/share/AWSPortalRoot1/out/Test Production/Shot/SH030/Rendering/045/4_0997-1104_4/combined_dict.json"
-    """
-
     headers = {
         "Content-Type": "application/json",
         "Accept-Charset": "UTF-8",
@@ -526,14 +518,6 @@ def submit_request_mov_to_kitsu(
         payload_request: Dict,
         job_model: JobBase,
 ) -> Generator[Output[requests.Response] | AssetMaterialization | Any, Any, None]:
-
-    """
-    Before:
-    cat "/data/share/AWSPortalRoot1/out/Test Production/Shot/SH030/Rendering/037/4_1197-1254_4/combined_dict.json"
-
-    After
-    cat "/data/share/AWSPortalRoot1/out/Test Production/Shot/SH030/Rendering/045/4_0997-1104_4/combined_dict.json"
-    """
 
     headers = {
         "Content-Type": "application/json",
