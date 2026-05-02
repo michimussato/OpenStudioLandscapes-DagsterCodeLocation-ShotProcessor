@@ -18,7 +18,7 @@ from OpenStudioLandscapes.DagsterCodeLocation.JobProcessor.dagster_job_processor
     version,
     render_output_directory,
     CONFIG,
-    frames,
+    calc_frames,
     output_format,
     submit_request_raw,
     fps,
@@ -55,7 +55,7 @@ assets_external.extend(job_title_str.specs)
 assets_external.extend(batch_name.specs)
 assets_external.extend(output_format.specs)
 assets_external.extend(CONFIG.specs)
-assets_external.extend(frames.specs)
+assets_external.extend(calc_frames.specs)
 assets_external.extend(render_output_directory.specs)
 assets_external.extend(submit_request_raw.specs)
 assets_external.extend(fps.specs)
