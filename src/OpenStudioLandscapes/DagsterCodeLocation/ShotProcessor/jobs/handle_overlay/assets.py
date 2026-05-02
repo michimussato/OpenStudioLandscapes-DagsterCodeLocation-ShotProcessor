@@ -260,8 +260,8 @@ def create_handle_overlay(
         "render_output_directory": AssetIn(
             AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "render_output_directory"])
         ),
-        "frames": AssetIn(
-            AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "frames"])
+        "render_frames": AssetIn(
+            AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "render_frames"])
         ),
         # "render_output_filename": AssetIn(
         #     AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "render_output_filename"])
@@ -285,7 +285,7 @@ def job_info_handle_overlay(
         batch_name: str,
         job_title_str: str,
         render_output_directory: pathlib.Path,
-        frames: str,
+        render_frames: str,
         # render_output_filename: Dict,
         job_model: JobBase,
         job_id_raw: str,
@@ -304,7 +304,7 @@ def job_info_handle_overlay(
     job_info_dict = {
         "Plugin": models_submission.DeadlinePlugins.CommandLine.value,
         # create_handle_overlay is a single task
-        "Frames": frames,
+        "Frames": render_frames,
         "Name": f"{job_title_str} - {JOB}",
         "Comment": job_model.comment,
         # "Department"
