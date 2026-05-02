@@ -10,6 +10,6 @@
 ## _mov_to_kitsu
 
 ```shell
-pip install --editable .[dev]
+pip install --force-reinstall --editable .[dev]
 dagster dev --workspace src/OpenStudioLandscapes/DagsterCodeLocation/ShotProcessor/jobs/mov_to_kitsu/workspace.yaml
 ```

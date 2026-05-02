@@ -10,6 +10,6 @@
 ## exr_with_custom_metadata
 
 ```shell
-pip install --editable .[dev]
+pip install --force-reinstall --editable .[dev]
 dagster dev --workspace src/OpenStudioLandscapes/DagsterCodeLocation/ShotProcessor/jobs/exr_with_custom_metadata/workspace.yaml
 ```

@@ -7,6 +7,6 @@
 # ShotProcessor
 
 ```shell
-pip install --editable .[dev]
+pip install --force-reinstall --editable .[dev]
 dagster dev --workspace src/OpenStudioLandscapes/DagsterCodeLocation/ShotProcessor/workspace.yaml
 ```

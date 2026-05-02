@@ -10,6 +10,6 @@
 ## exr_to_png
 
 ```shell
-pip install --editable .[dev]
+pip install --force-reinstall --editable .[dev]
 dagster dev --workspace src/OpenStudioLandscapes/DagsterCodeLocation/ShotProcessor/jobs/exr_to_png/workspace.yaml
 ```

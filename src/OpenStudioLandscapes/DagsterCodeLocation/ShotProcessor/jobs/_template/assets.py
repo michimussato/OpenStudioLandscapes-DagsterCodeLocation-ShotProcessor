@@ -261,8 +261,8 @@ def _template(
         "render_output_directory": AssetIn(
             AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "render_output_directory"])
         ),
-        "frames": AssetIn(
-            AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "frames"])
+        "render_frames": AssetIn(
+            AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "render_frames"])
         ),
         # "render_output_filename": AssetIn(
         #     AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "render_output_filename"])
@@ -286,7 +286,7 @@ def job_info_template(
         batch_name: str,
         job_title_str: str,
         render_output_directory: pathlib.Path,
-        frames: str,
+        render_frames: str,
         # render_output_filename: Dict,
         job_model: JobBase,
         job_id_raw: str,
@@ -306,7 +306,7 @@ def job_info_template(
         "Plugin": models_submission.DeadlinePlugins.CommandLine.value,
         # _template is a single task
         "Frames": {
-            "multi_task": frames,
+            "multi_task": render_frames,
             "single_task": "1",
         }["multi_task"],
         "Name": f"{job_title_str} - {JOB}",
