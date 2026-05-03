@@ -11,12 +11,10 @@ from OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.jobs.png_to_mov.defi
 from OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.jobs.mov_to_kitsu.definitions import assets_base as assets_mov_to_kitsu
 
 from OpenStudioLandscapes.DagsterCodeLocation.JobProcessor.dagster_job_processor.assets.read_yaml import (
-    batch_name,
-    job_title_str,
+    deadline_job_str,
     read_job_yaml,
     render_output_filename,
-    version,
-    render_output_directory,
+    calc_render_output_directory,
     CONFIG,
     calc_frames,
     output_format,
@@ -49,14 +47,12 @@ assets_external.extend(CONFIG.specs)
 
 # JobProcessor
 assets_external.extend(read_job_yaml.specs)
-assets_external.extend(version.specs)
+assets_external.extend(deadline_job_str.specs)
 assets_external.extend(render_output_filename.specs)
-assets_external.extend(job_title_str.specs)
-assets_external.extend(batch_name.specs)
+assets_external.extend(calc_render_output_directory.specs)
 assets_external.extend(output_format.specs)
 assets_external.extend(CONFIG.specs)
 assets_external.extend(calc_frames.specs)
-assets_external.extend(render_output_directory.specs)
 assets_external.extend(submit_request_raw.specs)
 assets_external.extend(fps.specs)
 

@@ -10,7 +10,6 @@ from OpenStudioLandscapes.DagsterCodeLocation.JobProcessor.dagster_job_processor
     read_job_yaml,
     render_output_filename,
     calc_render_output_directory,
-    # render_output_directory,
     CONFIG,
     submit_request_raw,
 )
@@ -30,7 +29,6 @@ assets_external.extend(calc_frames.specs)
 assets_external.extend(read_job_yaml.specs)
 assets_external.extend(render_output_filename.specs)
 assets_external.extend(calc_render_output_directory.specs)
-# assets_external.extend(version.specs)
 assets_external.extend(CONFIG.specs)
 assets_external.extend(submit_request_raw.specs)
 
