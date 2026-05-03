@@ -7,11 +7,11 @@ from dagster import (
     AutoMaterializePolicy,
 )
 
-import OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.jobs.exr_to_png.assets
+import OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.jobs.text_overlay.assets
 
 
 assets_base = load_assets_from_modules(
-    modules=[OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.jobs.exr_to_png.assets],
+    modules=[OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.jobs.text_overlay.assets],
     auto_materialize_policy=AutoMaterializePolicy.lazy().with_rules(
             AutoMaterializeRule.materialize_on_parent_updated(),
     ),

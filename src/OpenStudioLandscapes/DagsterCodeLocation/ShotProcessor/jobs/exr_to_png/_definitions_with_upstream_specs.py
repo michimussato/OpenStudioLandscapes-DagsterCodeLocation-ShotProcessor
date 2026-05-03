@@ -2,16 +2,15 @@ from dagster import (
     Definitions,
 )
 
-from OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.jobs.text_overlay.definitions import assets_base
+from OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.jobs.exr_to_png.definitions import assets_base
 
 from OpenStudioLandscapes.DagsterCodeLocation.JobProcessor.dagster_job_processor.assets.read_yaml import (
-    batch_name,
-    job_title_str,
+    deadline_job_str,
     calc_frames,
     read_job_yaml,
     render_output_filename,
-    version,
-    render_output_directory,
+    # version,
+    calc_render_output_directory,
     CONFIG,
     submit_request_raw,
 )
@@ -26,13 +25,12 @@ assets_external = []
 assets_external.extend(CONFIG_OIIO.specs)
 
 # JobProcessor
-assets_external.extend(batch_name.specs)
-assets_external.extend(job_title_str.specs)
+assets_external.extend(deadline_job_str.specs)
 assets_external.extend(calc_frames.specs)
 assets_external.extend(read_job_yaml.specs)
 assets_external.extend(render_output_filename.specs)
-assets_external.extend(render_output_directory.specs)
-assets_external.extend(version.specs)
+assets_external.extend(calc_render_output_directory.specs)
+# assets_external.extend(version.specs)
 assets_external.extend(CONFIG.specs)
 assets_external.extend(submit_request_raw.specs)
 
