@@ -24,6 +24,7 @@ from dagster import (
     MetadataValue,
 )
 
+from OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.jobs.png_to_mov import ASSET_HEADER, JOB
 # from OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.config.models import ConfigOIIO
 from OpenStudioLandscapes.DagsterCodeLocation.JobProcessor.deadline_templates.jobs import models_submission
 from OpenStudioLandscapes.DagsterCodeLocation.JobProcessor.dagster_job_processor.config.models import DefaultConstants
@@ -40,21 +41,8 @@ from OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.base.assets import (
 )
 
 from OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.jobs.exr_to_png.assets import (
-    ASSET_HEADER_OIIO_PROCESSOR_EXR_TO_PNG,
+    ASSET_HEADER as ASSET_HEADER_OIIO_PROCESSOR_EXR_TO_PNG
 )
-
-
-JOB = "png_to_mov"
-
-
-GROUP = f"OpenStudioLandscapes_DagsterCodeLocation_ShotProcessor_OIIO_Processor_{JOB}"
-# KEY_CONSTANTS_DEFAULT = [GROUP_CONSTANTS_DEFAULT, "Constants"]
-KEY_PREFIX = [GROUP]
-
-ASSET_HEADER = {
-    "group_name": GROUP,
-    "key_prefix": KEY_PREFIX,
-}
 
 
 @multi_asset(

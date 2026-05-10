@@ -24,6 +24,8 @@ from dagster import (
     MetadataValue,
 )
 
+from OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.jobs.exr_to_png import ASSET_HEADER, JOB
+
 # from OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.config.models import ConfigOIIO
 from OpenStudioLandscapes.DagsterCodeLocation.JobProcessor.deadline_templates.jobs import models_submission
 from OpenStudioLandscapes.DagsterCodeLocation.JobProcessor.dagster_job_processor.config.models import DefaultConstants
@@ -37,37 +39,24 @@ from OpenStudioLandscapes.DagsterCodeLocation.JobProcessor.dagster_job_processor
 
 from OpenStudioLandscapes.DagsterCodeLocation.ShotProcessor.base.assets import (
     ASSET_HEADER_JOB_PROCESSOR,
-    ASSET_HEADER_OIIO_PROCESSOR,
+    # ASSET_HEADER_OIIO_PROCESSOR,
 )
-
-
-JOB = "exr_to_png"
-
-
-GROUP_OIIO_PROCESSOR_EXR_TO_PNG = f"OpenStudioLandscapes_DagsterCodeLocation_ShotProcessor_OIIO_Processor_{JOB}"
-# KEY_CONSTANTS_DEFAULT = [GROUP_CONSTANTS_DEFAULT, "Constants"]
-KEY_OIIO_PROCESSOR_EXR_TO_PNG = [GROUP_OIIO_PROCESSOR_EXR_TO_PNG]
-
-ASSET_HEADER_OIIO_PROCESSOR_EXR_TO_PNG = {
-    "group_name": GROUP_OIIO_PROCESSOR_EXR_TO_PNG,
-    "key_prefix": KEY_OIIO_PROCESSOR_EXR_TO_PNG,
-}
 
 
 @multi_asset(
     outs={
         "cmd": AssetOut(
-            **ASSET_HEADER_OIIO_PROCESSOR_EXR_TO_PNG,
+            **ASSET_HEADER,
             dagster_type=List,
             description="Todo",
         ),
         "Deadline_OutputDirectory": AssetOut(
-            **ASSET_HEADER_OIIO_PROCESSOR_EXR_TO_PNG,
+            **ASSET_HEADER,
             dagster_type=pathlib.Path,
             description="Todo",
         ),
         "Deadline_OutputFilename": AssetOut(
-            **ASSET_HEADER_OIIO_PROCESSOR_EXR_TO_PNG,
+            **ASSET_HEADER,
             dagster_type=NoneType,
             description="Todo",
         ),
@@ -190,7 +179,7 @@ def raw_to_png(
 @multi_asset(
     outs={
         "job_info_model": AssetOut(
-            **ASSET_HEADER_OIIO_PROCESSOR_EXR_TO_PNG,
+            **ASSET_HEADER,
             dagster_type=models_submission.JobInfo,
             description="",
         ),
@@ -218,7 +207,7 @@ def raw_to_png(
             AssetKey([*ASSET_HEADER_JOB_PROCESSOR_DEADLINE["key_prefix"], "job_id_raw"]),
         ),
         "Deadline_OutputDirectory": AssetIn(
-            AssetKey([*ASSET_HEADER_OIIO_PROCESSOR_EXR_TO_PNG["key_prefix"], "Deadline_OutputDirectory"]),
+            AssetKey([*ASSET_HEADER["key_prefix"], "Deadline_OutputDirectory"]),
         ),
         # "Deadline_OutputFilename": AssetIn(
         #     AssetKey([*ASSET_HEADER_OIIO_PROCESSOR_CREATE_TEXT_OVERLAY["key_prefix"], "Deadline_OutputFilename"]),
@@ -306,7 +295,7 @@ def job_info_exr_to_png(
 @multi_asset(
     outs={
         "plugin_info_model": AssetOut(
-            **ASSET_HEADER_OIIO_PROCESSOR_EXR_TO_PNG,
+            **ASSET_HEADER,
             dagster_type=models_submission.CommandLinePluginInfo,
             description="",
         ),
@@ -322,7 +311,7 @@ def job_info_exr_to_png(
         #     AssetKey([*ASSET_HEADER_JOB_PROCESSOR_READER["key_prefix"], "read_job_yaml"])
         # ),
         "cmd": AssetIn(
-            AssetKey([*ASSET_HEADER_OIIO_PROCESSOR_EXR_TO_PNG["key_prefix"], "cmd"])
+            AssetKey([*ASSET_HEADER["key_prefix"], "cmd"])
         ),
     }
 )
@@ -376,16 +365,16 @@ def plugin_info_text_overlay(
 
 
 @asset(
-    **ASSET_HEADER_OIIO_PROCESSOR_EXR_TO_PNG,
+    **ASSET_HEADER,
     ins={
         "CONFIG": AssetIn(
             AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "CONFIG"]),
         ),
         "job_info_model": AssetIn(
-            AssetKey([*ASSET_HEADER_OIIO_PROCESSOR_EXR_TO_PNG["key_prefix"], "job_info_model"]),
+            AssetKey([*ASSET_HEADER["key_prefix"], "job_info_model"]),
         ),
         "plugin_info_model": AssetIn(
-            AssetKey([*ASSET_HEADER_OIIO_PROCESSOR_EXR_TO_PNG["key_prefix"], "plugin_info_model"]),
+            AssetKey([*ASSET_HEADER["key_prefix"], "plugin_info_model"]),
         ),
         # "job_id_raw": AssetIn(
         #     AssetKey([*ASSET_HEADER_JOB_PROCESSOR_DEADLINE["key_prefix"], "job_id_raw"]),
@@ -440,13 +429,13 @@ def payload_request(
 @multi_asset(
     outs={
         "job": AssetOut(
-            **ASSET_HEADER_OIIO_PROCESSOR_EXR_TO_PNG,
+            **ASSET_HEADER,
             dagster_type=Dict,
             description="The resulting job details received "
                         "from Deadline.",
         ),
         "job_id": AssetOut(
-            **ASSET_HEADER_OIIO_PROCESSOR_EXR_TO_PNG,
+            **ASSET_HEADER,
             dagster_type=str,
             description="The job ID received from Deadline.",
         ),
@@ -456,7 +445,7 @@ def payload_request(
             AssetKey([*ASSET_HEADER_JOB_PROCESSOR["key_prefix"], "CONFIG"]),
         ),
         "payload_request": AssetIn(
-            AssetKey([*ASSET_HEADER_OIIO_PROCESSOR_EXR_TO_PNG["key_prefix"], "payload_request"]),
+            AssetKey([*ASSET_HEADER["key_prefix"], "payload_request"]),
         ),
         "job_model": AssetIn(
             AssetKey([*ASSET_HEADER_JOB_PROCESSOR_READER["key_prefix"], "read_job_yaml"])
